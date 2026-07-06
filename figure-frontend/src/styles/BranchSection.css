@@ -1,0 +1,134 @@
+/* src/styles/BranchSection.css */
+.branch-section {
+    padding: 60px 20px;
+    background: #f8fafc;
+}
+
+.branch-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto 40px;
+}
+
+.header-text h2 {
+    font-size: 2rem;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.header-text p {
+    color: #64748b;
+    font-size: 1rem;
+}
+
+.view-all-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.view-all-link:hover {
+    gap: 12px;
+    color: var(--primary-hover);
+}
+
+.branch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.branch-preview-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 16px;
+}
+
+.branch-preview-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.branch-preview-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.branch-preview-info {
+    flex: 1;
+}
+
+.branch-preview-info h3 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.branch-address,
+.branch-phone {
+    font-size: 0.85rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+}
+
+.branch-address svg,
+.branch-phone svg {
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.branch-detail-link {
+    display: inline-block;
+    margin-top: 12px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.branch-detail-link:hover {
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .branch-section {
+        padding: 40px 16px;
+    }
+    
+    .branch-section-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-text h2 {
+        font-size: 1.5rem;
+    }
+    
+    .branch-preview-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .branch-address,
+    .branch-phone {
+        justify-content: center;
+    }
+}

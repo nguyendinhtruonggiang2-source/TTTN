@@ -1,0 +1,243 @@
+/* src/styles/cart.css */
+.cart-container {
+    min-height: calc(100vh - 200px);
+    padding-top: 20px;
+    padding-bottom: 40px;
+  }
+  
+  /* Image styles */
+  .cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+    border: 1px solid #e0e0e0;
+    background-color: #f5f5f5;
+  }
+  
+  .cart-item-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Quantity input styles */
+  .quantity-input {
+    -moz-appearance: textfield;
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .quantity-input::-webkit-outer-spin-button,
+  .quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Empty cart styles */
+  .empty-cart {
+    animation: fadeIn 0.5s ease;
+    padding: 60px 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  /* Responsive styles */
+  @media (max-width: 900px) {
+    .cart-item-row {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 16px 0;
+    }
+    
+    .cart-item-image {
+      width: 120px;
+      height: 120px;
+      margin-bottom: 12px;
+    }
+    
+    .cart-summary-card {
+      margin-top: 24px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .cart-container {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    
+    .cart-title {
+      font-size: 1.5rem !important;
+    }
+    
+    .quantity-controls {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .quantity-input {
+      width: 50px !important;
+    }
+    
+    /* Make table scrollable on mobile */
+    .MuiTableContainer-root {
+      overflow-x: auto;
+      margin: 0 -12px;
+      width: calc(100% + 24px);
+    }
+    
+    .MuiTable {
+      min-width: 600px;
+    }
+  }
+  
+  /* Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  /* Table styles */
+  .table-header {
+    background: linear-gradient(90deg, #1976d2 0%, #2196f3 100%);
+  }
+  
+  .table-header .MuiTableCell-head {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+  
+  .table-row:hover {
+    background-color: rgba(25, 118, 210, 0.04);
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Button styles */
+  .checkout-button {
+    background: linear-gradient(45deg, #1976d2 0%, #2196f3 100%);
+    color: white;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .checkout-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(33, 150, 243, 0.4);
+  }
+  
+  .checkout-button:disabled {
+    background: linear-gradient(45deg, #9e9e9e 0%, #bdbdbd 100%);
+    transform: none;
+    box-shadow: none;
+  }
+  
+  .clear-cart-button {
+    border-color: #f44336;
+    color: #f44336;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    font-weight: 500;
+  }
+  
+  .clear-cart-button:hover {
+    background-color: rgba(244, 67, 54, 0.08);
+    border-color: #d32f2f;
+    color: #d32f2f;
+    transform: translateY(-1px);
+  }
+  
+  /* Alert styles */
+  .free-shipping-alert {
+    border-left: 4px solid #4caf50;
+    background-color: rgba(76, 175, 80, 0.08);
+    border-radius: 8px;
+  }
+  
+  .free-shipping-alert .MuiAlert-icon {
+    color: #4caf50;
+  }
+  
+  /* Dialog styles */
+  .confirm-dialog .MuiDialog-paper {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .confirm-dialog-title {
+    background: linear-gradient(90deg, #ff9800 0%, #ffb74d 100%);
+    color: white;
+    padding: 16px 24px;
+  }
+  
+  .confirm-dialog-title .MuiSvgIcon-root {
+    color: white;
+  }
+  
+  /* Card styles */
+  .cart-summary-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+  }
+  
+  .cart-summary-card:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  /* Snackbar customization */
+  .MuiSnackbar-root {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .MuiAlert-filledSuccess {
+    background-color: #2e7d32 !important;
+  }
+  
+  .MuiAlert-filledError {
+    background-color: #d32f2f !important;
+  }
+  
+  .MuiAlert-filledWarning {
+    background-color: #ed6c02 !important;
+  }
+  
+  .MuiAlert-filledInfo {
+    background-color: #0288d1 !important;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }

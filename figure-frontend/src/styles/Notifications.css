@@ -1,0 +1,241 @@
+.notifications-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    min-height: calc(100vh - 200px);
+    background: #f5f5f5;
+  }
+  
+  .notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .notifications-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 24px;
+    color: #333;
+  }
+  
+  .header-icon {
+    color: var(--primary-color);
+  }
+  
+  .unread-badge {
+    background: var(--primary-color);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+  
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+  
+  .mark-all-btn, .delete-all-btn {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  
+  .mark-all-btn {
+    background: #e8f5e9;
+    border: none;
+    color: #2e7d32;
+  }
+  
+  .mark-all-btn:hover:not(:disabled) {
+    background: #c8e6c9;
+  }
+  
+  .delete-all-btn {
+    background: #ffebee;
+    border: none;
+    color: #c62828;
+  }
+  
+  .delete-all-btn:hover {
+    background: #ffcdd2;
+  }
+  
+  /* Filter tabs */
+  .filter-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .filter-tab {
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.2s;
+  }
+  
+  .filter-tab.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  /* Notifications list */
+  .notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .notification-item {
+    display: flex;
+    gap: 16px;
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    border: 1px solid #eee;
+  }
+  
+  .notification-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .notification-item.unread {
+    background: #fff8e1;
+    border-left: 3px solid #ffc107;
+  }
+  
+  .notification-icon .icon {
+    font-size: 24px;
+  }
+  
+  .icon.order { color: #2196f3; }
+  .icon.promotion { color: #ff9800; }
+  .icon.system { color: #9c27b0; }
+  .icon.default { color: #757575; }
+  
+  .notification-content {
+    flex: 1;
+  }
+  
+  .notification-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+  }
+  
+  .notification-message {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  
+  .notification-time {
+    font-size: 11px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+  }
+  
+  /* Empty state */
+  .empty-notifications {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+  }
+  
+  .empty-icon {
+    font-size: 64px;
+    color: #ccc;
+    margin-bottom: 16px;
+  }
+  
+  .empty-notifications p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  
+  .empty-notifications span {
+    font-size: 13px;
+    color: #999;
+  }
+  
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+  }
+  
+  .pagination button {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .page-info {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Loading */
+  .notifications-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+  }
+  
+  .spinner {
+    animation: spin 1s linear infinite;
+    font-size: 40px;
+    color: var(--primary-color);
+  }
+  
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
