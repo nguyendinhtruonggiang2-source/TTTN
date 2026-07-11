@@ -282,185 +282,131 @@
   <li><code>GET /api/admin/ai-chat/sessions/{sessionId}/messages</code> (Chi tiết tin nhắn trong cuộc trò chuyện).</li>
 </ul>
 <hr />
-<h2>PHẦN IV: BỘ CÂU HỎI PHẢN BIỆN VÀ ĐÁP ÁN TRẢ LỜI CHI TIẾT</h2>
-<p>Dưới đây là bộ câu hỏi thường gặp khi bảo vệ khóa luận / thực tập tốt nghiệp trước hội đồng và gợi ý trả lời cụ thể cho dự án Figure Store:</p>
+<h2>PHẦN IV: BỘ CÂU HỎI PHẢN BIỆN VÀ ĐÁP ÁN TRẢ LỜI CHI TIẾT (ĐỊNH HƯỚNG BẢO VỆ CHO SINH VIÊN)</h2>
+<p>Dưới đây là bộ câu hỏi thường gặp khi bảo vệ trước Hội đồng và các câu trả lời mẫu được biên soạn theo phong cách hội thoại lễ phép, khiêm tốn nhưng tự tin của sinh viên:</p>
 <h3>1. NHÓM CÂU HỎI TỔNG QUAN VỀ ĐỀ TÀI</h3>
 <h4>HỎI: Đề tài của bạn giải quyết vấn đề gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Đề tài giải quyết vấn đề tối ưu hóa quy trình kinh doanh và nâng cao trải nghiệm mua sắm mô hình chính hãng trực tuyến. Dự án giải quyết các vấn đề cốt lõi như: Quản lý hàng tồn kho, quản lý khuyến mãi/Flash Sale, tự động hóa quy trình đặt hàng, và đặc biệt là giải quyết bài toán tư vấn trực tuyến 24/7 cho khách hàng thông qua Trợ lý ảo AI có khả năng đọc dữ liệu thực tế từ cơ sở dữ liệu.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, đề tài của em tập trung giải quyết bài toán mua sắm mô hình nhân vật trực tuyến. Em tập trung giải quyết việc tự động hóa quản lý kho hàng, tối ưu hóa quy trình thanh toán đặt hàng nhanh của khách, và đặc biệt là giải quyết khó khăn trong việc tư vấn khách hàng 24/7. Thay vì cần nhân sự trực tuyến liên tục, em đã tích hợp Trợ lý ảo AI có khả năng đọc hiểu dữ liệu sản phẩm và khuyến mãi thực tế từ CSDL để phản hồi ngay cho khách hàng ạ.</p>
 <h4>HỎI: Lý do bạn chọn đề tài này là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Thứ nhất, thị trường mô hình nhân vật (figure) tại Việt Nam đang phát triển mạnh mẽ và có tệp khách hàng rất đặc thù, yêu cầu thông tin chi tiết về tỷ lệ, hãng sản xuất. Thứ hai, các trang web thương mại điện tử hiện tại thường thiếu đi sự tư vấn trực quan theo thời gian thực về sản phẩm hoặc khuyến mãi. Em chọn đề tài này nhằm ứng dụng công nghệ Spring Boot và ReactJS kết hợp mô hình ngôn ngữ lớn để tạo ra một hệ thống thương mại điện tử hiện đại, mang tính tương tác cao.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em chọn đề tài này xuất phát từ hai lý do chính ạ. Thứ nhất, phong trào sưu tầm mô hình (figure) ở nước ta đang phát triển rất mạnh mẽ và khách hàng có nhu cầu tra cứu thông số rất tỉ mỉ (như hãng sản xuất, tỷ lệ sản phẩm). Thứ hai, em nhận thấy các trang web thương mại điện tử hiện nay hầu như chưa ứng dụng Trí tuệ nhân tạo (LLM) kết nối trực tiếp với dữ liệu động. Vì vậy, em muốn áp dụng các kiến thức đã học về Java Spring Boot và ReactJS kết hợp với API Gemini của Google để tạo ra giải pháp mua sắm thông minh hơn ạ.</p>
 <h4>HỎI: Mục tiêu chính của dự án là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Xây dựng thành công một web app thương mại điện tử hoàn chỉnh, vận hành mượt mà, tải nhanh (SPA); thiết lập hệ thống trang quản trị (Admin Panel) trực quan để quản lý sản phẩm, đơn hàng, người dùng; và tích hợp chatbot AI thông minh trả lời dựa trên dữ liệu sản phẩm, coupon và flash sale thực tế.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, mục tiêu chính của em khi thực hiện đồ án này là: Thiết kế và lập trình hoàn chỉnh một trang web bán hàng Single Page Application tải nhanh, giao diện đẹp; xây dựng hệ thống quản trị dữ liệu (Admin Panel) chuẩn hóa để quản lý sản phẩm và xử lý đơn hàng; đồng thời huấn luyện và cấu hình chatbot AI trả lời đúng các thông tin về kho hàng và khuyến mãi thực tế ạ.</p>
 <h4>HỎI: Đối tượng sử dụng hệ thống là ai?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
-<p>1. <strong>Khách hàng</strong>: Người đam mê mô hình, cần tìm kiếm thông tin, so sánh sản phẩm, nhận tư vấn và đặt mua hàng nhanh chóng.</p>
-<p>2. <strong>Quản trị viên (Admin)</strong>: Người quản lý cửa hàng, phụ trách duyệt đơn, quản lý kho hàng, tạo chiến dịch khuyến mãi/Flash Sale và theo dõi biểu đồ doanh thu.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, đối tượng sử dụng hệ thống của em gồm hai nhóm:</p>
+<p>1. <strong>Khách hàng</strong>: Những người yêu thích mô hình muốn lên web tìm kiếm, so sánh sản phẩm, chat hỏi đáp thông tin và thực hiện mua hàng.</p>
+<p>2. <strong>Quản trị viên (Admin)</strong>: Chủ cửa hàng hoặc nhân viên quản lý kho, phụ trách cập nhật mô hình mới, duyệt đơn hàng, tạo mã giảm giá và theo dõi doanh thu hàng ngày ạ.</p>
 <h4>HỎI: Điểm mới hoặc ưu điểm của dự án so với các hệ thống hiện có là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Điểm mới lớn nhất là <strong>Chatbot AI tích hợp dữ liệu động</strong>. Thay vì chỉ trả lời các câu hỏi chung chung dựa trên kịch bản tĩnh, Chatbot AI của hệ thống sử dụng RAG (Retrieval-Augmented Generation) thu nhỏ để đọc dữ liệu sản phẩm, coupon giảm giá và Flash Sale đang chạy từ MySQL để tư vấn chính xác tên sản phẩm, đường dẫn link sản phẩm và các mã giảm giá có hiệu lực. Ngoài ra, giao diện của trang được thiết kế với độ thẩm mỹ cao, chuyển cảnh mượt mà và tối ưu trên di động.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, điểm mới nổi bật nhất trong đồ án của em là <strong>Chatbot AI tư vấn dữ liệu thực tế</strong>. Chatbot của em không trả lời theo kịch bản soạn sẵn mà hoạt động theo cơ chế truy vấn động CSDL. Khi khách hỏi về khuyến mãi hay sản phẩm, AI sẽ tự tìm thông tin đang có trong CSDL MySQL rồi mới tạo câu trả lời chính xác kèm link click dẫn tới sản phẩm đó ạ. Ngoài ra, giao diện của trang web được em chăm chút thiết kế theo phong cách hiện đại, chuyển cảnh mượt mà và tối ưu hóa tốt trên thiết bị di động ạ.</p>
 <h4>HỎI: Dự án của bạn đã hoàn thành bao nhiêu phần trăm?</h4>
-<p><strong>TRẢ LỜI:</strong> Dự án đã hoàn thành <strong>100%</strong> các chức năng cốt lõi theo đề cương thực tập/khóa luận, bao gồm toàn bộ luồng mua hàng, hệ thống thanh toán, quản lý admin, thông báo đẩy thời gian thực qua Websocket và tích hợp thành công Gemini API cho chatbot hỗ trợ khách hàng.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, tính đến thời điểm hiện tại, dự án của em đã hoàn thành <strong>100%</strong> các chức năng được đề ra trong đề cương thực tập và chạy thử nghiệm thành công trên môi trường cục bộ ạ.</p>
 <hr />
 <h3>2. NHÓM CÂU HỎI VỀ CÔNG NGHỆ</h3>
 <h4>HỎI: Vì sao bạn chọn ngôn ngữ lập trình và framework này?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
-<ul>
-  <li><strong>Java / Spring Boot</strong>: Java là ngôn ngữ hướng đối tượng mạnh mẽ, có tính an toàn cao, gõ tĩnh (statically typed) giúp giảm thiểu lỗi runtime. Spring Boot cung cấp hệ sinh thái phong phú, cơ chế Auto-Configuration giúp xây dựng RESTful API cực nhanh và Spring Security bảo mật bảo vệ ứng dụng hiệu quả.</li>
-  <li><strong>ReactJS</strong>: Sử dụng DOM ảo (Virtual DOM) giúp tăng tốc độ hiển thị giao diện, cơ chế chia nhỏ Component giúp tái sử dụng mã nguồn tốt, mang lại trải nghiệm ứng dụng mượt mà không bị tải lại trang (SPA).</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, em chọn <strong>Java/Spring Boot</strong> cho backend vì Java là ngôn ngữ có tính an toàn cao, gõ tĩnh giúp em kiểm soát lỗi chặt chẽ. Spring Boot hỗ trợ Auto-Configuration giúp em khởi tạo API RESTful nhanh chóng và tích hợp sẵn các giải pháp bảo mật mạnh mẽ của Spring Security. Còn đối với frontend, em chọn <strong>ReactJS</strong> vì đây là thư viện tối ưu hóa hiển thị giao diện qua DOM ảo rất tốt, cơ chế chia nhỏ thành các Component giúp em dễ quản lý và mang lại trải nghiệm SPA tải trang rất mượt mà cho người dùng ạ.</p>
 <h4>HỎI: Tại sao chọn MySQL thay vì SQL Server hoặc MongoDB?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
-<ul>
-  <li>Đối với website thương mại điện tử, các giao dịch tài chính, đặt hàng và số lượng tồn kho yêu cầu tính nhất quán dữ liệu rất cao (đảm bảo tính chất <strong>ACID</strong>). Do đó, CSDL quan hệ (RDBMS) là lựa chọn bắt buộc.</li>
-  <li><strong>MySQL</strong> là mã nguồn mở, miễn phí, hiệu năng cao, nhẹ và dễ triển khai hơn SQL Server (vốn tốn tài nguyên và mất phí bản quyền).</li>
-  <li><strong>MongoDB</strong> (NoSQL) không hỗ trợ tốt các mối quan hệ phức tạp và các giao dịch ràng buộc nhiều bảng (như Order - OrderItem - Product), dễ dẫn đến mất mát hoặc sai lệch dữ liệu kho hàng.</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ, em chọn <strong>MySQL</strong> vì hệ thống của em là website bán hàng, các thao tác thanh toán và trừ kho đòi hỏi tính toàn vẹn dữ liệu cực kỳ khắt khe (tuân thủ tính chất ACID), nên em bắt buộc phải sử dụng cơ sở dữ liệu quan hệ (RDBMS). Em chọn MySQL thay vì SQL Server vì MySQL là mã nguồn mở, hoàn toàn miễn phí, rất nhẹ và phổ biến trong giảng dạy nhà trường. Còn <strong>MongoDB</strong> là NoSQL, cấu trúc phi quan hệ của nó không đảm bảo an toàn cho các giao dịch liên kết phức tạp như giỏ hàng và đơn hàng ạ.</p>
 <h4>HỎI: Ưu điểm và nhược điểm của Spring Boot là gì?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
+<p><strong>TRẢ LỜI:</strong> Dạ, theo trải nghiệm của em khi code dự án này:</p>
 <ul>
-  <li><strong>Ưu điểm</strong>: Khởi tạo dự án cực nhanh với Spring Initializr; nhúng sẵn máy chủ (Tomcat) nên chạy được ngay bằng tệp JAR; quản lý thư viện dễ dàng qua Maven; tích hợp Spring Data JPA giúp giảm thiểu viết mã SQL thủ công.</li>
-  <li><strong>Nhược điểm</strong>: Dung lượng tệp build lớn; khởi động ban đầu tốn thời gian hơn các framework nhẹ (như Node.js Express); chiếm dụng RAM lớn khi chạy.</li>
+  <li><strong>Ưu điểm</strong>: Giúp em tiết kiệm rất nhiều thời gian cấu hình xml nhờ cơ chế Convention over Configuration; tích hợp sẵn Tomcat nên em chỉ cần chạy file JAR; quản lý dependencies qua Maven rất khoa học.</li>
+  <li><strong>Nhược điểm</strong>: Thời gian khởi chạy ban đầu hơi lâu; dung lượng tệp JAR khi build ra khá nặng và ứng dụng Spring Boot tiêu tốn khá nhiều dung lượng bộ nhớ RAM khi chạy ạ.</li>
 </ul>
 <h4>HỎI: Tại sao sử dụng React cho phần frontend?</h4>
-<p><strong>TRẢ LỜI:</strong> ReactJS giúp tách biệt hoàn toàn phần giao diện và dữ liệu (giao tiếp qua JSON API). Nhờ cơ chế <strong>Single Page Application (SPA)</strong>, người dùng chuyển trang ngay lập tức mà không bị chớp màn hình tải lại, đem lại cảm giác mượt mà như ứng dụng di động.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em dùng ReactJS vì muốn tách biệt hoàn toàn vai trò của Frontend và Backend. Frontend sẽ chỉ lo hiển thị và tương tác người dùng, nhận dữ liệu qua API JSON từ backend. Việc này giúp giảm tải cho server và tạo ra giao diện ứng dụng mượt mà hơn ạ.</p>
 <h4>HỎI: Vì sao dự án được xây dựng theo kiến trúc Monolithic REST API thay vì Microservices?</h4>
-<p><strong>TRẢ LỜI:</strong> Hệ thống được xây dựng theo kiến trúc <strong>Monolithic REST API</strong> vì:</p>
-<p>1. Quy mô dự án phù hợp với mô hình Monolith, giúp tập trung phát triển nghiệp vụ nhanh chóng mà không bị quá tải bởi việc quản lý hạ tầng mạng.</p>
-<p>2. Giảm thiểu độ trễ mạng phát sinh do giao tiếp giữa các service trong Microservices.</p>
-<p>3. Việc quản lý Transaction (Giao dịch đặt hàng, trừ kho) trên một database duy nhất diễn ra an toàn và dễ dàng hơn nhiều so với việc phân tán Transaction (Saga Pattern) trên nhiều CSDL riêng lẻ.</p>
-<p>*Lưu ý: Mặc dù là Monolithic, mã nguồn backend đã được phân chia rõ ràng theo các tầng (Layered Architecture) và các package nghiệp vụ độc lập, giúp dễ dàng chia tách thành Microservices khi quy mô hệ thống mở rộng trong tương lai.*</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, trong phạm vi của một đồ án tốt nghiệp/thực tập tốt nghiệp, em lựa chọn kiến trúc <strong>Monolithic</strong> vì:</p>
+<p>1. Giúp em tập trung tối đa thời gian vào việc hoàn thiện các nghiệp vụ phức tạp của cửa hàng (như giỏ hàng, thanh toán, xử lý AI) mà không bị phân tán vào việc cấu hình hạ tầng mạng phức tạp của Microservices.</p>
+<p>2. Tránh độ trễ mạng phát sinh khi các dịch vụ phải gọi chéo nhau qua mạng.</p>
+<p>3. Việc quản lý Transaction (giao dịch đặt hàng và trừ kho sản phẩm) trên một Database duy nhất diễn ra an toàn và dễ kiểm soát lỗi hơn rất nhiều ạ. Tuy nhiên, em đã viết mã nguồn phân chia package rõ ràng để sau này dễ dàng bóc tách lên Microservices khi cần thiết ạ.</p>
 <h4>HỎI: Hãy giải thích cách hoạt động của OpenFeign, Kafka/RabbitMQ, Eureka Server, API Gateway (nếu hệ thống chuyển đổi lên Microservices)?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
+<p><strong>TRẢ LỜI:</strong> Dạ, theo tìm hiểu lý thuyết của em:</p>
 <ul>
-  <li><strong>Eureka Server</strong>: Là Service Registry đóng vai trò làm danh bạ, quản lý địa chỉ IP và cổng của tất cả các microservices đăng ký vào hệ thống.</li>
-  <li><strong>API Gateway</strong>: Là chốt chặn đầu tiên tiếp nhận mọi yêu cầu từ Client, thực hiện định tuyến (routing) đến các service tương ứng, đồng thời xử lý xác thực (Authentication) tập trung.</li>
-  <li><strong>OpenFeign</strong>: Là một thư viện declarative REST client trong Spring Cloud giúp các microservices gọi API của nhau một cách dễ dàng như gọi một hàm local.</li>
-  <li><strong>Kafka / RabbitMQ</strong>: Là các Message Broker (Hệ thống hàng đợi tin nhắn) giúp truyền thông tin bất đồng bộ giữa các microservices, giảm tải cho hệ thống và đảm bảo tính kết nối lỏng (loose coupling).</li>
-  <li><strong>Docker</strong>: Giúp đóng gói toàn bộ mã nguồn cùng môi trường chạy (OS, thư viện) vào một Container duy nhất, đảm bảo ứng dụng chạy đồng nhất từ máy lập trình cá nhân lên server deploy mà không gặp lỗi cấu hình.</li>
+  <li><strong>Eureka Server</strong>: Là trung tâm đăng ký dịch vụ (Service Registry), giúp các microservices khai báo địa chỉ IP/Port và tìm thấy nhau trong hệ thống.</li>
+  <li><strong>API Gateway</strong>: Là cửa ngõ duy nhất tiếp nhận mọi request từ Client, thực hiện điều hướng request đến đúng microservice và xử lý xác thực tập trung.</li>
+  <li><strong>OpenFeign</strong>: Giúp em viết code gọi REST API giữa các microservices một cách ngắn gọn dưới dạng khai báo Interface.</li>
+  <li><strong>Kafka / RabbitMQ</strong>: Là các Message Broker trung gian giúp truyền tải tin nhắn bất đồng bộ, giải quyết bài toán giao tiếp không đồng bộ giữa các dịch vụ để giảm tải nghẽn hệ thống.</li>
+  <li><strong>Docker</strong>: Giúp em đóng gói ứng dụng thành các Container độc lập, chạy được ở mọi máy tính mà không sợ lỗi xung đột môi trường ạ.</li>
 </ul>
 <hr />
 <h3>3. NHÓM CÂU HỎI VỀ CƠ SỞ DỮ LIỆU</h3>
 <h4>HỎI: Hệ thống của bạn có những bảng nào?</h4>
-<p><strong>TRẢ LỜI:</strong> Hệ thống gồm các bảng chính:</p>
-<ul>
-  <li><code>users</code>: Lưu tài khoản khách hàng và admin.</li>
-  <li><code>roles</code> & <code>user_roles</code>: Phân quyền người dùng (ADMIN, USER).</li>
-  <li><code>figures</code>: Danh sách mô hình sản phẩm.</li>
-  <li><code>categories</code>: Danh mục sản phẩm.</li>
-  <li><code>orders</code> & <code>order_items</code>: Lưu thông tin đơn hàng và chi tiết các sản phẩm trong đơn.</li>
-  <li><code>promotions</code>: Lưu thông tin mã giảm giá, voucher.</li>
-  <li><code>flash_sales</code>: Quản lý các chiến dịch giảm giá giờ vàng.</li>
-  <li><code>chat_messages</code>: Lưu lịch sử hội thoại hỗ trợ của AI.</li>
-  <li><code>comments</code> & <code>reviews</code>: Bình luận tin tức và đánh giá sản phẩm.</li>
-  <li><code>branches</code>: Hệ thống các cửa hàng/chi nhánh.</li>
-  <li><code>banners</code>: Slide ảnh quảng cáo ngoài trang chủ.</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ, cơ sở dữ liệu của em gồm các bảng chính: bảng <code>users</code> lưu tài khoản; <code>roles</code> và <code>user_roles</code> để phân quyền; bảng <code>figures</code> lưu sản phẩm mô hình; <code>categories</code> lưu danh mục; <code>orders</code> và <code>order_items</code> để quản lý đơn hàng; <code>promotions</code> lưu mã giảm giá; <code>flash_sales</code> cho giảm giá giờ vàng; <code>chat_messages</code> lưu lịch sử tin nhắn AI; cùng một số bảng phụ như <code>comments</code>, <code>reviews</code>, <code>branches</code>, <code>banners</code> ạ.</p>
 <h4>HỎI: Mối quan hệ giữa các bảng được thiết kế như thế nào?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, em thiết kế các bảng có mối quan hệ ràng buộc chặt chẽ với nhau:</p>
 <ul>
-  <li>Quan hệ <strong>Một - Nhiều (1-n)</strong>: Một danh mục (<code>Category</code>) có nhiều sản phẩm (<code>Figure</code>). Một đơn hàng (<code>Order</code>) chứa nhiều chi tiết sản phẩm (<code>OrderItem</code>). Một người dùng (<code>User</code>) có nhiều đơn hàng (<code>Order</code>).</li>
-  <li>Quan hệ <strong>Nhiều - Nhiều (n-n)</strong>: Thiết lập giữa <code>User</code> và <code>Role</code> thông qua bảng trung gian <code>user_roles</code>.</li>
+  <li><strong>Quan hệ 1 - Nhiều (1-n)</strong>: Một danh mục chứa nhiều mô hình; một người dùng có thể đặt nhiều đơn hàng; một đơn hàng chứa nhiều chi tiết sản phẩm (<code>order_items</code>).</li>
+  <li><strong>Quan hệ Nhiều - Nhiều (n-n)</strong>: Thiết lập giữa tài khoản người dùng và quyền truy cập thông qua bảng trung gian <code>user_roles</code> ạ.</li>
 </ul>
 <h4>HỎI: Tại sao bạn lại thiết kế cơ sở dữ liệu như vậy?</h4>
-<p><strong>TRẢ LỜI:</strong> CSDL được thiết kế tuân thủ theo các dạng chuẩn hóa (chủ yếu là <strong>3NF - Dạng chuẩn 3</strong>). Việc này giúp:</p>
-<p>1. Triệt tiêu tối đa việc dư thừa dữ liệu (tránh lặp lại thông tin địa chỉ khách hàng hay tên sản phẩm trong từng chi tiết đơn hàng).</p>
-<p>2. Tránh các dị thường trong thao tác thêm, sửa, xóa dữ liệu (ví dụ: khi xóa một sản phẩm không làm ảnh hưởng đến lịch sử đơn hàng cũ nhờ việc lưu giá bán cố định tại bảng OrderItem).</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em đã tiến hành thiết kế và phân tích các bảng CSDL tuân thủ theo dạng chuẩn hóa <strong>3NF</strong>. Việc này giúp cơ sở dữ liệu của em giảm thiểu tối đa sự trùng lặp thông tin (như không cần lặp lại thông tin cá nhân khách hàng ở mỗi dòng chi tiết sản phẩm) và loại bỏ được các lỗi dị thường khi thêm mới hoặc cập nhật dữ liệu ạ.</p>
 <h4>HỎI: Khóa chính và khóa ngoại có vai trò gì?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
-<ul>
-  <li><strong>Khóa chính (Primary Key)</strong>: Định danh duy nhất cho một bản ghi trong bảng (ví dụ <code>id</code> của User hay Product), đảm bảo dữ liệu không bị trùng lặp.</li>
-  <li><strong>Khóa ngoại (Foreign Key)</strong>: Ràng buộc mối quan hệ giữa hai bảng (ví dụ: <code>category_id</code> trong bảng <code>figures</code> liên kết đến khóa chính <code>id</code> của bảng <code>categories</code>), giúp duy trì tính toàn vẹn dữ liệu, không cho phép tạo sản phẩm thuộc danh mục không tồn tại.</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ, <strong>Khóa chính</strong> giúp định danh duy nhất cho một dòng dữ liệu (ví dụ mã sản phẩm), đảm bảo dữ liệu không bị lặp. Còn <strong>Khóa ngoại</strong> giúp tạo mối liên kết logic giữa các bảng và duy trì tính toàn vẹn dữ liệu, không cho phép lưu sản phẩm thuộc về một danh mục không tồn tại trong hệ thống ạ.</p>
 <h4>HỎI: Chuẩn hóa dữ liệu là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Là quá trình phân tích và tổ chức lại cấu trúc dữ liệu trong CSDL nhằm loại bỏ sự dư thừa dữ liệu, ngăn ngừa các dị thường khi cập nhật và bảo vệ tính toàn vẹn của dữ liệu trong hệ thống.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, chuẩn hóa dữ liệu là việc phân tích và tổ chức lại các bảng dữ liệu theo các quy tắc toán học quan hệ (các dạng chuẩn 1NF, 2NF, 3NF...) nhằm loại bỏ sự dư thừa thông tin và ngăn ngừa các lỗi sai lệch dữ liệu trong quá trình cập nhật ạ.</p>
 <h4>HỎI: Nếu dữ liệu tăng lên hàng triệu bản ghi, bạn sẽ tối ưu như thế nào?</h4>
-<p><strong>TRẢ LỜI:</strong> Em sẽ áp dụng các giải pháp sau:</p>
-<p>1. <strong>Database Indexing</strong>: Đánh chỉ mục cho các cột thường xuyên dùng để tìm kiếm hoặc lọc (như tên sản phẩm, mã đơn hàng).</p>
-<p>2. <strong>Database Partitioning</strong>: Phân vùng bảng (ví dụ chia nhỏ bảng đơn hàng theo năm hoặc tháng để tìm kiếm nhanh hơn).</p>
-<p>3. <strong>Caching</strong>: Sử dụng Redis để lưu trữ các dữ liệu đọc nhiều nhưng ít thay đổi (danh mục, banner, sản phẩm nổi bật).</p>
-<p>4. <strong>Pagination</strong>: Bắt buộc phân trang ở mọi API lấy danh sách.</p>
-<p>5. <strong>Read/Write Splitting</strong>: Cấu hình mô hình Database Replication (Master-Slave) - Master chuyên xử lý ghi (Insert/Update/Delete), các Slave chuyên xử lý đọc (Select) để chia tải.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, nếu dữ liệu tăng lên quy mô lớn, em sẽ áp dụng các giải pháp tối ưu sau:</p>
+<p>1. Thực hiện đánh chỉ mục (<strong>Database Indexing</strong>) ở các trường thường xuyên dùng để tìm kiếm (như tên mô hình, mã đơn hàng).</p>
+<p>2. Thiết lập cơ chế phân trang (<strong>Pagination</strong>) bắt buộc ở mọi API trả về danh sách.</p>
+<p>3. Sử dụng giải pháp lưu trữ bộ đệm (<strong>Caching</strong> với Redis) cho các dữ liệu tĩnh ít thay đổi.</p>
+<p>4. Nghiên cứu phân chia bảng (<strong>Partitioning</strong>) hoặc áp dụng mô hình sao chép CSDL <strong>Master-Slave</strong> (Master ghi dữ liệu, các Slave đọc dữ liệu) để phân tán tải truy vấn ạ.</p>
 <h4>HỎI: Index trong cơ sở dữ liệu dùng để làm gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Index hoạt động tương tự như mục lục của một cuốn sách. Nó tạo ra một cấu trúc dữ liệu tìm kiếm nhanh (thường là cấu trúc cây B-Tree) giúp hệ quản trị CSDL nhanh chóng tìm thấy dòng dữ liệu cần thiết mà không phải quét toàn bộ bảng (Table Scan).</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, Index giúp tăng tốc độ tìm kiếm bản ghi trong bảng. Thay vì phải quét qua từng dòng từ đầu đến cuối bảng (Table Scan) rất tốn thời gian, cơ chế Index tạo ra một cây tìm kiếm nhanh (thường là cấu trúc B-Tree) giúp hệ thống trỏ thẳng đến bản ghi cần tìm chỉ trong vài mili-giây ạ.</p>
 <hr />
 <h3>4. NHÓM CÂU HỎI VỀ CHỨC NĂNG</h3>
 <h4>HỎI: Chức năng quan trọng nhất của hệ thống là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Có hai chức năng quan trọng nhất:</p>
-<p>1. <strong>Quy trình đặt hàng thanh toán trực tuyến</strong>: Đảm bảo trừ kho chính xác, tính toán tổng tiền chuẩn và chuyển đổi trạng thái đơn hàng mượt mà.</p>
-<p>2. <strong>Hệ thống tư vấn tự động bằng AI</strong>: Chatbot tự nhận diện ngữ cảnh sản phẩm/khuyến mãi thực tế để hỗ trợ khách hàng ngay tức thì.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, theo em chức năng quan trọng nhất của hệ thống là <strong>Quy trình đặt hàng và thanh toán trực tuyến</strong> (yêu cầu trừ kho chính xác, tính toán tổng tiền chuẩn) và <strong>Trợ lý ảo AI hỗ trợ tự động</strong> (nhận diện câu hỏi để gợi ý sản phẩm, chi nhánh và voucher phù hợp từ database) ạ.</p>
 <h4>HỎI: Quy trình người dùng đặt hàng diễn ra như thế nào?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
-<p>1. Khách hàng thêm sản phẩm vào giỏ hàng -> Hệ thống kiểm tra số lượng tồn kho.</p>
-<p>2. Tại trang thanh toán, khách hàng nhập thông tin nhận hàng, chọn phương thức COD hoặc chuyển khoản qua QR code ngân hàng.</p>
-<p>3. Người dùng áp dụng mã giảm giá (nếu có) -> Gọi API kiểm tra điều kiện của mã giảm giá.</p>
-<p>4. Nhấn đặt hàng -> Backend lưu thông tin đơn hàng, trừ trực tiếp số lượng tồn kho của sản phẩm trong database, gửi thông báo đẩy thời gian thực về trang Admin thông qua WebSocket.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, quy trình bắt đầu từ việc người dùng thêm sản phẩm vào giỏ hàng -> Chuyển sang trang thanh toán nhập địa chỉ -> Nhập mã voucher (hệ thống gọi API kiểm tra điều kiện áp dụng) -> Chọn phương thức thanh toán -> Nhấn đặt hàng. Lúc này, Backend sẽ tiếp nhận yêu cầu, kiểm tra số lượng tồn kho thực tế, tiến hành trừ kho trong DB, tạo đơn hàng mới và gửi tín hiệu thông báo thời gian thực về màn hình Admin qua WebSocket ạ.</p>
 <h4>HỎI: Hệ thống xử lý lỗi khi người dùng nhập sai dữ liệu ra sao?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em xử lý lỗi ở cả hai đầu:</p>
 <ul>
-  <li>Phía <strong>Frontend</strong>: Validate trực tiếp trên giao diện bằng Regex hoặc Javascript (kiểm tra độ dài mật khẩu, định dạng email, số điện thoại) và hiển thị thông báo đỏ cảnh báo người dùng trước khi gửi form.</li>
-  <li>Phía <strong>Backend</strong>: Sử dụng thư viện validation (<code>@Valid</code>, <code>@NotNull</code>, <code>@Size</code>...) trong các DTO. Nếu dữ liệu không hợp lệ, Controller sẽ chặn lại và trả về mã lỗi <code>HTTP 400 (Bad Request)</code> kèm thông điệp lỗi chi tiết dưới dạng JSON để frontend hiển thị lên màn hình.</li>
+  <li>Ở <strong>Frontend</strong>: Em kiểm tra tính hợp lệ của dữ liệu đầu vào (như định dạng email, số điện thoại, mật khẩu trống) bằng Javascript và báo lỗi đỏ ngay trên giao diện.</li>
+  <li>Ở <strong>Backend</strong>: Em dùng các thẻ anotation validation của Spring Boot trong lớp DTO để chặn request lại và trả về thông tin lỗi rõ ràng dưới dạng JSON nếu dữ liệu vượt qua được frontend ạ.</li>
 </ul>
 <h4>HỎI: Nếu một dịch vụ bị lỗi thì toàn bộ hệ thống có hoạt động được không?</h4>
-<p><strong>TRẢ LỜI:</strong> Vì hệ thống hiện tại chạy theo kiến trúc Monolith nên nếu ứng dụng Spring Boot bị dừng (crash), toàn bộ website sẽ không thể tương tác với cơ sở dữ liệu. Tuy nhiên, hệ thống đã được triển khai bên trong môi trường Docker Container với cấu hình <code>restart: always</code>, giúp tự động khởi động lại dịch vụ ngay lập tức khi phát hiện ứng dụng bị sập.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, vì hệ thống của em xây dựng theo mô hình Monolith nên nếu server Spring Boot bị sập thì toàn bộ trang web sẽ tạm thời ngưng hoạt động. Tuy nhiên, em đã đóng gói server trong <strong>Docker Container</strong> với thuộc tính tự động khởi động lại (<code>restart: always</code>) giúp ứng dụng tự phục hồi chạy lại ngay lập tức khi phát hiện có sự cố crash hệ thống ạ.</p>
 <h4>HỎI: Hệ thống phân quyền người dùng như thế nào?</h4>
-<p><strong>TRẢ LỜI:</strong> Hệ thống sử dụng cơ chế <strong>Role-Based Access Control (RBAC)</strong> thông qua Spring Security:</p>
-<ul>
-  <li>Mỗi khi người dùng đăng nhập thành công, Server sẽ trả về JWT Token chứa danh sách các quyền của họ (ví dụ: <code>ROLE_USER</code>, <code>ROLE_ADMIN</code>).</li>
-  <li>Ở <strong>Backend</strong>: Sử dụng <code>@PreAuthorize</code> trên các phương thức hoặc cấu hình trong SecurityConfig để chặn các API admin <code>/api/admin/**</code> chỉ cho phép <code>ROLE_ADMIN</code>.</li>
-  <li>Ở <strong>Frontend</strong>: React sử dụng thuộc tính Route Guard (<code>AdminRoute</code>) để kiểm tra quyền và chặn không cho User thường truy cập giao diện quản trị.</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ, em phân quyền dựa trên cơ chế JWT kết hợp Spring Security. Tài khoản đăng nhập thành công sẽ nhận được một Token JWT chứa danh sách quyền của mình (ADMIN hoặc USER). Backend sẽ cấu hình chặn các đường dẫn admin <code>/api/admin/**</code> chỉ dành cho ROLE_ADMIN. Phía Frontend em cũng viết bộ định tuyến bảo vệ (<code>AdminRoute</code>) để ngăn chặn tài khoản thường cố tình truy cập vào trang quản trị ạ.</p>
 <h4>HỎI: API nào được sử dụng nhiều nhất?</h4>
-<p><strong>TRẢ LỜI:</strong></p>
-<ul>
-  <li><code>GET /api/figures</code> (API lấy danh sách mô hình sản phẩm, được gọi liên tục mỗi khi người dùng tìm kiếm, chuyển trang, hoặc lọc danh mục).</li>
-  <li><code>GET /api/auth/profile</code> (API đồng bộ trạng thái tài khoản mỗi khi người dùng chuyển trang).</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ, đó là API lấy danh sách sản phẩm <code>GET /api/figures</code> (vì được gọi mỗi khi người dùng tải trang chủ, tìm kiếm, chuyển phân trang hoặc lọc danh mục) và API lấy thông tin tài khoản đang đăng nhập <code>GET /api/auth/profile</code> để hiển thị menu cá nhân hóa ạ.</p>
 <hr />
 <h3>5. NHÓM CÂU HỎI VỀ KIẾN TRÚC VÀ THUẬT TOÁN</h3>
 <h4>HỎI: Hãy mô tả kiến trúc tổng thể của hệ thống.</h4>
-<p><strong>TRẢ LỜI:</strong> Hệ thống được thiết kế theo mô hình <strong>Client-Server</strong> giao tiếp qua REST API.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, hệ thống của em được thiết kế theo kiến trúc phân tầng truyền thống (<strong>Layered Architecture</strong>):</p>
 <ul>
-  <li>Ở <strong>Backend</strong>: Sử dụng kiến trúc phân tầng chuẩn (<strong>Layered Architecture</strong>):</li>
-  <li><strong>Controller Layer</strong>: Tiếp nhận request, xử lý validate và ánh xạ dữ liệu.</li>
-  <li><strong>Service Layer</strong>: Nơi xử lý toàn bộ logic nghiệp vụ (business logic) của hệ thống.</li>
-  <li><strong>Repository Layer (DAO)</strong>: Giao tiếp trực tiếp với MySQL CSDL thông qua Spring Data JPA.</li>
-  <li><strong>Entity Layer</strong>: Ánh xạ trực tiếp các bảng CSDL thành các đối tượng Java.</li>
+  <li><strong>Controller</strong>: Tiếp nhận request từ client, validate dữ liệu đầu vào.</li>
+  <li><strong>Service</strong>: Xử lý logic nghiệp vụ và tính toán chính của hệ thống.</li>
+  <li><strong>Repository</strong>: Thực hiện truy vấn dữ liệu từ MySQL Database qua Spring Data JPA.</li>
+  <li><strong>Entity</strong>: Lớp ánh xạ trực tiếp các bảng CSDL thành các đối tượng Java ạ.</li>
 </ul>
 <h4>HỎI: Luồng dữ liệu từ frontend đến backend diễn ra như thế nào?</h4>
-<p><strong>TRẢ LỜI:</strong> Người dùng thao tác trên giao diện React -> Kích hoạt gọi hàm Axios -> Gửi HTTP Request kèm Token JWT đến cổng Server -> Spring Security kiểm tra tính hợp lệ của Token -> Chuyển đến Controller tương ứng -> Gọi hàm Service để thực hiện nghiệp vụ -> Service gọi Repository truy vấn MySQL -> Dữ liệu trả ngược lại Service xử lý -> Trả về Client dưới định dạng JSON -> Giao diện React nhận kết quả và cập nhật hiển thị.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, luồng đi từ thao tác click chuột của người dùng trên giao diện React -> React gọi API thông qua thư viện Axios kèm Token JWT -> Request truyền đến Backend Spring Boot -> Bộ lọc Spring Security giải mã Token và xác thực -> Controller tiếp nhận request -> Gọi Service thực thi nghiệp vụ -> Service gọi Repository truy vấn MySQL CSDL -> Dữ liệu trả về Service xử lý -> Trả về Client dưới dạng JSON -> Giao diện React nhận dữ liệu cập nhật lại giao diện người dùng ạ.</p>
 <h4>HỎI: JWT là gì và hoạt động ra sao?</h4>
-<p><strong>TRẢ LỜI:</strong> <strong>JWT (JSON Web Token)</strong> là một chuỗi mã hóa gồm 3 phần ngăn cách bởi dấu chấm: <code>Header</code> (Thuật toán mã hóa), <code>Payload</code> (Thông tin người dùng cần truyền tải như username, roles) và <code>Signature</code> (Chữ ký để xác thực tính toàn vẹn).</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, <strong>JWT (JSON Web Token)</strong> là một chuỗi mã hóa gồm 3 phần chính cách nhau bởi dấu chấm: Header (Khai báo thuật toán), Payload (Chứa thông tin cơ bản của user đăng nhập như username, roles) và Signature (Chữ ký số xác thực).</p>
 <ul>
-  <li><strong>Cách hoạt động</strong>:</li>
+  <li><strong>Cách hoạt động</strong>: Khi người dùng đăng nhập thành công, Server dùng Secret Key của mình ký và tạo ra chuỗi JWT gửi về lưu ở trình duyệt khách hàng. Ở những yêu cầu tiếp theo, Frontend tự động đính chuỗi này vào Header. Server nhận được sẽ giải mã Signature, nếu trùng khớp chữ ký thì chấp nhận người dùng đã xác thực thành công và cho phép truy cập tài nguyên ạ.</li>
 </ul>
-<p>1. Người dùng đăng nhập thành công.</p>
-<p>2. Server dùng Secret Key ký và tạo ra JWT gửi về Client.</p>
-<p>3. Client lưu JWT vào <code>localStorage</code> và tự động gắn vào Header <code>Authorization: Bearer <Token></code> cho các request sau.</p>
-<p>4. Server dùng bộ lọc Interceptor giải mã Signature bằng Secret Key. Nếu khớp, Server công nhận request hợp lệ và cho phép truy cập tài nguyên.</p>
 <h4>HỎI: RESTful API là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> RESTful API là một tiêu chuẩn thiết kế API web sử dụng các phương thức HTTP tiêu chuẩn (GET, POST, PUT, DELETE) để thực hiện các thao tác CRUD trên tài nguyên (Resources). Tài nguyên được đại diện bằng các đường dẫn danh từ (ví dụ: <code>/api/figures</code>, <code>/api/orders</code>) thay vì động từ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, RESTful API là một tiêu chuẩn thiết kế API web sử dụng các phương thức HTTP tiêu chuẩn (GET, POST, PUT, DELETE) để quản lý tài nguyên. Tài nguyên trong hệ thống của em được đại diện bằng các đường dẫn danh từ (ví dụ: <code>/api/figures</code>, <code>/api/orders</code>) giúp việc gọi và thiết kế hệ thống trở nên tường minh, dễ hiểu ạ.</p>
 <hr />
 <h3>6. NHÓM CÂU HỎI TÌNH HUỐNG PHẢN BIỆN</h3>
 <h4>HỎI: Nếu có 10.000 người dùng truy cập cùng lúc, hệ thống sẽ xử lý thế nào?</h4>
-<p><strong>TRẢ LỜI:</strong> Để xử lý được tải lớn như vậy, em sẽ đề xuất các bước nâng cấp hệ thống:</p>
-<p>1. Sử dụng <strong>Nginx</strong> làm Load Balancer để chia tải đến các cụm Docker chứa nhiều bản sao của Spring Boot Server.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, nếu hệ thống có tải lớn đột biến 10.000 người dùng cùng lúc, với cấu hình hiện tại sẽ dễ xảy ra tình trạng nghẽn cổ chai. Để giải quyết, em đề xuất các phương án tối ưu:</p>
+<p>1. Sử dụng <strong>Nginx</strong> làm Load Balancer để chia tải đến các cụm Docker chứa nhiều server Spring Boot chạy song song.</p>
 <p>2. Tối ưu hóa <strong>HikariCP</strong> (Database Connection Pool) trong Spring Boot để tăng khả năng xử lý truy vấn đồng thời.</p>
 <p>3. Kích hoạt bộ nhớ đệm <strong>Redis Cache</strong> cho các dữ liệu trang chủ nhằm giảm tải tối đa số lần đọc trực tiếp từ MySQL.</p>
 <p>4. Đưa các tác vụ nặng (như gửi email xác nhận đơn hàng) vào hàng đợi tin nhắn <strong>RabbitMQ</strong> để xử lý bất đồng bộ.</p>
 <h4>HỎI: Nếu cơ sở dữ liệu bị mất kết nối thì hệ thống sẽ làm gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Khi mất kết nối database, các truy vấn Hibernate sẽ sinh ra ngoại lệ <code>QueryTimeoutException</code> hoặc <code>JDBCConnectionException</code>. Hệ thống đã được cấu hình bộ xử lý ngoại lệ tập trung (<code>@ControllerAdvice</code> / Global Exception Handler) để bắt các lỗi này, ghi nhận thông tin lỗi chi tiết vào file log của hệ thống để quản trị viên kiểm tra, đồng thời trả về client mã lỗi <code>HTTP 500</code> kèm thông báo thân thiện: "Hệ thống đang bảo trì dịch vụ dữ liệu, quý khách vui lòng thử lại sau". Việc này giúp bảo vệ ứng dụng không bị sập hoàn toàn và giữ trải nghiệm người dùng tốt nhất có thể.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, khi mất kết nối database, các truy vấn Hibernate sẽ sinh ra ngoại lệ <code>JDBCConnectionException</code>. Em đã viết bộ xử lý ngoại lệ tập trung (<code>Global Exception Handler</code>) bằng anotation <code>@ControllerAdvice</code> để bắt tất cả các lỗi này. Hệ thống sẽ ghi nhận chi tiết lỗi vào file log để lập trình viên kiểm tra, đồng thời trả về Client mã lỗi <code>HTTP 500</code> kèm thông báo thân thiện: "Hệ thống đang bảo trì dữ liệu, quý khách vui lòng thử lại sau" để trang web không bị sập hoàn toàn và giữ trải nghiệm người dùng tốt nhất ạ.</p>
 <h4>HỎI: Nếu API trả về dữ liệu sai thì bạn xử lý ra sao?</h4>
-<p><strong>TRẢ LỜI:</strong> Em sẽ sử dụng công cụ <strong>Postman</strong> hoặc tab Network trên trình duyệt để gọi và phân tích dữ liệu JSON trả về từ API đó nhằm xác định lỗi ở Frontend hay Backend.</p>
-<ul>
-  <li>Nếu lỗi ở Frontend: Kiểm tra lại các hàm parse dữ liệu hoặc các biến state trong React.</li>
-  <li>Nếu lỗi ở Backend: Tiến hành debug trong lớp Service, kiểm tra câu lệnh truy vấn JPA hoặc viết thêm Unit Test để cô lập và xử lý triệt để logic sai.</li>
-</ul>
+<p><strong>TRẢ LỜI:</strong> Dạ, đầu tiên em sẽ mở công cụ DevTools trên trình duyệt (tab Network) hoặc dùng Postman gọi trực tiếp vào API đó để xem dữ liệu JSON trả về có đúng định dạng và dữ liệu mong muốn không. Từ đó em sẽ khoanh vùng lỗi: nếu dữ liệu JSON từ API trả về đúng nhưng hiển thị sai thì lỗi ở Frontend React; còn nếu dữ liệu JSON trả về đã bị sai lệch thì em sẽ tiến hành debug lại mã nguồn trong lớp Service của Backend để tìm và sửa lỗi logic ạ.</p>
 <h4>HỎI: Nếu được làm lại từ đầu, bạn sẽ thay đổi điều gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Em sẽ thiết kế hệ thống theo cấu trúc <strong>Clean Architecture</strong> (Architecture củ hành) ngay từ đầu để tăng tính độc lập giữa các lớp nghiệp vụ và môi trường bên ngoài. Đồng thời, em sẽ cấu hình hệ thống thanh toán tự động qua cổng thanh toán VNPay hoặc MoMo thật thay vì chỉ hiển thị mã QR chuyển khoản tĩnh như hiện tại.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, nếu được làm lại từ đầu, em sẽ thiết kế hệ thống theo mô hình <strong>Clean Architecture</strong> để các tầng nghiệp vụ độc lập hoàn toàn với framework, giúp dễ bảo trì và viết Unit Test hơn. Ngoài ra, em sẽ tích hợp cổng thanh toán trực tuyến thực tế (như VNPay hoặc MoMo) thay vì sử dụng cơ chế hiển thị mã QR chuyển khoản thủ công như hiện tại ạ.</p>
 <h4>HỎI: Chức năng nào khó thực hiện nhất? Vì sao?</h4>
-<p><strong>TRẢ LỜI:</strong> Chức năng khó nhất là <strong>Tích hợp hội thoại động cho Trợ lý AI</strong>. Khó khăn lớn nhất là làm thế nào để AI có thể hiểu được người dùng đang hỏi về sản phẩm hay khuyến mãi nào, và tự động gọi API lấy đúng thông tin từ database để ghép vào ngữ cảnh (Prompt Context) trước khi truyền sang Gemini API, nhằm tạo ra câu trả lời chứa link liên kết sản phẩm chính xác mà không làm trễ tốc độ phản hồi tin nhắn.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, đối với em chức năng khó nhất là <strong>Tích hợp hội thoại động cho Trợ lý AI</strong>. Khó khăn lớn nhất là làm thế nào để AI có thể hiểu được người dùng đang hỏi về sản phẩm hay khuyến mãi nào, và tự động gọi API lấy đúng thông tin từ database để ghép vào ngữ cảnh (Prompt Context) trước khi truyền sang Gemini API, nhằm tạo ra câu trả lời chứa link liên kết sản phẩm chính xác mà không làm trễ tốc độ phản hồi tin nhắn ạ.</p>
 <h4>HỎI: Trong quá trình thực hiện, bạn gặp những khó khăn gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Khó khăn lớn nhất là việc cấu hình phân quyền trên <strong>Spring Security 6</strong> (vốn có cú pháp thay đổi rất nhiều so với phiên bản cũ) và việc xử lý lỗi bất đồng bộ khi đồng bộ dữ liệu giỏ hàng của tài khoản khách hàng giữa các tab trình duyệt khác nhau.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em gặp khó khăn lớn nhất ở việc cấu hình phân quyền và phân cấp CORS trên <strong>Spring Security 6</strong> do phiên bản này đã loại bỏ hoàn toàn các cú pháp cũ của Spring Security 5 mà em từng học. Thêm vào đó, việc đồng bộ hóa dữ liệu giỏ hàng thời gian thực của người dùng trên nhiều tab trình duyệt khác nhau cũng khiến em mất khá nhiều thời gian xử lý bất đồng bộ ạ.</p>
 <h4>HỎI: Bạn học được gì từ dự án này?</h4>
-<p><strong>TRẢ LỜI:</strong> Qua dự án này, em đã thành thạo kỹ năng phân tích thiết kế cơ sở dữ liệu chuẩn hóa, làm chủ quy trình xây dựng RESTful API chuyên nghiệp bằng Spring Boot kết hợp bảo mật JWT. Đồng thời, em tích lũy được nhiều kinh nghiệm xây dựng ứng dụng SPA mượt mà bằng ReactJS, biết cách tích hợp và tối ưu hóa prompt cho các mô hình AI thông minh thế hệ mới.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, qua đồ án thực tập này, em đã nâng cao rất nhiều tư duy thiết kế CSDL thực tế chuẩn 3NF, thành thạo lập trình các RESTful API bảo mật bằng Spring Boot và làm chủ việc thiết kế giao diện ứng dụng SPA mượt mà bằng ReactJS. Đặc biệt, em đã có cơ hội tìm hiểu sâu hơn về cách tích hợp và tối ưu ngữ cảnh (prompt engineering) để huấn luyện trợ lý AI hỗ trợ tự động phục vụ người dùng ạ.</p>
 </body>
 </html>
