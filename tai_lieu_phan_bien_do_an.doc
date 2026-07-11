@@ -283,38 +283,56 @@
 </ul>
 <hr />
 <h2>PHẦN IV: BỘ CÂU HỎI PHẢN BIỆN VÀ ĐÁP ÁN TRẢ LỜI CHI TIẾT (ĐỊNH HƯỚNG BẢO VỆ CHO SINH VIÊN)</h2>
-<p>Dưới đây là bộ câu hỏi thường gặp khi bảo vệ trước Hội đồng và các câu trả lời mẫu được biên soạn theo phong cách hội thoại lễ phép, khiêm tốn nhưng tự tin của sinh viên:</p>
+<p>Dưới đây là bộ câu hỏi thường gặp khi bảo vệ trước Hội đồng và các câu trả lời mẫu được biên soạn theo phong cách hội thoại lễ phép, khiêm tốn nhưng tự tin của sinh viên, kèm theo giải thích ngắn gọn các thuật ngữ viết tắt để tránh bị thầy cô hỏi xoáy:</p>
+<h3>🌟 BẢNG GIẢI THÍCH NHANH CÁC THUẬT NGỮ VIẾT TẮT TRONG BÁO CÁO:</h3>
+<ul>
+  <li><strong>SPA (Single Page Application - Ứng dụng trang đơn):</strong> Trang web chỉ tải một trang HTML duy nhất, dữ liệu chuyển đổi được cập nhật động bằng Javascript mà không cần tải lại toàn bộ trang.</li>
+  <li><strong>REST / RESTful API (Representational State Transfer):</strong> Chuẩn thiết kế API web sử dụng các phương thức HTTP (GET, POST, PUT, DELETE) để trao đổi dữ liệu.</li>
+  <li><strong>JWT (JSON Web Token):</strong> Một chuỗi mã hóa nhỏ chứa thông tin định danh người dùng dưới dạng JSON, được gửi kèm trong Header để xác thực người dùng.</li>
+  <li><strong>RDBMS (Relational Database Management System - Hệ quản trị CSDL quan hệ):</strong> Hệ thống quản lý dữ liệu dưới dạng các bảng có quan hệ ràng buộc chéo (như MySQL).</li>
+  <li><strong>NoSQL (Not Only SQL):</strong> CSDL phi quan hệ, lưu trữ dữ liệu dạng tài liệu linh hoạt (như MongoDB) thay vì chia bảng.</li>
+  <li><strong>ACID (Atomicity - Consistency - Isolation - Durability):</strong> Tập hợp 4 thuộc tính đảm bảo giao dịch CSDL diễn ra an toàn (Nguyên tố - Nhất quán - Độc lập - Bền vững).</li>
+  <li><strong>RAG (Retrieval-Augmented Generation):</strong> Kỹ thuật cải tiến AI bằng cách truy xuất thêm dữ liệu thực tế ngoài CSDL để ghép vào prompt trước khi gửi đi.</li>
+  <li><strong>3NF (Third Normal Form - Dạng chuẩn 3):</strong> Quy chuẩn thiết kế CSDL nhằm loại bỏ tối đa sự trùng lặp và dư thừa thông tin giữa các bảng.</li>
+  <li><strong>DTO (Data Transfer Object):</strong> Đối tượng dùng để đóng gói và vận chuyển dữ liệu qua lại giữa các tầng của ứng dụng (Frontend -> Backend).</li>
+  <li><strong>RBAC (Role-Based Access Control):</strong> Cơ chế quản lý quyền truy cập của người dùng dựa trên vai trò được cấp (ADMIN hoặc USER).</li>
+  <li><strong>CORS (Cross-Origin Resource Sharing):</strong> Cơ chế bảo mật của trình duyệt ngăn chặn các request từ domain này gọi API sang domain khác khi chưa được cho phép.</li>
+  <li><strong>DAO (Data Access Object / Repository):</strong> Lớp mã nguồn chuyên phụ trách giao tiếp, truy vấn dữ liệu trực tiếp trong Database.</li>
+  <li><strong>CRUD (Create - Read - Update - Delete):</strong> 4 thao tác cơ bản với dữ liệu (Thêm, Đọc, Sửa, Xóa).</li>
+  <li><strong>LLM (Large Language Model - Mô hình ngôn ngữ lớn):</strong> Mô hình AI được huấn luyện trên lượng dữ liệu khổng lồ để hiểu và tạo ngôn ngữ tự nhiên (như Gemini).</li>
+</ul>
+<hr />
 <h3>1. NHÓM CÂU HỎI TỔNG QUAN VỀ ĐỀ TÀI</h3>
 <h4>HỎI: Đề tài của bạn giải quyết vấn đề gì?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, đề tài của em tập trung giải quyết bài toán mua sắm mô hình nhân vật trực tuyến. Em tập trung giải quyết việc tự động hóa quản lý kho hàng, tối ưu hóa quy trình thanh toán đặt hàng nhanh của khách, và đặc biệt là giải quyết khó khăn trong việc tư vấn khách hàng 24/7. Thay vì cần nhân sự trực tuyến liên tục, em đã tích hợp Trợ lý ảo AI có khả năng đọc hiểu dữ liệu sản phẩm và khuyến mãi thực tế từ CSDL để phản hồi ngay cho khách hàng ạ.</p>
 <h4>HỎI: Lý do bạn chọn đề tài này là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, em chọn đề tài này xuất phát từ hai lý do chính ạ. Thứ nhất, phong trào sưu tầm mô hình (figure) ở nước ta đang phát triển rất mạnh mẽ và khách hàng có nhu cầu tra cứu thông số rất tỉ mỉ (như hãng sản xuất, tỷ lệ sản phẩm). Thứ hai, em nhận thấy các trang web thương mại điện tử hiện nay hầu như chưa ứng dụng Trí tuệ nhân tạo (LLM) kết nối trực tiếp với dữ liệu động. Vì vậy, em muốn áp dụng các kiến thức đã học về Java Spring Boot và ReactJS kết hợp với API Gemini của Google để tạo ra giải pháp mua sắm thông minh hơn ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em chọn đề tài này xuất phát từ hai lý do chính ạ. Thứ nhất, phong trào sưu tầm mô hình (figure) ở nước ta đang phát triển rất mạnh mẽ và khách hàng có nhu cầu tra cứu thông số rất tỉ mỉ (như hãng sản xuất, tỷ lệ sản phẩm). Thứ hai, em nhận thấy các trang web thương mại điện tử hiện nay hầu như chưa ứng dụng Trí tuệ nhân tạo <strong>LLM</strong> (Large Language Model - Mô hình ngôn ngữ lớn) kết nối trực tiếp với dữ liệu động. Vì vậy, em muốn áp dụng các kiến thức đã học về Java Spring Boot và ReactJS kết hợp với API Gemini của Google để tạo ra giải pháp mua sắm thông minh hơn ạ.</p>
 <h4>HỎI: Mục tiêu chính của dự án là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, mục tiêu chính của em khi thực hiện đồ án này là: Thiết kế và lập trình hoàn chỉnh một trang web bán hàng Single Page Application tải nhanh, giao diện đẹp; xây dựng hệ thống quản trị dữ liệu (Admin Panel) chuẩn hóa để quản lý sản phẩm và xử lý đơn hàng; đồng thời huấn luyện và cấu hình chatbot AI trả lời đúng các thông tin về kho hàng và khuyến mãi thực tế ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, mục tiêu chính của em khi thực hiện đồ án này là: Thiết kế và lập trình hoàn chỉnh một trang web bán hàng <strong>SPA</strong> (Single Page Application - Ứng dụng trang đơn) tải nhanh, giao diện đẹp; xây dựng hệ thống quản trị dữ liệu (Admin Panel) chuẩn hóa để quản lý sản phẩm và xử lý đơn hàng; đồng thời huấn luyện và cấu hình chatbot AI trả lời đúng các thông tin về kho hàng và khuyến mãi thực tế ạ.</p>
 <h4>HỎI: Đối tượng sử dụng hệ thống là ai?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, đối tượng sử dụng hệ thống của em gồm hai nhóm:</p>
 <p>1. <strong>Khách hàng</strong>: Những người yêu thích mô hình muốn lên web tìm kiếm, so sánh sản phẩm, chat hỏi đáp thông tin và thực hiện mua hàng.</p>
 <p>2. <strong>Quản trị viên (Admin)</strong>: Chủ cửa hàng hoặc nhân viên quản lý kho, phụ trách cập nhật mô hình mới, duyệt đơn hàng, tạo mã giảm giá và theo dõi doanh thu hàng ngày ạ.</p>
 <h4>HỎI: Điểm mới hoặc ưu điểm của dự án so với các hệ thống hiện có là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, điểm mới nổi bật nhất trong đồ án của em là <strong>Chatbot AI tư vấn dữ liệu thực tế</strong>. Chatbot của em không trả lời theo kịch bản soạn sẵn mà hoạt động theo cơ chế truy vấn động CSDL. Khi khách hỏi về khuyến mãi hay sản phẩm, AI sẽ tự tìm thông tin đang có trong CSDL MySQL rồi mới tạo câu trả lời chính xác kèm link click dẫn tới sản phẩm đó ạ. Ngoài ra, giao diện của trang web được em chăm chút thiết kế theo phong cách hiện đại, chuyển cảnh mượt mà và tối ưu hóa tốt trên thiết bị di động ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, điểm mới nổi bật nhất trong đồ án của em là <strong>Chatbot AI tư vấn dữ liệu thực tế</strong>. Chatbot của em không trả lời theo kịch bản soạn sẵn mà hoạt động theo cơ chế <strong>RAG</strong> (Retrieval-Augmented Generation - Tạo câu trả lời tăng cường bằng cách truy xuất dữ liệu). Khi khách hỏi về khuyến mãi hay sản phẩm, AI sẽ tự tìm thông tin đang có trong CSDL MySQL rồi mới tạo câu trả lời chính xác kèm link click dẫn tới sản phẩm đó ạ. Ngoài ra, giao diện của trang web được em chăm chút thiết kế theo phong cách hiện đại, chuyển cảnh mượt mà và tối ưu hóa tốt trên thiết bị di động ạ.</p>
 <h4>HỎI: Dự án của bạn đã hoàn thành bao nhiêu phần trăm?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, tính đến thời điểm hiện tại, dự án của em đã hoàn thành <strong>100%</strong> các chức năng được đề ra trong đề cương thực tập và chạy thử nghiệm thành công trên môi trường cục bộ ạ.</p>
 <hr />
 <h3>2. NHÓM CÂU HỎI VỀ CÔNG NGHỆ</h3>
 <h4>HỎI: Vì sao bạn chọn ngôn ngữ lập trình và framework này?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, em chọn <strong>Java/Spring Boot</strong> cho backend vì Java là ngôn ngữ có tính an toàn cao, gõ tĩnh giúp em kiểm soát lỗi chặt chẽ. Spring Boot hỗ trợ Auto-Configuration giúp em khởi tạo API RESTful nhanh chóng và tích hợp sẵn các giải pháp bảo mật mạnh mẽ của Spring Security. Còn đối với frontend, em chọn <strong>ReactJS</strong> vì đây là thư viện tối ưu hóa hiển thị giao diện qua DOM ảo rất tốt, cơ chế chia nhỏ thành các Component giúp em dễ quản lý và mang lại trải nghiệm SPA tải trang rất mượt mà cho người dùng ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, em chọn <strong>Java/Spring Boot</strong> cho backend vì Java là ngôn ngữ có tính an toàn cao, gõ tĩnh giúp em kiểm soát lỗi chặt chẽ. Spring Boot hỗ trợ Auto-Configuration giúp em khởi tạo API <strong>REST</strong> (Representational State Transfer - Giao thức truyền tải trạng thái đại diện) nhanh chóng và tích hợp sẵn các giải pháp bảo mật mạnh mẽ của Spring Security. Còn đối với frontend, em chọn <strong>ReactJS</strong> vì đây là thư viện tối ưu hóa hiển thị giao diện qua DOM ảo rất tốt, cơ chế chia nhỏ thành các Component giúp em dễ quản lý và mang lại trải nghiệm ứng dụng trang đơn tải rất mượt mà cho người dùng ạ.</p>
 <h4>HỎI: Tại sao chọn MySQL thay vì SQL Server hoặc MongoDB?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, em chọn <strong>MySQL</strong> vì hệ thống của em là website bán hàng, các thao tác thanh toán và trừ kho đòi hỏi tính toàn vẹn dữ liệu cực kỳ khắt khe (tuân thủ tính chất ACID), nên em bắt buộc phải sử dụng cơ sở dữ liệu quan hệ (RDBMS). Em chọn MySQL thay vì SQL Server vì MySQL là mã nguồn mở, hoàn toàn miễn phí, rất nhẹ và phổ biến trong giảng dạy nhà trường. Còn <strong>MongoDB</strong> là NoSQL, cấu trúc phi quan hệ của nó không đảm bảo an toàn cho các giao dịch liên kết phức tạp như giỏ hàng và đơn hàng ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em chọn <strong>MySQL</strong> vì hệ thống của em là website bán hàng, các thao tác thanh toán và trừ kho đòi hỏi tính toàn vẹn dữ liệu cực kỳ khắt khe (tuân thủ tính chất <strong>ACID</strong> - đảm bảo giao dịch diễn ra an toàn không lỗi nửa chừng), nên em bắt buộc phải sử dụng cơ sở dữ liệu quan hệ <strong>RDBMS</strong> (Relational Database Management System). Em chọn MySQL thay vì SQL Server vì MySQL là mã nguồn mở, hoàn toàn miễn phí, rất nhẹ và phổ biến trong giảng dạy nhà trường. Còn <strong>MongoDB</strong> là <strong>NoSQL</strong> (Cơ sở dữ liệu phi quan hệ), cấu trúc dạng tài liệu của nó không đảm bảo an toàn cho các giao dịch liên kết phức tạp như giỏ hàng và đơn hàng ạ.</p>
 <h4>HỎI: Ưu điểm và nhược điểm của Spring Boot là gì?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, theo trải nghiệm của em khi code dự án này:</p>
 <ul>
-  <li><strong>Ưu điểm</strong>: Giúp em tiết kiệm rất nhiều thời gian cấu hình xml nhờ cơ chế Convention over Configuration; tích hợp sẵn Tomcat nên em chỉ cần chạy file JAR; quản lý dependencies qua Maven rất khoa học.</li>
+  <li><strong>Ưu điểm</strong>: Giúp em tiết kiệm rất nhiều thời gian cấu hình xml nhờ cơ chế tự động cài đặt; nhúng sẵn Tomcat nên em chỉ cần chạy file JAR; quản lý dependencies qua Maven rất khoa học.</li>
   <li><strong>Nhược điểm</strong>: Thời gian khởi chạy ban đầu hơi lâu; dung lượng tệp JAR khi build ra khá nặng và ứng dụng Spring Boot tiêu tốn khá nhiều dung lượng bộ nhớ RAM khi chạy ạ.</li>
 </ul>
 <h4>HỎI: Tại sao sử dụng React cho phần frontend?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, em dùng ReactJS vì muốn tách biệt hoàn toàn vai trò của Frontend và Backend. Frontend sẽ chỉ lo hiển thị và tương tác người dùng, nhận dữ liệu qua API JSON từ backend. Việc này giúp giảm tải cho server và tạo ra giao diện ứng dụng mượt mà hơn ạ.</p>
 <h4>HỎI: Vì sao dự án được xây dựng theo kiến trúc Monolithic REST API thay vì Microservices?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, trong phạm vi của một đồ án tốt nghiệp/thực tập tốt nghiệp, em lựa chọn kiến trúc <strong>Monolithic</strong> vì:</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, trong phạm vi của một đồ án tốt nghiệp/thực tập tốt nghiệp, em lựa chọn kiến trúc <strong>Monolithic</strong> (Kiến trúc khối đồng nhất) vì:</p>
 <p>1. Giúp em tập trung tối đa thời gian vào việc hoàn thiện các nghiệp vụ phức tạp của cửa hàng (như giỏ hàng, thanh toán, xử lý AI) mà không bị phân tán vào việc cấu hình hạ tầng mạng phức tạp của Microservices.</p>
 <p>2. Tránh độ trễ mạng phát sinh khi các dịch vụ phải gọi chéo nhau qua mạng.</p>
 <p>3. Việc quản lý Transaction (giao dịch đặt hàng và trừ kho sản phẩm) trên một Database duy nhất diễn ra an toàn và dễ kiểm soát lỗi hơn rất nhiều ạ. Tuy nhiên, em đã viết mã nguồn phân chia package rõ ràng để sau này dễ dàng bóc tách lên Microservices khi cần thiết ạ.</p>
@@ -324,7 +342,7 @@
   <li><strong>Eureka Server</strong>: Là trung tâm đăng ký dịch vụ (Service Registry), giúp các microservices khai báo địa chỉ IP/Port và tìm thấy nhau trong hệ thống.</li>
   <li><strong>API Gateway</strong>: Là cửa ngõ duy nhất tiếp nhận mọi request từ Client, thực hiện điều hướng request đến đúng microservice và xử lý xác thực tập trung.</li>
   <li><strong>OpenFeign</strong>: Giúp em viết code gọi REST API giữa các microservices một cách ngắn gọn dưới dạng khai báo Interface.</li>
-  <li><strong>Kafka / RabbitMQ</strong>: Là các Message Broker trung gian giúp truyền tải tin nhắn bất đồng bộ, giải quyết bài toán giao tiếp không đồng bộ giữa các dịch vụ để giảm tải nghẽn hệ thống.</li>
+  <li><strong>Kafka / RabbitMQ</strong>: Là các Message Broker (Hệ thống trung chuyển hàng đợi tin nhắn) giúp truyền tải tin nhắn bất đồng bộ, giải quyết bài toán giao tiếp không đồng bộ giữa các dịch vụ để giảm tải nghẽn hệ thống.</li>
   <li><strong>Docker</strong>: Giúp em đóng gói ứng dụng thành các Container độc lập, chạy được ở mọi máy tính mà không sợ lỗi xung đột môi trường ạ.</li>
 </ul>
 <hr />
@@ -338,17 +356,17 @@
   <li><strong>Quan hệ Nhiều - Nhiều (n-n)</strong>: Thiết lập giữa tài khoản người dùng và quyền truy cập thông qua bảng trung gian <code>user_roles</code> ạ.</li>
 </ul>
 <h4>HỎI: Tại sao bạn lại thiết kế cơ sở dữ liệu như vậy?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, em đã tiến hành thiết kế và phân tích các bảng CSDL tuân thủ theo dạng chuẩn hóa <strong>3NF</strong>. Việc này giúp cơ sở dữ liệu của em giảm thiểu tối đa sự trùng lặp thông tin (như không cần lặp lại thông tin cá nhân khách hàng ở mỗi dòng chi tiết sản phẩm) và loại bỏ được các lỗi dị thường khi thêm mới hoặc cập nhật dữ liệu ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em đã tiến hành thiết kế và phân tích các bảng CSDL tuân thủ theo dạng chuẩn hóa <strong>3NF</strong> (Third Normal Form - Dạng chuẩn hóa CSDL cấp độ 3). Việc này giúp cơ sở dữ liệu của em giảm thiểu tối đa sự trùng lặp thông tin (như không cần lặp lại thông tin cá nhân khách hàng ở mỗi dòng chi tiết sản phẩm) và loại bỏ được các lỗi dị thường khi thêm mới hoặc cập nhật dữ liệu ạ.</p>
 <h4>HỎI: Khóa chính và khóa ngoại có vai trò gì?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, <strong>Khóa chính</strong> giúp định danh duy nhất cho một dòng dữ liệu (ví dụ mã sản phẩm), đảm bảo dữ liệu không bị lặp. Còn <strong>Khóa ngoại</strong> giúp tạo mối liên kết logic giữa các bảng và duy trì tính toàn vẹn dữ liệu, không cho phép lưu sản phẩm thuộc về một danh mục không tồn tại trong hệ thống ạ.</p>
 <h4>HỎI: Chuẩn hóa dữ liệu là gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, chuẩn hóa dữ liệu là việc phân tích và tổ chức lại các bảng dữ liệu theo các quy tắc toán học quan hệ (các dạng chuẩn 1NF, 2NF, 3NF...) nhằm loại bỏ sự dư thừa thông tin và ngăn ngừa các lỗi sai lệch dữ liệu trong quá trình cập nhật ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, chuẩn hóa dữ liệu là việc phân tích và tổ chức lại các bảng dữ liệu theo các quy tắc toán học quan hệ (các dạng chuẩn 1NF, 2NF, 3NF...) nhằm loại bỏ sự dư thừa thông tin và ngăn ngừa các lỗi sai lệch dữ liệu trong quá trình cập nhật dữ liệu ạ.</p>
 <h4>HỎI: Nếu dữ liệu tăng lên hàng triệu bản ghi, bạn sẽ tối ưu như thế nào?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, nếu dữ liệu tăng lên quy mô lớn, em sẽ áp dụng các giải pháp tối ưu sau:</p>
 <p>1. Thực hiện đánh chỉ mục (<strong>Database Indexing</strong>) ở các trường thường xuyên dùng để tìm kiếm (như tên mô hình, mã đơn hàng).</p>
-<p>2. Thiết lập cơ chế phân trang (<strong>Pagination</strong>) bắt buộc ở mọi API trả về danh sách.</p>
+<p>2. Thiết lập cơ chế phân trang (<strong>Pagination</strong>) bắt buộc ở mọi API trả về danh sách để không làm nghẽn ram.</p>
 <p>3. Sử dụng giải pháp lưu trữ bộ đệm (<strong>Caching</strong> với Redis) cho các dữ liệu tĩnh ít thay đổi.</p>
-<p>4. Nghiên cứu phân chia bảng (<strong>Partitioning</strong>) hoặc áp dụng mô hình sao chép CSDL <strong>Master-Slave</strong> (Master ghi dữ liệu, các Slave đọc dữ liệu) để phân tán tải truy vấn ạ.</p>
+<p>4. Nghiên cứu phân chia bảng (<strong>Partitioning</strong>) hoặc áp dụng mô hình sao chép CSDL <strong>Master-Slave</strong> để phân tán tải truy vấn ạ.</p>
 <h4>HỎI: Index trong cơ sở dữ liệu dùng để làm gì?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, Index giúp tăng tốc độ tìm kiếm bản ghi trong bảng. Thay vì phải quét qua từng dòng từ đầu đến cuối bảng (Table Scan) rất tốn thời gian, cơ chế Index tạo ra một cây tìm kiếm nhanh (thường là cấu trúc B-Tree) giúp hệ thống trỏ thẳng đến bản ghi cần tìm chỉ trong vài mili-giây ạ.</p>
 <hr />
@@ -360,11 +378,11 @@
 <h4>HỎI: Hệ thống xử lý lỗi khi người dùng nhập sai dữ liệu ra sao?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, em xử lý lỗi ở cả hai đầu:</p>
 <ul>
-  <li>Ở <strong>Frontend</strong>: Em kiểm tra tính hợp lệ của dữ liệu đầu vào (như định dạng email, số điện thoại, mật khẩu trống) bằng Javascript và báo lỗi đỏ ngay trên giao diện.</li>
-  <li>Ở <strong>Backend</strong>: Em dùng các thẻ anotation validation của Spring Boot trong lớp DTO để chặn request lại và trả về thông tin lỗi rõ ràng dưới dạng JSON nếu dữ liệu vượt qua được frontend ạ.</li>
+  <li>Ở <strong>Frontend</strong>: Em kiểm tra tính hợp lệ của dữ liệu đầu vào bằng các hàm logic và báo lỗi đỏ ngay trên giao diện.</li>
+  <li>Ở <strong>Backend</strong>: Em dùng các thẻ validation của Spring Boot trong lớp <strong>DTO</strong> (Data Transfer Object - Đối tượng truyền tải dữ liệu) để chặn request lại và trả về thông tin lỗi rõ ràng dưới dạng JSON nếu dữ liệu vượt qua được frontend ạ.</li>
 </ul>
 <h4>HỎI: Nếu một dịch vụ bị lỗi thì toàn bộ hệ thống có hoạt động được không?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, vì hệ thống của em xây dựng theo mô hình Monolith nên nếu server Spring Boot bị sập thì toàn bộ trang web sẽ tạm thời ngưng hoạt động. Tuy nhiên, em đã đóng gói server trong <strong>Docker Container</strong> với thuộc tính tự động khởi động lại (<code>restart: always</code>) giúp ứng dụng tự phục hồi chạy lại ngay lập tức khi phát hiện có sự cố crash hệ thống ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, vì hệ thống của em xây dựng theo mô hình Monolith nên nếu server Spring Boot bị sập thì toàn bộ trang web sẽ tạm thời ngưng hoạt động. Tuy nhiên, em đã đóng gói server trong Docker Container với thuộc tính tự động khởi động lại giúp ứng dụng tự phục hồi chạy lại ngay lập tức khi phát hiện có sự cố crash hệ thống ạ.</p>
 <h4>HỎI: Hệ thống phân quyền người dùng như thế nào?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, em phân quyền dựa trên cơ chế JWT kết hợp Spring Security. Tài khoản đăng nhập thành công sẽ nhận được một Token JWT chứa danh sách quyền của mình (ADMIN hoặc USER). Backend sẽ cấu hình chặn các đường dẫn admin <code>/api/admin/**</code> chỉ dành cho ROLE_ADMIN. Phía Frontend em cũng viết bộ định tuyến bảo vệ (<code>AdminRoute</code>) để ngăn chặn tài khoản thường cố tình truy cập vào trang quản trị ạ.</p>
 <h4>HỎI: API nào được sử dụng nhiều nhất?</h4>
@@ -376,13 +394,13 @@
 <ul>
   <li><strong>Controller</strong>: Tiếp nhận request từ client, validate dữ liệu đầu vào.</li>
   <li><strong>Service</strong>: Xử lý logic nghiệp vụ và tính toán chính của hệ thống.</li>
-  <li><strong>Repository</strong>: Thực hiện truy vấn dữ liệu từ MySQL Database qua Spring Data JPA.</li>
+  <li><strong>Repository</strong> (hay <strong>DAO - Data Access Object</strong>): Thực hiện truy vấn dữ liệu từ MySQL Database qua Spring Data JPA.</li>
   <li><strong>Entity</strong>: Lớp ánh xạ trực tiếp các bảng CSDL thành các đối tượng Java ạ.</li>
 </ul>
 <h4>HỎI: Luồng dữ liệu từ frontend đến backend diễn ra như thế nào?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ, luồng đi từ thao tác click chuột của người dùng trên giao diện React -> React gọi API thông qua thư viện Axios kèm Token JWT -> Request truyền đến Backend Spring Boot -> Bộ lọc Spring Security giải mã Token và xác thực -> Controller tiếp nhận request -> Gọi Service thực thi nghiệp vụ -> Service gọi Repository truy vấn MySQL CSDL -> Dữ liệu trả về Service xử lý -> Trả về Client dưới dạng JSON -> Giao diện React nhận dữ liệu cập nhật lại giao diện người dùng ạ.</p>
 <h4>HỎI: JWT là gì và hoạt động ra sao?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, <strong>JWT (JSON Web Token)</strong> là một chuỗi mã hóa gồm 3 phần chính cách nhau bởi dấu chấm: Header (Khai báo thuật toán), Payload (Chứa thông tin cơ bản của user đăng nhập như username, roles) và Signature (Chữ ký số xác thực).</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, <strong>JWT (JSON Web Token - Chuỗi mã hóa dữ liệu xác thực)</strong> là một chuỗi mã hóa gồm 3 phần chính cách nhau bởi dấu chấm: Header (Khai báo thuật toán), Payload (Chứa thông tin user như username, roles) và Signature (Chữ ký số xác thực).</p>
 <ul>
   <li><strong>Cách hoạt động</strong>: Khi người dùng đăng nhập thành công, Server dùng Secret Key của mình ký và tạo ra chuỗi JWT gửi về lưu ở trình duyệt khách hàng. Ở những yêu cầu tiếp theo, Frontend tự động đính chuỗi này vào Header. Server nhận được sẽ giải mã Signature, nếu trùng khớp chữ ký thì chấp nhận người dùng đã xác thực thành công và cho phép truy cập tài nguyên ạ.</li>
 </ul>
@@ -405,7 +423,7 @@
 <h4>HỎI: Chức năng nào khó thực hiện nhất? Vì sao?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, đối với em chức năng khó nhất là <strong>Tích hợp hội thoại động cho Trợ lý AI</strong>. Khó khăn lớn nhất là làm thế nào để AI có thể hiểu được người dùng đang hỏi về sản phẩm hay khuyến mãi nào, và tự động gọi API lấy đúng thông tin từ database để ghép vào ngữ cảnh (Prompt Context) trước khi truyền sang Gemini API, nhằm tạo ra câu trả lời chứa link liên kết sản phẩm chính xác mà không làm trễ tốc độ phản hồi tin nhắn ạ.</p>
 <h4>HỎI: Trong quá trình thực hiện, bạn gặp những khó khăn gì?</h4>
-<p><strong>TRẢ LỜI:</strong> Dạ, em gặp khó khăn lớn nhất ở việc cấu hình phân quyền và phân cấp CORS trên <strong>Spring Security 6</strong> do phiên bản này đã loại bỏ hoàn toàn các cú pháp cũ của Spring Security 5 mà em từng học. Thêm vào đó, việc đồng bộ hóa dữ liệu giỏ hàng thời gian thực của người dùng trên nhiều tab trình duyệt khác nhau cũng khiến em mất khá nhiều thời gian xử lý bất đồng bộ ạ.</p>
+<p><strong>TRẢ LỜI:</strong> Dạ, em gặp khó khăn lớn nhất ở việc cấu hình phân quyền và phân cấp <strong>CORS</strong> (Cross-Origin Resource Sharing - Chia sẻ tài nguyên nguồn chéo) trên <strong>Spring Security 6</strong> do phiên bản này đã loại bỏ hoàn toàn các cú pháp cũ của Spring Security 5 mà em từng học. Thêm vào đó, việc đồng bộ hóa dữ liệu giỏ hàng thời gian thực của người dùng trên nhiều tab trình duyệt khác nhau cũng khiến em mất khá nhiều thời gian xử lý bất đồng bộ ạ.</p>
 <h4>HỎI: Bạn học được gì từ dự án này?</h4>
 <p><strong>TRẢ LỜI:</strong> Dạ thưa thầy/cô, qua đồ án thực tập này, em đã nâng cao rất nhiều tư duy thiết kế CSDL thực tế chuẩn 3NF, thành thạo lập trình các RESTful API bảo mật bằng Spring Boot và làm chủ việc thiết kế giao diện ứng dụng SPA mượt mà bằng ReactJS. Đặc biệt, em đã có cơ hội tìm hiểu sâu hơn về cách tích hợp và tối ưu ngữ cảnh (prompt engineering) để huấn luyện trợ lý AI hỗ trợ tự động phục vụ người dùng ạ.</p>
 </body>
