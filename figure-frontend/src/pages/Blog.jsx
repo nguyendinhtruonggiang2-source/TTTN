@@ -6,7 +6,7 @@ import {
   FaComment, FaShare, FaSearch, FaArrowRight,
   FaNewspaper, FaFire, FaClock, FaBookOpen, FaSpinner
 } from 'react-icons/fa';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/Blog.css';
 
 const Blog = () => {
@@ -27,23 +27,7 @@ const Blog = () => {
   const [tags, setTags] = useState([]);
   const postsPerPage = 6;
 
-  // Hàm lấy đường dẫn ảnh đúng
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/default-blog.jpg';
-    
-    // Nếu đã là URL đầy đủ (http:// hoặc https://)
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    
-    // Nếu là đường dẫn từ upload (bắt đầu bằng /uploads/)
-    if (imagePath.startsWith('/uploads/')) {
-      return `http://localhost:8080${imagePath}`;
-    }
-    
-    // Nếu là đường dẫn tương đối khác
-    return imagePath;
-  };
+
 
   // Lấy params từ URL
   useEffect(() => {
@@ -252,7 +236,7 @@ const Blog = () => {
               <div key={post.id} className="featured-card">
                 <div className="featured-image">
                   <img 
-                    src={getImageUrl(post.image)} 
+                    src={getImageUrl(post.image, '/default-blog.jpg')} 
                     alt={post.title}
                     onError={(e) => { e.target.src = '/default-blog.jpg'; }}
                   />
@@ -285,7 +269,7 @@ const Blog = () => {
               <div key={post.id} className="hot-card" onClick={() => handleReadMore(post.id)}>
                 <div className="hot-image">
                   <img 
-                    src={getImageUrl(post.image)} 
+                    src={getImageUrl(post.image, '/default-blog.jpg')} 
                     alt={post.title}
                     onError={(e) => { e.target.src = '/default-blog.jpg'; }}
                   />
@@ -371,7 +355,7 @@ const Blog = () => {
             <article key={post.id} className="blog-card">
               <div className="blog-image">
                 <img 
-                  src={getImageUrl(post.image)} 
+                  src={getImageUrl(post.image, '/default-blog.jpg')} 
                   alt={post.title}
                   onError={(e) => { e.target.src = '/default-blog.jpg'; }}
                 />

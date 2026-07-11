@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import axios from "axios";
+import axiosClient from "./api/axiosClient";
 import "./App.css";
 import Header from "./components/Header";
 import { CategoryProvider } from "./contexts/CategoryContext";
@@ -31,11 +33,13 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import TrackOrder from "./pages/TrackOrder"; // 👈 THÊM IMPORT
 import Wishlist from "./pages/Wishlist";
+import AiChatWidget from "./components/AiChatWidget";
 
 // Admin Components
 import AdminLayout from "./components/admin/AdminLayout";
 import BranchManagement from "./components/admin/BranchManagement";
 import CategoryManagement from "./components/admin/CategoryManagement";
+import BannerManagement from "./components/admin/BannerManagement";
 import DashboardStats from "./components/admin/DashboardStats"; // 👈 THÊM IMPORT
 import FlashSaleManagement from "./components/admin/FlashSaleManagement";
 import OrderManagement from "./components/admin/OrderManagement";
@@ -43,6 +47,8 @@ import PostManagement from "./components/admin/PostManagement";
 import ProductManagement from "./components/admin/ProductManagement";
 import PromotionManagement from "./components/admin/PromotionManagement";
 import UserManagement from "./components/admin/UserManagement";
+import AdminAiChat from "./components/admin/AdminAiChat";
+import NotificationListener from "./components/NotificationListener";
 
 // Component Protected Route
 const ProtectedRoute = ({ children }) => {
@@ -83,9 +89,42 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
+// Component Wrapper cho Header để ẩn trên trang Login/Register/Forgot Password
+const HeaderWrapper = ({ isAuthenticated, user, updateAuthStatus, onLogout }) => {
+  const location = useLocation();
+  const hideHeaderPaths = ["/login", "/register", "/forgot-password", "/reset-password"];
+  const shouldShowHeader = !hideHeaderPaths.includes(location.pathname);
+
+  if (!shouldShowHeader) return null;
+
+  return (
+    <Header 
+      isAuthenticated={isAuthenticated} 
+      user={user}
+      updateAuthStatus={updateAuthStatus}
+      onLogout={onLogout}
+    />
+  );
+};
+
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem("token");
+  });
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch (error) {
+        console.error("Error parsing initial user data:", error);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        return null;
+      }
+    }
+    return null;
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -162,7 +201,7 @@ function App() {
           {/* Public routes với Header */}
           <Route path="/*" element={
             <>
-              <Header 
+              <HeaderWrapper 
                 isAuthenticated={isAuthenticated} 
                 user={user}
                 updateAuthStatus={updateAuthStatus}
@@ -278,14 +317,18 @@ function App() {
             <Route path="dashboard" element={<DashboardStats />} />
             <Route path="products" element={<ProductManagement />} />
             <Route path="categories" element={<CategoryManagement />} />
+            <Route path="banners" element={<BannerManagement />} />
             <Route path="branches" element={<BranchManagement />} />
             <Route path="posts" element={<PostManagement />} />
             <Route path="promotions" element={<PromotionManagement />} />
             <Route path="flash-sale" element={<FlashSaleManagement />} />
             <Route path="users" element={<UserManagement />} />
             <Route path="orders" element={<OrderManagement />} />
+            <Route path="ai-chat" element={<AdminAiChat />} />
           </Route>
         </Routes>
+        <AiChatWidget />
+        <NotificationListener />
       </BrowserRouter>
     </CategoryProvider>
   );

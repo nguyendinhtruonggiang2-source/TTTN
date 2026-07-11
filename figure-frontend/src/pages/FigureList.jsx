@@ -14,6 +14,11 @@ function FigureList() {
   const [addingToCart, setAddingToCart] = useState({});
   const [wishlistStatus, setWishlistStatus] = useState({});
   const [togglingWishlist, setTogglingWishlist] = useState({});
+  
+  // Phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8; // 8 sản phẩm mỗi trang (2 hàng x 4 cột)
+  
   const location = useLocation();
   const isAuthenticated = !!localStorage.getItem("token");
 
@@ -22,6 +27,7 @@ function FigureList() {
     const category = params.get('category');
     const series = params.get('series');
     const keyword = params.get('keyword');
+    const isNew = params.get('isNew') === 'true';
     
     if (category) {
       setFilterType('category');
@@ -38,6 +44,11 @@ function FigureList() {
       setFilterValue(keyword);
       setSearchTerm(keyword);
       fetchFiguresByKeyword(keyword);
+    } else if (isNew) {
+      setFilterType('new');
+      setFilterValue('Hàng mới');
+      setSearchTerm('');
+      fetchNewFigures();
     } else {
       setFilterType('');
       setFilterValue('');
@@ -63,6 +74,7 @@ function FigureList() {
       }));
       
       setFigures(processedFigures);
+      setCurrentPage(1);
       
       // Kiểm tra wishlist cho từng sản phẩm
       if (isAuthenticated) {
@@ -110,6 +122,7 @@ function FigureList() {
       }));
       
       setFigures(processedFigures);
+      setCurrentPage(1);
       
       if (isAuthenticated && processedFigures.length > 0) {
         await checkMultipleWishlistStatus(processedFigures.map(f => f.id));
@@ -144,6 +157,7 @@ function FigureList() {
       }));
       
       setFigures(processedFigures);
+      setCurrentPage(1);
       
       if (isAuthenticated && processedFigures.length > 0) {
         await checkMultipleWishlistStatus(processedFigures.map(f => f.id));
@@ -178,6 +192,7 @@ function FigureList() {
       }));
       
       setFigures(processedFigures);
+      setCurrentPage(1);
       
       if (isAuthenticated && processedFigures.length > 0) {
         await checkMultipleWishlistStatus(processedFigures.map(f => f.id));
@@ -189,6 +204,43 @@ function FigureList() {
     } catch (err) {
       console.error("❌ Search error:", err);
       setError(`Lỗi tìm kiếm: ${err.message}`);
+      setFigures([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lấy danh sách hàng mới
+  const fetchNewFigures = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      console.log("🔍 Fetching new figures...");
+      const response = await axiosClient.get("/figures");
+      
+      const processedFigures = response.data
+        .map(figure => ({
+          ...figure,
+          quantity: figure.quantity || 50,
+          price: figure.price || 0,
+          image: figure.image || "/default-figure.jpg",
+          id: figure.id || Math.random().toString(36).substr(2, 9)
+        }))
+        .filter(figure => figure.isNew === true);
+      
+      setFigures(processedFigures);
+      setCurrentPage(1);
+      
+      if (isAuthenticated && processedFigures.length > 0) {
+        await checkMultipleWishlistStatus(processedFigures.map(f => f.id));
+      }
+      
+      if (processedFigures.length === 0) {
+        setError("Chưa có sản phẩm hàng mới nào được thêm");
+      }
+    } catch (err) {
+      console.error("❌ Error fetching new figures:", err);
+      setError("Không thể tải danh sách hàng mới");
       setFigures([]);
     } finally {
       setLoading(false);
@@ -323,6 +375,8 @@ function FigureList() {
       return `📺 Series: ${filterValue}`;
     } else if (filterType === 'search') {
       return `🔍 Kết quả tìm kiếm: "${filterValue}"`;
+    } else if (filterType === 'new') {
+      return `✨ Hàng mới về`;
     }
     return "🏷️ Danh Sách Figure";
   };
@@ -337,6 +391,12 @@ function FigureList() {
       </div>
     );
   }
+
+  // Các biến phục vụ phân trang
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = figures.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(figures.length / itemsPerPage);
 
   return (
     <div className="figure-list-container">
@@ -368,6 +428,7 @@ function FigureList() {
             {filterType === 'category' && '📁 Danh mục'}
             {filterType === 'series' && '📺 Series'}
             {filterType === 'search' && '🔍 Tìm kiếm'}
+            {filterType === 'new' && '✨ Trạng thái'}
             : {filterValue}
           </span>
           <button onClick={handleReset} className="clear-filter-btn">✖ Xóa lọc</button>
@@ -391,7 +452,7 @@ function FigureList() {
       ) : (
         <>
           <div className="figure-grid">
-            {figures.map((figure) => (
+            {currentItems.map((figure) => (
               <div key={figure.id} className="figure-card">
                 <Link to={`/product/${figure.id}`} className="figure-link">
                   <div className="figure-image">
@@ -406,10 +467,6 @@ function FigureList() {
                   </div>
                   <div className="figure-info">
                     <h3>{figure.name}</h3>
-                    {figure.series && <p className="figure-series">📺 {figure.series}</p>}
-                    {figure.manufacturer && <p className="figure-manufacturer">🏭 {figure.manufacturer}</p>}
-                    {figure.type && <p className="figure-type">🏷️ {figure.type}</p>}
-                    {figure.scale && <p className="figure-scale">📏 Tỉ lệ: {figure.scale}</p>}
                     
                     <div className="figure-price">
                       <strong>{figure.price ? figure.price.toLocaleString() + "₫" : "Liên hệ"}</strong>
@@ -465,8 +522,89 @@ function FigureList() {
             ))}
           </div>
           
-          <div className="figure-footer">
-            <p>Hiển thị <strong>{figures.length}</strong> sản phẩm</p>
+          {totalPages > 1 && (
+            <div className="pagination" style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '40px',
+              marginBottom: '30px'
+            }}>
+              <button 
+                type="button"
+                onClick={() => {
+                  setCurrentPage(prev => Math.max(prev - 1, 1));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                disabled={currentPage === 1}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: '25px',
+                  border: '1px solid #e2e8f0',
+                  backgroundColor: currentPage === 1 ? '#f1f5f9' : '#ffffff',
+                  color: currentPage === 1 ? '#94a3b8' : '#1e293b',
+                  cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}
+              >
+                ← Trước
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNumber => (
+                <button
+                  type="button"
+                  key={pageNumber}
+                  onClick={() => {
+                    setCurrentPage(pageNumber);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  style={{
+                    width: '42px',
+                    height: '42px',
+                    borderRadius: '50%',
+                    border: '1px solid',
+                    borderColor: currentPage === pageNumber ? '#3b82f6' : '#e2e8f0',
+                    backgroundColor: currentPage === pageNumber ? '#3b82f6' : '#ffffff',
+                    color: currentPage === pageNumber ? '#ffffff' : '#1e293b',
+                    cursor: 'pointer',
+                    fontWeight: '700',
+                    transition: 'all 0.2s',
+                    boxShadow: currentPage === pageNumber ? '0 4px 10px rgba(59, 130, 246, 0.3)' : '0 2px 4px rgba(0,0,0,0.02)'
+                  }}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+
+              <button 
+                type="button"
+                onClick={() => {
+                  setCurrentPage(prev => Math.min(prev + 1, totalPages));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                disabled={currentPage === totalPages}
+                style={{
+                  padding: '10px 18px',
+                  borderRadius: '25px',
+                  border: '1px solid #e2e8f0',
+                  backgroundColor: currentPage === totalPages ? '#f1f5f9' : '#ffffff',
+                  color: currentPage === totalPages ? '#94a3b8' : '#1e293b',
+                  cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
+                  fontWeight: '600',
+                  transition: 'all 0.2s',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.02)'
+                }}
+              >
+                Sau →
+              </button>
+            </div>
+          )}
+
+          <div className="figure-footer" style={{ marginTop: '20px' }}>
+            <p>Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong> | Hiển thị từ <strong>{indexOfFirstItem + 1}</strong> đến <strong>{Math.min(indexOfLastItem, figures.length)}</strong> trong tổng số <strong>{figures.length}</strong> sản phẩm</p>
             {filterType && (
               <p className="filter-info-text">
                 Đang hiển thị sản phẩm theo {filterType === 'category' ? 'danh mục' : filterType === 'series' ? 'series' : 'từ khóa'}: 

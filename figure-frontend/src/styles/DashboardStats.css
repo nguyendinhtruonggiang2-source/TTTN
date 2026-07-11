@@ -67,10 +67,10 @@
 .stat-card {
     background: var(--bg-card);
     border-radius: var(--radius-md);
-    padding: 20px;
+    padding: 16px 12px;
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 10px;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
     transition: transform 0.25s, box-shadow 0.25s;
@@ -105,9 +105,10 @@
 }
 
 .stat-card-value {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 800;
     color: var(--text-primary);
+    word-break: break-word;
 }
 
 .stat-card-sub {
@@ -365,7 +366,7 @@
 }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 1200px) {
+@media (max-width: 1350px) {
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
     }

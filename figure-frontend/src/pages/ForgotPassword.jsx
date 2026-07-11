@@ -9,7 +9,10 @@ import {
   FaArrowLeft, 
   FaKey,
   FaGoogle,
-  FaFacebook
+  FaFacebook,
+  FaEye,
+  FaEyeSlash,
+  FaInfoCircle
 } from "react-icons/fa";
 
 function ForgotPassword() {
@@ -28,6 +31,9 @@ function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   // Biến lưu mã test nhận được từ API để hỗ trợ test nhanh trên UI
   const [testHelperCode, setTestHelperCode] = useState("");
@@ -162,12 +168,16 @@ function ForgotPassword() {
 
           {/* Hiển thị hỗ trợ kiểm thử code trong môi trường dev */}
           {testHelperCode && step === 2 && (
-            <div className="banner-tips" style={{ marginBottom: "20px", borderLeft: "4px solid #10b981", background: "rgba(16, 185, 129, 0.1)", color: "#065f46" }}>
-              <h4 style={{ color: "#047857", margin: "0 0 5px 0" }}>💡 Dev Helper (Môi trường thử nghiệm):</h4>
-              <p style={{ margin: 0, fontSize: "14px", color: "#065f46" }}>
-                Mã xác thực của bạn là: <strong style={{ fontSize: "16px", color: "#047857" }}>{testHelperCode}</strong> (đã được điền tự động).
-              </p>
-            </div>
+            <details className="dev-tips-details" style={{ marginBottom: "20px", cursor: "pointer", textAlign: 'left' }}>
+              <summary style={{ color: '#fbbf24', fontSize: '13px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px', userSelect: 'none' }}>
+                <FaInfoCircle /> Trợ giúp kiểm thử OTP (Dev Mode)
+              </summary>
+              <div className="banner-tips" style={{ marginTop: "10px", borderLeft: "4px solid #10b981", background: "rgba(16, 185, 129, 0.1)", padding: "12px", borderRadius: "8px" }}>
+                <p style={{ margin: 0, fontSize: "13px", color: "#10b981", fontWeight: '600' }}>
+                  Mã xác thực OTP là: <span style={{ fontSize: "15px", color: "#fbbf24", fontFamily: 'monospace' }}>{testHelperCode}</span> (hệ thống đã tự động điền).
+                </p>
+              </div>
+            </details>
           )}
 
           {step === 1 ? (
@@ -227,32 +237,82 @@ function ForgotPassword() {
                 />
               </div>
 
-              <div className="input-group">
+              <div className="input-group" style={{ position: 'relative' }}>
                 <label>
                   <FaLock /> Mật khẩu mới
                 </label>
-                <input
-                  type="password"
-                  placeholder="Nhập mật khẩu mới"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                />
+                <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    placeholder="Nhập mật khẩu mới"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    style={{ paddingRight: '45px' }}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#94a3b8',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '6px',
+                      zIndex: 2
+                    }}
+                  >
+                    {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
 
-              <div className="input-group">
+              <div className="input-group" style={{ position: 'relative' }}>
                 <label>
                   <FaLock /> Xác nhận mật khẩu mới
                 </label>
-                <input
-                  type="password"
-                  placeholder="Xác nhận mật khẩu mới"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  disabled={loading}
-                />
+                <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Xác nhận mật khẩu mới"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    style={{ paddingRight: '45px' }}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#94a3b8',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '6px',
+                      zIndex: 2
+                    }}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
               </div>
 
               <button type="submit" className="auth-submit" disabled={loading}>
@@ -271,7 +331,7 @@ function ForgotPassword() {
                 className="guest-btn" 
                 onClick={() => setStep(1)} 
                 disabled={loading}
-                style={{ marginTop: "15px", width: "100%", border: "1px solid #e1e5e9" }}
+                style={{ marginTop: "15px", width: "100%" }}
               >
                 <FaArrowLeft style={{ marginRight: "8px" }} /> Quay lại bước 1
               </button>

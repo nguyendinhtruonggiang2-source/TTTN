@@ -8,7 +8,7 @@ import {
   FaClipboardList, FaTag, FaBlog, FaPhoneAlt, FaFire, FaClock,
   FaCrown, FaUserCircle, FaSignOutAlt, FaSignInAlt, FaUserPlus,
   FaStar, FaThLarge, FaPercent, FaShieldAlt, FaHeadset,
-  FaGamepad, FaRobot, FaDragon, FaChessQueen
+  FaGamepad, FaRobot, FaDragon, FaChessQueen, FaBell
 } from "react-icons/fa";
 import axiosClient from "../api/axiosClient";
 import { useCategory } from "../contexts/CategoryContext";
@@ -19,6 +19,7 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
   const [categories, setCategories] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [cartCount, setCartCount] = useState(0);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownActive, setDropdownActive] = useState(null);
   const navigate = useNavigate();
@@ -49,10 +50,24 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
   useEffect(() => {
     if (isAuthenticated) {
       fetchCartCount();
+      fetchUnreadCount();
     } else {
       setCartCount(0);
+      setUnreadCount(0);
     }
   }, [isAuthenticated, location.pathname]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const handleNewNotification = () => {
+        fetchUnreadCount();
+      };
+      window.addEventListener('new-notification', handleNewNotification);
+      return () => {
+        window.removeEventListener('new-notification', handleNewNotification);
+      };
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -75,6 +90,20 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
       setCartCount(response.data.count || 0);
     } catch (error) {
       setCartCount(0);
+    }
+  };
+
+  const fetchUnreadCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setUnreadCount(0);
+        return;
+      }
+      const response = await axiosClient.get("/notifications/count");
+      setUnreadCount(response.data.total || response.data.count || 0);
+    } catch (error) {
+      setUnreadCount(0);
     }
   };
 
@@ -125,11 +154,7 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
     setDropdownActive(null);
   };
 
-  const handleSeriesClick = (series) => {
-    navigate(`/figures?series=${encodeURIComponent(series)}`);
-    setMobileMenuOpen(false);
-    setDropdownActive(null);
-  };
+
 
   const handleCategoryClick = (category) => {
     navigate(`/figures?category=${encodeURIComponent(category)}`);
@@ -192,6 +217,9 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
                 <button onClick={() => handleNavigate("/wishlist")}>
                   <FaHeart /> Sản phẩm yêu thích
                 </button>
+                <button onClick={() => handleNavigate("/notifications")}>
+                  <FaBell /> Thông báo của tôi
+                </button>
                 {isAdmin && (
                   <button onClick={() => handleNavigate("/admin")} className="admin-btn">
                     <FaTachometerAlt /> Quản trị hệ thống
@@ -209,6 +237,17 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
               </button>
               <button className="register-btn" onClick={handleRegister}>
                 <FaUserPlus /> <span>Đăng ký</span>
+              </button>
+            </div>
+          )}
+
+          {isAuthenticated && (
+            <div className="cart-container" style={{ marginRight: '10px' }}>
+              <button className="cart-btn" onClick={() => handleNavigate("/notifications")} title="Thông báo">
+                <FaBell />
+                {unreadCount > 0 && (
+                  <span className="cart-badge" style={{ background: '#ff4d4f' }}>{unreadCount > 99 ? '99+' : unreadCount}</span>
+                )}
               </button>
             </div>
           )}
@@ -254,38 +293,7 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
               <FaBox /> <span className="nav-text">Sản phẩm</span>
             </button>
 
-            {/* Dropdown Theo Series */}
-            <div className={`dropdown ${dropdownActive === 'series' ? 'active' : ''}`}>
-              <button className="nav-btn dropdown-toggle" onClick={() => toggleDropdown('series')} title="Theo Series">
-                <FaStar /> <span className="nav-text">Series</span>
-              </button>
-              <div className="dropdown-menu">
-                <button onClick={() => handleSeriesClick("Genshin Impact")}>
-                  <FaStar /> Genshin Impact
-                </button>
-                <button onClick={() => handleSeriesClick("Honkai Star Rail")}>
-                  <FaStar /> Honkai Star Rail
-                </button>
-                <button onClick={() => handleSeriesClick("Honkai Impact 3rd")}>
-                  <FaStar /> Honkai Impact 3rd
-                </button>
-                <button onClick={() => handleSeriesClick("Zenless Zone Zero")}>
-                  <FaStar /> Zenless Zone Zero
-                </button>
-                <button onClick={() => handleSeriesClick("Wuthering Waves")}>
-                  <FaStar /> Wuthering Waves
-                </button>
-                <button onClick={() => handleSeriesClick("Arknights")}>
-                  <FaStar /> Arknights
-                </button>
-                <button onClick={() => handleSeriesClick("Blue Archive")}>
-                  <FaStar /> Blue Archive
-                </button>
-                <button onClick={() => handleSeriesClick("Girls' Frontline")}>
-                  <FaStar /> Girls' Frontline
-                </button>
-              </div>
-            </div>
+
 
             {/* Dropdown Danh mục */}
             <div className={`dropdown ${dropdownActive === 'category' ? 'active' : ''}`}>
@@ -324,14 +332,7 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
               <FaPercent /> <span className="nav-text">Khuyến mãi</span>
             </button>
 
-            {/* Hàng mới */}
-            <button 
-              className={`nav-btn ${location.pathname === "/new-arrivals" ? "active" : ""}`}
-              onClick={() => handleNavigate("/figures?isNew=true")}
-              title="Hàng mới"
-            >
-              <FaClock /> <span className="nav-text">Hàng mới</span>
-            </button>
+
 
             {/* Chi nhánh */}
             <button 
@@ -342,15 +343,6 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
               <FaStore /> <span className="nav-text">Chi nhánh</span>
             </button>
 
-            {/* So sánh */}
-            <button 
-              className={`nav-btn ${location.pathname === "/compare" ? "active" : ""}`}
-              onClick={() => handleNavigate("/compare")}
-              title="So sánh"
-            >
-              <FaExchangeAlt /> <span className="nav-text">So sánh</span>
-            </button>
-
             {/* Blog */}
             <button 
               className={`nav-btn ${location.pathname === "/blog" ? "active" : ""}`}
@@ -358,63 +350,6 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
               title="Blog"
             >
               <FaBlog /> <span className="nav-text">Blog</span>
-            </button>
-
-            {/* Giới thiệu */}
-            <button 
-              className={`nav-btn ${location.pathname === "/about" ? "active" : ""}`}
-              onClick={() => handleNavigate("/about")}
-              title="Giới thiệu"
-            >
-              <FaInfoCircle /> <span className="nav-text">Giới thiệu</span>
-            </button>
-
-            {/* Liên hệ */}
-            <button 
-              className={`nav-btn ${location.pathname === "/contact" ? "active" : ""}`}
-              onClick={() => handleNavigate("/contact")}
-              title="Liên hệ"
-            >
-              <FaEnvelope /> <span className="nav-text">Liên hệ</span>
-            </button>
-
-            {/* FAQ */}
-            <button 
-              className={`nav-btn ${location.pathname === "/faq" ? "active" : ""}`}
-              onClick={() => handleNavigate("/faq")}
-              title="FAQ"
-            >
-              <FaQuestionCircle /> <span className="nav-text">FAQ</span>
-            </button>
-
-            {/* Chính sách */}
-            <div className={`dropdown ${dropdownActive === 'policy' ? 'active' : ''}`}>
-              <button className="nav-btn dropdown-toggle" onClick={() => toggleDropdown('policy')} title="Chính sách">
-                <FaShieldAlt /> <span className="nav-text">Chính sách</span>
-              </button>
-              <div className="dropdown-menu">
-                <button onClick={() => handleNavigate("/policies")}>
-                  <FaFileAlt /> Chính sách chung
-                </button>
-                <button onClick={() => handleNavigate("/terms")}>
-                  <FaFileAlt /> Điều khoản sử dụng
-                </button>
-                <button onClick={() => handleNavigate("/privacy")}>
-                  <FaShieldAlt /> Chính sách bảo mật
-                </button>
-                <button onClick={() => handleNavigate("/return-policy")}>
-                  <FaExchangeAlt /> Chính sách đổi trả
-                </button>
-              </div>
-            </div>
-
-            {/* Hỗ trợ */}
-            <button 
-              className={`nav-btn ${location.pathname === "/support" ? "active" : ""}`}
-              onClick={() => handleNavigate("/support")}
-              title="Hỗ trợ"
-            >
-              <FaHeadset /> <span className="nav-text">Hỗ trợ</span>
             </button>
 
             {/* ===== MOBILE MENU EXTRA ===== */}
@@ -464,6 +399,9 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
                 </button>
                 <button className="nav-btn" onClick={() => handleNavigate("/wishlist")}>
                   <FaHeart /> Sản phẩm yêu thích
+                </button>
+                <button className="nav-btn" onClick={() => handleNavigate("/notifications")}>
+                  <FaBell /> Thông báo của tôi
                 </button>
                 {isAdmin && (
                   <button className="nav-btn admin-nav-btn" onClick={() => handleNavigate("/admin")}>

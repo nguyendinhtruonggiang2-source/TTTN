@@ -5,13 +5,16 @@ import {
   FaShoppingCart, FaEye, FaBolt, FaClock, FaSpinner, 
   FaFire, FaBell, FaCheckCircle, FaAngleRight
 } from 'react-icons/fa';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/FlashSale.css';
 
 const FlashSale = () => {
   const navigate = useNavigate();
   const [flashSales, setFlashSales] = useState([]);
   const [upcomingSales, setUpcomingSales] = useState([]);
+  const [promotions, setPromotions] = useState([]);
+  const [activeTab, setActiveTab] = useState('flashsale');
+  const [copiedId, setCopiedId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [addingToCart, setAddingToCart] = useState({});
@@ -21,7 +24,23 @@ const FlashSale = () => {
   useEffect(() => {
     fetchFlashSales();
     fetchUpcomingSales();
+    fetchActivePromotions();
   }, []);
+
+  const fetchActivePromotions = async () => {
+    try {
+      const response = await axiosClient.get('/promotions/active');
+      setPromotions(response.data || []);
+    } catch (err) {
+      console.error('Error fetching active promotions:', err);
+    }
+  };
+
+  const handleCopyCode = (code, id) => {
+    navigator.clipboard.writeText(code);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   // Cập nhật đồng hồ đếm ngược mỗi giây
   useEffect(() => {
@@ -166,16 +185,7 @@ const FlashSale = () => {
     // Có thể gọi API lưu thông báo ở đây
   };
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/default-figure.jpg';
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    if (imagePath.startsWith('/uploads/')) {
-      return `http://localhost:8080${imagePath}`;
-    }
-    return imagePath;
-  };
+
 
   const formatPrice = (price) => {
     if (!price) return '0₫';
@@ -209,174 +219,345 @@ const FlashSale = () => {
         <p>Siêu giảm giá sốc - Số lượng có hạn</p>
       </div>
 
-      {/* Flash Sale đang diễn ra */}
-      {flashSales.length > 0 ? (
+      {/* Tabs */}
+      <div className="discount-tabs">
+        <button 
+          className={`tab-btn ${activeTab === 'flashsale' ? 'active' : ''}`}
+          onClick={() => setActiveTab('flashsale')}
+        >
+          <FaBolt /> Flash Sale
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'voucher' ? 'active' : ''}`}
+          onClick={() => setActiveTab('voucher')}
+        >
+          🎟️ Voucher & Coupon
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'freeship' ? 'active' : ''}`}
+          onClick={() => setActiveTab('freeship')}
+        >
+          🚚 Miễn Phí Vận Chuyển
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'sale' ? 'active' : ''}`}
+          onClick={() => setActiveTab('sale')}
+        >
+          🏷️ Ưu Đãi Khác
+        </button>
+      </div>
+
+      {activeTab === 'flashsale' && (
+        <>
+          {/* Flash Sale đang diễn ra */}
+          {flashSales.length > 0 ? (
+            <div className="flash-sale-section">
+              <div className="section-header">
+                <h2>
+                  <FaBolt className="section-icon" />
+                  Đang diễn ra
+                </h2>
+                <Link to="/figures" className="view-all">
+                  Xem tất cả <FaAngleRight />
+                </Link>
+              </div>
+              
+              <div className="flash-sale-grid">
+                {flashSales.map(sale => {
+                  const time = timeLeft[sale.id] || { hours: 0, minutes: 0, seconds: 0 };
+                  const progress = getProgressPercent(sale);
+                  const remaining = sale.quantityLimit - sale.soldQuantity;
+                  
+                  return (
+                    <div key={sale.id} className="flash-sale-card">
+                      <div className="card-image">
+                        <img 
+                          src={getImageUrl(sale.figure.image)} 
+                          alt={sale.figure.name}
+                          onError={(e) => e.target.src = '/default-figure.jpg'}
+                        />
+                        <div className="discount-badge">-{sale.discountPercent}%</div>
+                        <div className="flash-badge">
+                          <FaBolt /> FLASH SALE
+                        </div>
+                      </div>
+                      
+                      <div className="card-content">
+                        <Link to={`/product/${sale.figure.id}`} className="product-title">
+                          <h3>{sale.figure.name}</h3>
+                        </Link>
+                        
+                        <div className="product-price">
+                          <span className="original-price">
+                            {formatPrice(sale.figure.originalPrice)}
+                          </span>
+                          <span className="flash-price">
+                            {formatPrice(sale.salePrice)}
+                          </span>
+                        </div>
+                        
+                        <div className="countdown-timer">
+                          <FaClock className="timer-icon" />
+                          <span>Kết thúc sau: </span>
+                          <div className="timer">
+                            <span className="time-unit">{String(time.hours).padStart(2, '0')}</span>:
+                            <span className="time-unit">{String(time.minutes).padStart(2, '0')}</span>:
+                            <span className="time-unit">{String(time.seconds).padStart(2, '0')}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="progress-section">
+                          <div className="progress-bar">
+                            <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                          </div>
+                          <div className="progress-info">
+                            <span className="sold-info">Đã bán {sale.soldQuantity}</span>
+                            <span className="remaining-info">Còn {remaining}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="card-actions">
+                          <button 
+                            className="buy-now-btn"
+                            onClick={() => handleBuyNow(sale)}
+                            disabled={remaining <= 0}
+                          >
+                            <FaBolt /> Mua ngay
+                          </button>
+                          <button 
+                            className="add-to-cart-btn"
+                            onClick={() => handleAddToCart(sale)}
+                            disabled={remaining <= 0 || addingToCart[sale.id]}
+                          >
+                            {addingToCart[sale.id] ? (
+                              <FaSpinner className="spinner-small" />
+                            ) : (
+                              <FaShoppingCart />
+                            )}
+                            Thêm giỏ
+                          </button>
+                          <Link to={`/product/${sale.figure.id}`} className="view-detail-btn" title="Xem chi tiết">
+                            <FaEye />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="no-flash-sale">
+              <FaFire className="no-sale-icon" />
+              <h3>Hiện không có chương trình flash sale</h3>
+              <p>Hãy quay lại sau để không bỏ lỡ ưu đãi nhé!</p>
+              <Link to="/figures" className="shop-now-btn">
+                <FaShoppingCart /> Mua sắm ngay
+              </Link>
+            </div>
+          )}
+
+          {/* Flash Sale sắp diễn ra */}
+          {upcomingSales.length > 0 && (
+            <div className="upcoming-section">
+              <div className="section-header">
+                <h2>
+                  <FaClock className="section-icon" />
+                  Sắp diễn ra
+                </h2>
+              </div>
+              
+              <div className="upcoming-grid">
+                {upcomingSales.map(sale => {
+                  const time = timeLeft[sale.id] || { days: 0, hours: 0, minutes: 0 };
+                  
+                  return (
+                    <div key={sale.id} className="upcoming-card">
+                      <div className="card-image">
+                        <img 
+                          src={getImageUrl(sale.figure.image)} 
+                          alt={sale.figure.name}
+                          onError={(e) => e.target.src = '/default-figure.jpg'}
+                        />
+                        <div className="discount-badge">-{sale.discountPercent}%</div>
+                      </div>
+                      <div className="card-content">
+                        <h4>{sale.figure.name}</h4>
+                        <div className="product-price">
+                          <span className="original-price">{formatPrice(sale.figure.originalPrice)}</span>
+                          <span className="flash-price">{formatPrice(sale.salePrice)}</span>
+                        </div>
+                        <div className="countdown-timer upcoming">
+                          <FaClock className="timer-icon" />
+                          <span>Bắt đầu sau: </span>
+                          <div className="timer">
+                            {time.days > 0 && (
+                              <><span className="time-unit">{time.days}</span>d </>
+                            )}
+                            <span className="time-unit">{String(time.hours).padStart(2, '0')}</span>:
+                            <span className="time-unit">{String(time.minutes).padStart(2, '0')}</span>
+                          </div>
+                        </div>
+                        <div className="notify-btn">
+                          {notified[sale.id] ? (
+                            <button className="notified" disabled>
+                              <FaCheckCircle /> Đã nhắc
+                            </button>
+                          ) : (
+                            <button onClick={() => handleNotify(sale)}>
+                              <FaBell /> Nhắc tôi
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {activeTab === 'voucher' && (
         <div className="flash-sale-section">
           <div className="section-header">
-            <h2>
-              <FaBolt className="section-icon" />
-              Đang diễn ra
-            </h2>
-            <Link to="/figures" className="view-all">
-              Xem tất cả <FaAngleRight />
-            </Link>
+            <h2>🎟️ Mã Giảm Giá / Voucher Coupon</h2>
           </div>
-          
-          <div className="flash-sale-grid">
-            {flashSales.map(sale => {
-              const time = timeLeft[sale.id] || { hours: 0, minutes: 0, seconds: 0 };
-              const progress = getProgressPercent(sale);
-              const remaining = sale.quantityLimit - sale.soldQuantity;
-              
-              return (
-                <div key={sale.id} className="flash-sale-card">
-                  <div className="card-image">
-                    <img 
-                      src={getImageUrl(sale.figure.image)} 
-                      alt={sale.figure.name}
-                      onError={(e) => e.target.src = '/default-figure.jpg'}
-                    />
-                    <div className="discount-badge">-{sale.discountPercent}%</div>
-                    <div className="flash-badge">
-                      <FaBolt /> FLASH SALE
+          <div className="vouchers-grid">
+            {promotions.filter(p => p.type === 'voucher').length === 0 ? (
+              <div className="no-promo-data">
+                <p>Hiện tại chưa có mã voucher nào khả dụng.</p>
+              </div>
+            ) : (
+              promotions.filter(p => p.type === 'voucher').map(promo => (
+                <div key={promo.id} className="coupon-ticket">
+                  <div className="coupon-left">
+                    <div className="discount-value">{promo.discount}%</div>
+                    <div className="discount-label">GIẢM GIÁ</div>
+                  </div>
+                  <div className="coupon-right">
+                    <div>
+                      <div className="coupon-title">{promo.title}</div>
+                      {promo.description && <div className="coupon-desc">{promo.description}</div>}
+                      <div className="coupon-condition">
+                        {promo.minOrderAmount > 0 ? `Đơn tối thiểu ${promo.minOrderAmount.toLocaleString()}đ` : 'Không giới hạn đơn tối thiểu'}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="coupon-date">
+                        Hạn dùng: {formatDate(promo.endDate)}
+                      </div>
+                      <div className="coupon-action-row">
+                        <span className="coupon-code">{promo.code}</span>
+                        <button 
+                          className={`copy-code-btn ${copiedId === promo.id ? 'copied' : ''}`}
+                          onClick={() => handleCopyCode(promo.code, promo.id)}
+                        >
+                          {copiedId === promo.id ? 'Đã lưu' : 'Sao chép'}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="card-content">
-                    <Link to={`/product/${sale.figure.id}`} className="product-title">
-                      <h3>{sale.figure.name}</h3>
-                    </Link>
-                    
-                    {sale.figure.series && (
-                      <p className="product-series">📺 {sale.figure.series}</p>
-                    )}
-                    
-                    <div className="product-price">
-                      <span className="original-price">
-                        {formatPrice(sale.figure.originalPrice)}
-                      </span>
-                      <span className="flash-price">
-                        {formatPrice(sale.salePrice)}
-                      </span>
-                    </div>
-                    
-                    <div className="countdown-timer">
-                      <FaClock className="timer-icon" />
-                      <span>Kết thúc sau: </span>
-                      <div className="timer">
-                        <span className="time-unit">{String(time.hours).padStart(2, '0')}</span>:
-                        <span className="time-unit">{String(time.minutes).padStart(2, '0')}</span>:
-                        <span className="time-unit">{String(time.seconds).padStart(2, '0')}</span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'freeship' && (
+        <div className="flash-sale-section">
+          <div className="section-header">
+            <h2>🚚 Miễn Phí Vận Chuyển</h2>
+          </div>
+          <div className="vouchers-grid">
+            {promotions.filter(p => p.type === 'freeship').length === 0 ? (
+              <div className="no-promo-data">
+                <p>Hiện tại chưa có chương trình miễn phí vận chuyển nào.</p>
+              </div>
+            ) : (
+              promotions.filter(p => p.type === 'freeship').map(promo => (
+                <div key={promo.id} className="coupon-ticket freeship-ticket">
+                  <div className="coupon-left">
+                    <div className="discount-value">FREE</div>
+                    <div className="discount-label">SHIPPING</div>
+                  </div>
+                  <div className="coupon-right">
+                    <div>
+                      <div className="coupon-title">{promo.title}</div>
+                      {promo.description && <div className="coupon-desc">{promo.description}</div>}
+                      <div className="coupon-condition">
+                        {promo.minOrderAmount > 0 ? `Đơn tối thiểu ${promo.minOrderAmount.toLocaleString()}đ` : 'Không giới hạn đơn tối thiểu'}
                       </div>
                     </div>
-                    
-                    <div className="progress-section">
-                      <div className="progress-bar">
-                        <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+                    <div>
+                      <div className="coupon-date">
+                        Hạn dùng: {formatDate(promo.endDate)}
                       </div>
-                      <div className="progress-info">
-                        <span className="sold-info">Đã bán {sale.soldQuantity}</span>
-                        <span className="remaining-info">Còn {remaining}</span>
+                      <div className="coupon-action-row">
+                        <span className="coupon-code">{promo.code}</span>
+                        <button 
+                          className={`copy-code-btn ${copiedId === promo.id ? 'copied' : ''}`}
+                          onClick={() => handleCopyCode(promo.code, promo.id)}
+                        >
+                          {copiedId === promo.id ? 'Đã lưu' : 'Sao chép'}
+                        </button>
                       </div>
                     </div>
-                    
-                    <div className="card-actions">
-                      <button 
-                        className="buy-now-btn"
-                        onClick={() => handleBuyNow(sale)}
-                        disabled={remaining <= 0}
-                      >
-                        <FaBolt /> Mua ngay
-                      </button>
-                      <button 
-                        className="add-to-cart-btn"
-                        onClick={() => handleAddToCart(sale)}
-                        disabled={remaining <= 0 || addingToCart[sale.id]}
-                      >
-                        {addingToCart[sale.id] ? (
-                          <FaSpinner className="spinner-small" />
-                        ) : (
-                          <FaShoppingCart />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'sale' && (
+        <div className="flash-sale-section">
+          <div className="section-header">
+            <h2>🏷️ Ưu Đãi Đặc Biệt</h2>
+          </div>
+          <div className="sales-grid">
+            {promotions.filter(p => p.type === 'sale').length === 0 ? (
+              <div className="no-promo-data">
+                <p>Hiện tại chưa có chương trình ưu đãi đặc biệt nào.</p>
+              </div>
+            ) : (
+              promotions.filter(p => p.type === 'sale').map(promo => (
+                <div key={promo.id} className="sale-promo-card">
+                  <div className="promo-card-left">
+                    <span className="promo-badge-tag">SALES</span>
+                    <div className="promo-discount-num">{promo.discount}% OFF</div>
+                  </div>
+                  <div className="promo-card-right">
+                    <div>
+                      <h3>{promo.title}</h3>
+                      <p>{promo.description}</p>
+                    </div>
+                    <div>
+                      <div className="promo-meta-info">
+                        <span>⏳ Hạn dùng: {formatDate(promo.startDate)} - {formatDate(promo.endDate)}</span>
+                        {promo.code && (
+                          <div className="promo-code-box">
+                            Mã: <code>{promo.code}</code>
+                            <button 
+                              className="copy-mini-btn"
+                              onClick={() => handleCopyCode(promo.code, promo.id)}
+                            >
+                              {copiedId === promo.id ? 'Đã chép' : 'Chép'}
+                            </button>
+                          </div>
                         )}
-                        Thêm giỏ
-                      </button>
-                      <Link to={`/product/${sale.figure.id}`} className="view-detail-btn" title="Xem chi tiết">
-                        <FaEye />
+                      </div>
+                      <Link to="/figures" className="go-shop-link">
+                        Mua sắm ngay ➔
                       </Link>
                     </div>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-        <div className="no-flash-sale">
-          <FaFire className="no-sale-icon" />
-          <h3>Hiện không có chương trình flash sale</h3>
-          <p>Hãy quay lại sau để không bỏ lỡ ưu đãi nhé!</p>
-          <Link to="/figures" className="shop-now-btn">
-            <FaShoppingCart /> Mua sắm ngay
-          </Link>
-        </div>
-      )}
-
-      {/* Flash Sale sắp diễn ra */}
-      {upcomingSales.length > 0 && (
-        <div className="upcoming-section">
-          <div className="section-header">
-            <h2>
-              <FaClock className="section-icon" />
-              Sắp diễn ra
-            </h2>
-          </div>
-          
-          <div className="upcoming-grid">
-            {upcomingSales.map(sale => {
-              const time = timeLeft[sale.id] || { days: 0, hours: 0, minutes: 0 };
-              
-              return (
-                <div key={sale.id} className="upcoming-card">
-                  <div className="card-image">
-                    <img 
-                      src={getImageUrl(sale.figure.image)} 
-                      alt={sale.figure.name}
-                      onError={(e) => e.target.src = '/default-figure.jpg'}
-                    />
-                    <div className="discount-badge">-{sale.discountPercent}%</div>
-                  </div>
-                  <div className="card-content">
-                    <h4>{sale.figure.name}</h4>
-                    <div className="product-price">
-                      <span className="original-price">{formatPrice(sale.figure.originalPrice)}</span>
-                      <span className="flash-price">{formatPrice(sale.salePrice)}</span>
-                    </div>
-                    <div className="countdown-timer upcoming">
-                      <FaClock className="timer-icon" />
-                      <span>Bắt đầu sau: </span>
-                      <div className="timer">
-                        {time.days > 0 && (
-                          <><span className="time-unit">{time.days}</span>d </>
-                        )}
-                        <span className="time-unit">{String(time.hours).padStart(2, '0')}</span>:
-                        <span className="time-unit">{String(time.minutes).padStart(2, '0')}</span>
-                      </div>
-                    </div>
-                    <div className="notify-btn">
-                      {notified[sale.id] ? (
-                        <button className="notified" disabled>
-                          <FaCheckCircle /> Đã nhắc
-                        </button>
-                      ) : (
-                        <button onClick={() => handleNotify(sale)}>
-                          <FaBell /> Nhắc tôi
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </div>
       )}

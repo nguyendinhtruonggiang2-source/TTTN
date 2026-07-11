@@ -5,7 +5,7 @@ import {
   FaTag, FaFire, FaGift, FaTicketAlt, FaPercent, FaToggleOn, FaToggleOff,
   FaCalendarAlt, FaClock, FaDollarSign, FaBox, FaTimes
 } from 'react-icons/fa';
-import axiosClient from '../../api/axiosClient';
+import axiosClient, { getImageUrl } from '../../api/axiosClient';
 import '../../styles/PromotionManagement.css';
 
 const PromotionManagement = () => {
@@ -19,6 +19,7 @@ const PromotionManagement = () => {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [editingPromotion, setEditingPromotion] = useState(null);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -43,7 +44,6 @@ const PromotionManagement = () => {
   const types = [
     { id: 'all', name: 'Tất cả', icon: <FaTag /> },
     { id: 'sale', name: 'Giảm giá', icon: <FaPercent /> },
-    { id: 'flashsale', name: 'Flash Sale', icon: <FaFire /> },
     { id: 'freeship', name: 'FreeShip', icon: <FaGift /> },
     { id: 'voucher', name: 'Voucher', icon: <FaTicketAlt /> }
   ];
@@ -91,6 +91,42 @@ const PromotionManagement = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      alert('Vui lòng chọn file ảnh định dạng JPEG, PNG, GIF hoặc WEBP');
+      return;
+    }
+
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+    
+    setUploadingImage(true);
+    try {
+      console.log('📡 Uploading promotion image...');
+      const response = await axiosClient.post('/upload', formDataUpload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const url = response.data.url || response.data.filePath;
+      if (url) {
+        setFormData(prev => ({ ...prev, image: url }));
+        alert('✅ Tải ảnh lên thành công!');
+      } else {
+        alert('❌ Không nhận được đường dẫn ảnh từ server');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('❌ Tải ảnh lên thất bại');
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -481,7 +517,6 @@ const PromotionManagement = () => {
                     disabled={saving}
                   >
                     <option value="sale">Giảm giá</option>
-                    <option value="flashsale">Flash Sale</option>
                     <option value="freeship">Miễn phí vận chuyển</option>
                     <option value="voucher">Voucher</option>
                   </select>
@@ -623,17 +658,62 @@ const PromotionManagement = () => {
               </div>
 
               <div className="form-group">
-                <label>URL Hình ảnh</label>
-                <input
-                  type="text"
-                  value={formData.image}
-                  onChange={(e) => setFormData({...formData, image: e.target.value})}
-                  placeholder="https://example.com/promotion-image.jpg"
-                  disabled={saving}
-                />
+                <label>Hình ảnh khuyến mãi</label>
+                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    value={formData.image}
+                    onChange={(e) => setFormData({...formData, image: e.target.value})}
+                    placeholder="Đường dẫn ảnh hoặc chọn file tải lên..."
+                    disabled={saving || uploadingImage}
+                    style={{ flex: 1 }}
+                  />
+                  <input
+                    type="file"
+                    id="promo-image-file"
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    disabled={saving || uploadingImage}
+                  />
+                  <button
+                    type="button"
+                    className="action-btn edit-btn"
+                    onClick={() => document.getElementById('promo-image-file').click()}
+                    disabled={saving || uploadingImage}
+                    style={{ display: 'flex', alignItems: 'center', gap: '5px', padding: '10px 15px', height: '42px', borderRadius: '8px' }}
+                  >
+                    {uploadingImage ? <FaSpinner className="spinner" /> : <FaPlus />}
+                    Tải ảnh lên
+                  </button>
+                </div>
                 {formData.image && (
-                  <div className="image-preview">
-                    <img src={formData.image} alt="Preview" />
+                  <div className="image-preview" style={{ marginTop: '10px', position: 'relative', display: 'inline-block' }}>
+                    <img src={getImageUrl(formData.image)} alt="Preview" style={{ maxWidth: '200px', borderRadius: '8px', border: '1px solid #e2e8f0' }} />
+                    <button
+                      type="button"
+                      onClick={() => setFormData({...formData, image: ''})}
+                      style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        right: '-8px',
+                        background: '#ef4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '20px',
+                        height: '20px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        fontSize: '11px',
+                        lineHeight: 1
+                      }}
+                    >
+                      ✕
+                    </button>
                   </div>
                 )}
               </div>

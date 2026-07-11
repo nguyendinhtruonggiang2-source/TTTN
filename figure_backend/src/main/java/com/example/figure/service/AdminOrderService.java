@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 public class AdminOrderService {
     
     private final OrderRepository orderRepository;
+    private final com.example.figure.repository.NotificationRepository notificationRepository;
+    private final com.example.figure.websocket.NotificationWebSocketHandler notificationWebSocketHandler;
     
     public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll().stream()
@@ -36,7 +38,40 @@ public class AdminOrderService {
             .orElseThrow(() -> new RuntimeException("Order not found"));
         order.setStatus(status);
         Order updated = orderRepository.save(order);
+
+        // Tạo thông báo cho khách hàng khi có cập nhật trạng thái đơn hàng
+        try {
+            if (updated.getUser() != null && (updated.getUser().getNotifyOrder() == null || updated.getUser().getNotifyOrder())) {
+                com.example.figure.entity.Notification notif = com.example.figure.entity.Notification.builder()
+                        .user(updated.getUser())
+                        .title("Cập nhật đơn hàng")
+                        .content("Đơn hàng " + updated.getOrderCode() + " của bạn đã được cập nhật thành: " + getStatusText(status))
+                        .type("ORDER")
+                        .redirectUrl("/orders/" + updated.getId())
+                        .isRead(false)
+                        .build();
+                com.example.figure.entity.Notification savedNotif = notificationRepository.save(notif);
+                
+                // Gửi realtime qua WebSocket
+                notificationWebSocketHandler.sendNotificationToUser(updated.getUser().getUsername(), savedNotif);
+            }
+        } catch (Exception e) {
+            System.err.println("Error saving/pushing customer notification: " + e.getMessage());
+        }
+
         return mapToDTO(updated);
+    }
+
+    private String getStatusText(String status) {
+        if (status == null) return "N/A";
+        switch (status.toLowerCase()) {
+            case "pending": return "Chờ xác nhận";
+            case "processing": return "Đang xử lý";
+            case "shipped": return "Đang giao hàng";
+            case "delivered": return "Đã giao hàng thành công";
+            case "cancelled": return "Đã hủy";
+            default: return status;
+        }
     }
     
     private OrderDTO mapToDTO(Order order) {

@@ -12,7 +12,9 @@ import {
   FaCheckCircle,
   FaShippingFast,
   FaGift,
-  FaStar
+  FaStar,
+  FaEye,
+  FaEyeSlash
 } from "react-icons/fa";
 
 function Register({ updateAuthStatus }) {
@@ -30,6 +32,8 @@ function Register({ updateAuthStatus }) {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -151,7 +155,7 @@ function Register({ updateAuthStatus }) {
             updateAuthStatus(userData);
           }
           
-          setSuccess("🎉 Đăng ký thành công! Bạn đã được tự động đăng nhập.");
+          setSuccess("Đăng ký thành công! Bạn đã được tự động đăng nhập.");
           
           // Redirect to home after 2 seconds
           setTimeout(() => {
@@ -320,38 +324,88 @@ function Register({ updateAuthStatus }) {
               </div>
 
               {/* Password */}
-              <div className="input-group">
+              <div className="input-group" style={{ position: 'relative' }}>
                 <label>
                   <FaLock className="input-icon" /> Mật khẩu *
                 </label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Ít nhất 6 ký tự"
-                  value={formData.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className={errors.password ? 'error' : ''}
-                />
+                <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    placeholder="Ít nhất 6 ký tự"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className={errors.password ? 'error' : ''}
+                    style={{ paddingRight: '45px' }}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#94a3b8',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '6px',
+                      zIndex: 2
+                    }}
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {errors.password && (
                   <span className="error-text">{errors.password}</span>
                 )}
               </div>
 
               {/* Confirm Password */}
-              <div className="input-group">
+              <div className="input-group" style={{ position: 'relative' }}>
                 <label>
                   <FaLock className="input-icon" /> Xác nhận mật khẩu *
                 </label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Nhập lại mật khẩu"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  disabled={loading}
-                  className={errors.confirmPassword ? 'error' : ''}
-                />
+                <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Nhập lại mật khẩu"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    disabled={loading}
+                    className={errors.confirmPassword ? 'error' : ''}
+                    style={{ paddingRight: '45px' }}
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#94a3b8',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '6px',
+                      zIndex: 2
+                    }}
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <span className="error-text">{errors.confirmPassword}</span>
                 )}
@@ -420,7 +474,7 @@ function Register({ updateAuthStatus }) {
         {/* Right side - Benefits Banner */}
         <div className="auth-banner register-banner">
           <div className="banner-content">
-            <h2 className="banner-title">🎁 ƯU ĐÃI ĐẶC BIỆT</h2>
+            <h2 className="banner-title">ƯU ĐÃI ĐẶC BIỆT</h2>
             <p className="banner-subtitle">Khi đăng ký thành viên</p>
             
             <div className="benefits-list">

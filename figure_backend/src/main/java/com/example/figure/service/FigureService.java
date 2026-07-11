@@ -86,7 +86,7 @@ public class FigureService {
             if (keyword == null || keyword.trim().isEmpty()) {
                 return getAllFigures();
             }
-            List<Figure> results = figureRepository.findByNameContainingIgnoreCase(keyword);
+            List<Figure> results = figureRepository.searchAllFields(keyword);
             System.out.println("✅ Found " + results.size() + " figures matching '" + keyword + "'");
             return results;
         } catch (Exception e) {

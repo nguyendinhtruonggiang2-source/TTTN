@@ -1,9 +1,11 @@
 .notifications-container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 30px 20px;
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 30px 24px;
     min-height: calc(100vh - 200px);
-    background: #f5f5f5;
+    background: #f8fafc;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
   }
   
   .notifications-header {
@@ -104,24 +106,27 @@
   
   .notification-item {
     display: flex;
-    gap: 16px;
+    gap: 18px;
     background: white;
-    border-radius: 8px;
-    padding: 16px;
+    border-radius: 10px;
+    padding: 18px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
-    border: 1px solid #eee;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
   }
   
   .notification-item:hover {
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    border-color: #ff4d4f;
+    box-shadow: 0 8px 16px rgba(255, 77, 79, 0.08);
   }
   
   .notification-item.unread {
-    background: #fff8e1;
-    border-left: 3px solid #ffc107;
+    background: #fffafa;
+    border-left: 4px solid #ff4d4f;
+    border-color: #ffccc7;
   }
   
   .notification-icon .icon {
@@ -238,4 +243,188 @@
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+  }
+
+  /* Type tabs (User vs Admin) */
+  .notification-type-tabs {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    padding: 6px;
+    gap: 6px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
+  }
+  
+  .type-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .type-tab:hover {
+    background: #f8fafc;
+    color: #334155;
+  }
+  
+  .type-tab.active {
+    background: var(--primary-color, #ff4d4f);
+    color: white;
+  }
+  
+  .type-tab .count-badge {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    transition: all 0.2s ease;
+  }
+  
+  .type-tab.active .count-badge {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+  }
+
+  /* Shopee Category Bar */
+  .category-filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .category-pill {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .category-pill:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+  }
+
+  .category-pill.active {
+    background: var(--primary-color, #ff4d4f);
+    color: white;
+    border-color: var(--primary-color, #ff4d4f);
+  }
+
+  /* Hover Action Buttons inside Notification Item */
+  .notification-item {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .notification-actions-hover {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.95) 20%, rgba(255,255,255,1) 100%);
+    padding-left: 20px;
+    height: 100%;
+    align-items: center;
+  }
+
+  .notification-item:hover .notification-actions-hover {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .action-hover-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+
+  .action-hover-btn.mark-read {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+
+  .action-hover-btn.mark-read:hover {
+    background: #c8e6c9;
+  }
+
+  .action-hover-btn.delete-notif {
+    background: #ffebee;
+    color: #c62828;
+  }
+
+  .action-hover-btn.delete-notif:hover {
+    background: #ffcdd2;
+  }
+
+  /* Figure store condition badges */
+  .fig-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+
+  .order-badge {
+    background: #e6f7ff;
+    color: #1890ff;
+    border: 1px solid #91d5ff;
+  }
+
+  .promo-badge {
+    background: #fff0f6;
+    color: #eb2f96;
+    border: 1px solid #ffadd2;
+  }
+
+  .news-badge {
+    background: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+  }
+
+  .ai-badge {
+    background: #f9f0ff;
+    color: #722ed1;
+    border: 1px solid #d3adf7;
+  }
+
+  .default-badge {
+    background: #f5f5f5;
+    color: #595959;
+    border: 1px solid #d9d9d9;
   }

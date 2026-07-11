@@ -36,7 +36,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         "/static",             // Static resources
         "/swagger-ui",         // Swagger UI
         "/v3/api-docs",        // API docs
-        "/error"               // Error pages
+        "/error",              // Error pages
+        "/ws"                  // WebSocket handshakes
     );
     
     @Override
@@ -58,39 +59,32 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
         
+        final String authHeader = request.getHeader("Authorization");
+        
+        System.out.println("🔍 Authorization header: " + (authHeader != null ? "PRESENT" : "NULL"));
+        
         // 2. Kiểm tra nếu là public path - bỏ qua authentication
         boolean isPublicPath = PUBLIC_PATHS.stream()
                 .anyMatch(publicPath -> path.startsWith(publicPath));
         
         // 3. Phân biệt GET và POST/PUT/DELETE cho categories
-        if (path.startsWith("/api/categories")) {
-            // Chỉ cho phép GET không cần token, các method khác cần token
-            if ("GET".equalsIgnoreCase(method)) {
-                System.out.println("✅ Public GET categories, skipping authentication");
+        boolean isCategoriesGet = path.startsWith("/api/categories") && "GET".equalsIgnoreCase(method);
+
+        // Nếu không có token và là public path -> bỏ qua authentication
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            if (isCategoriesGet) {
+                System.out.println("✅ Public GET categories without token, skipping authentication");
                 filterChain.doFilter(request, response);
                 return;
             }
-        }
-        
-        if (isPublicPath && !path.startsWith("/api/categories")) {
-            System.out.println("✅ Public path, skipping authentication: " + path);
-            filterChain.doFilter(request, response);
-            return;
-        }
-        
-        // 4. Xử lý JWT cho các endpoint cần authentication
-        final String authHeader = request.getHeader("Authorization");
-        
-        System.out.println("🔍 Authorization header: " + (authHeader != null ? "PRESENT" : "NULL"));
-        
-        // Kiểm tra header Authorization
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("⚠️ No Bearer token for protected endpoint: " + path);
+            if (isPublicPath && !path.startsWith("/api/categories")) {
+                System.out.println("✅ Public path without token, skipping authentication: " + path);
+                filterChain.doFilter(request, response);
+                return;
+            }
             
-            // Trả về 401 cho các endpoint bảo vệ mà không có token
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setContentType("application/json");
-            response.getWriter().write("{\"message\": \"Authentication required\"}");
+            System.out.println("ℹ️ No Bearer token found for protected path. Passing to Spring Security: " + path);
+            filterChain.doFilter(request, response);
             return;
         }
         

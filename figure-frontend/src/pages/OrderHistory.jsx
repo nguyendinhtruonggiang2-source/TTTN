@@ -1,7 +1,7 @@
 // src/pages/OrderHistory.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/orderHistory.css';
 
 function OrderHistory() {
@@ -17,13 +17,13 @@ function OrderHistory() {
   // Map status từ backend sang hiển thị
   const getStatusMapping = (status) => {
     const statusMap = {
-      'PENDING': { text: '⏳ Chờ xác nhận', class: 'pending', icon: '⏳' },
-      'PROCESSING': { text: '⚙️ Đang xử lý', class: 'processing', icon: '⚙️' },
-      'SHIPPED': { text: '🚚 Đang giao hàng', class: 'shipping', icon: '🚚' },
-      'DELIVERED': { text: '📦 Đã giao hàng', class: 'delivered', icon: '📦' },
-      'CANCELLED': { text: '❌ Đã hủy', class: 'cancelled', icon: '❌' }
+      'PENDING': { text: 'Chờ xác nhận', class: 'pending', icon: '' },
+      'PROCESSING': { text: 'Đang xử lý', class: 'processing', icon: '' },
+      'SHIPPED': { text: 'Đang giao hàng', class: 'shipping', icon: '' },
+      'DELIVERED': { text: 'Đã giao hàng', class: 'delivered', icon: '' },
+      'CANCELLED': { text: 'Đã hủy', class: 'cancelled', icon: '' }
     };
-    return statusMap[status] || { text: status, class: 'pending', icon: '⏳' };
+    return statusMap[status] || { text: status, class: 'pending', icon: '' };
   };
 
   useEffect(() => {
@@ -203,23 +203,23 @@ function OrderHistory() {
         </div>
 
         <div className="filter-group">
-          <label>📌 Trạng thái</label>
+          <label>Trạng thái</label>
           <select 
             value={statusFilter} 
             onChange={(e) => setStatusFilter(e.target.value)}
             className="status-select"
           >
             <option value="all">Tất cả</option>
-            <option value="PENDING">⏳ Chờ xác nhận</option>
-            <option value="PROCESSING">⚙️ Đang xử lý</option>
-            <option value="SHIPPED">🚚 Đang giao</option>
-            <option value="DELIVERED">📦 Đã giao</option>
-            <option value="CANCELLED">❌ Đã hủy</option>
+            <option value="PENDING">Chờ xác nhận</option>
+            <option value="PROCESSING">Đang xử lý</option>
+            <option value="SHIPPED">Đang giao</option>
+            <option value="DELIVERED">Đã giao</option>
+            <option value="CANCELLED">Đã hủy</option>
           </select>
         </div>
 
         <div className="filter-group">
-          <label>📅 Từ ngày</label>
+          <label>Từ ngày</label>
           <input
             type="date"
             value={dateRange.from}
@@ -229,7 +229,7 @@ function OrderHistory() {
         </div>
 
         <div className="filter-group">
-          <label>📅 Đến ngày</label>
+          <label>Đến ngày</label>
           <input
             type="date"
             value={dateRange.to}
@@ -240,7 +240,7 @@ function OrderHistory() {
 
         {(statusFilter !== 'all' || searchTerm || dateRange.from || dateRange.to) && (
           <button className="btn-clear-filters" onClick={clearFilters}>
-            🗑️ Xóa lọc
+            Xóa lọc
           </button>
         )}
       </div>
@@ -248,28 +248,24 @@ function OrderHistory() {
       {/* Thống kê nhanh */}
       <div className="order-stats">
         <div className="stat-card">
-          <span className="stat-icon">📦</span>
           <div className="stat-info">
             <span className="stat-value">{stats.total}</span>
             <span className="stat-label">Tổng đơn</span>
           </div>
         </div>
         <div className="stat-card">
-          <span className="stat-icon">⏳</span>
           <div className="stat-info">
             <span className="stat-value">{stats.pending + stats.processing}</span>
             <span className="stat-label">Đang xử lý</span>
           </div>
         </div>
         <div className="stat-card">
-          <span className="stat-icon">🚚</span>
           <div className="stat-info">
             <span className="stat-value">{stats.shipping}</span>
             <span className="stat-label">Đang giao</span>
           </div>
         </div>
         <div className="stat-card">
-          <span className="stat-icon">✅</span>
           <div className="stat-info">
             <span className="stat-value">{stats.delivered}</span>
             <span className="stat-label">Đã giao</span>
@@ -280,7 +276,6 @@ function OrderHistory() {
       {/* Danh sách đơn hàng */}
       {filteredOrders.length === 0 ? (
         <div className="order-history-empty">
-          <div className="empty-icon">📭</div>
           <h3>Không có đơn hàng nào</h3>
           <p>
             {orders.length === 0 
@@ -288,7 +283,7 @@ function OrderHistory() {
               : 'Không tìm thấy đơn hàng phù hợp với bộ lọc'}
           </p>
           <button onClick={() => navigate('/figures')} className="btn-shop-now">
-            🛍️ Mua sắm ngay
+            Mua sắm ngay
           </button>
         </div>
       ) : (
@@ -320,48 +315,45 @@ function OrderHistory() {
                 </div>
 
                 <div className="order-items-preview">
-                  <div className="items-scroll">
-                    {(order.items || []).slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="preview-item">
+                  <div className="items-list-vertical">
+                    {(order.items || []).map((item, idx) => (
+                      <div key={idx} className="preview-item-row">
                         <img 
-                          src={item.figure?.image || item.imageUrl || '/default-figure.jpg'}
+                          src={getImageUrl(item.figure?.imageUrl || item.figure?.image || item.imageUrl)}
                           alt={item.figure?.name}
                           onError={(e) => e.target.src = '/default-figure.jpg'}
+                          className="item-preview-img"
                         />
-                        <div className="preview-info">
-                          <p className="item-name">{item.figure?.name}</p>
-                          <p className="item-meta">
-                            {item.quantity} x {item.price?.toLocaleString()}đ
-                          </p>
+                        <div className="item-preview-info">
+                          <span className="item-preview-name">{item.figure?.name || 'Sản phẩm mô hình'}</span>
+                          <span className="item-preview-qty">Số lượng: {item.quantity}</span>
+                        </div>
+                        <div className="item-preview-price">
+                          {item.price?.toLocaleString()}đ
                         </div>
                       </div>
                     ))}
-                    {(order.items?.length || 0) > 3 && (
-                      <div className="more-items">
-                        +{(order.items.length - 3)} sản phẩm khác
-                      </div>
-                    )}
                   </div>
                 </div>
 
                 <div className="order-card-footer">
                   <div className="shipping-summary">
-                    <span>📦 {order.shippingName}</span>
-                    <span>📞 {order.shippingPhone}</span>
+                    <span>{order.shippingName}</span>
+                    <span>{order.shippingPhone}</span>
                   </div>
                   <div className="order-actions">
                     <button 
                       className="btn-view"
                       onClick={() => handleViewDetail(order.id)}
                     >
-                      👁️ Xem chi tiết
+                      Xem chi tiết
                     </button>
                     {order.status === 'PENDING' && (
                       <button 
                         className="btn-cancel"
                         onClick={() => handleCancelOrder(order.id)}
                       >
-                        ❌ Hủy đơn
+                        Hủy đơn
                       </button>
                     )}
                     {order.status === 'DELIVERED' && (
@@ -369,7 +361,7 @@ function OrderHistory() {
                         className="btn-reorder"
                         onClick={() => handleReorder(order)}
                       >
-                        🔄 Đặt lại
+                        Đặt lại
                       </button>
                     )}
                   </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/profile.css';
 
 function Profile() {
@@ -21,14 +21,22 @@ function Profile() {
         name: u.name || u.fullName || u.username || '',
         email: u.email || '',
         phone: u.phone || '',
-        address: u.address || ''
+        address: u.address || '',
+        notifyNewArticle: u.notifyNewArticle !== false,
+        notifyFlashSale: u.notifyFlashSale !== false,
+        notifyOrder: u.notifyOrder !== false,
+        notifyAiMessage: u.notifyAiMessage !== false
       };
     }
     return {
       name: '',
       email: '',
       phone: '',
-      address: ''
+      address: '',
+      notifyNewArticle: true,
+      notifyFlashSale: true,
+      notifyOrder: true,
+      notifyAiMessage: true
     };
   });
   const navigate = useNavigate();
@@ -69,7 +77,11 @@ function Profile() {
         name: response.data.name || '',
         email: response.data.email || '',
         phone: response.data.phone || '',
-        address: response.data.address || ''
+        address: response.data.address || '',
+        notifyNewArticle: response.data.notifyNewArticle !== false,
+        notifyFlashSale: response.data.notifyFlashSale !== false,
+        notifyOrder: response.data.notifyOrder !== false,
+        notifyAiMessage: response.data.notifyAiMessage !== false
       });
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -84,7 +96,7 @@ function Profile() {
   const fetchUserOrders = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axiosClient.get('/orders/my-orders', {
+      const response = await axiosClient.get('/orders', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(response.data || []);
@@ -126,6 +138,30 @@ function Profile() {
     }
   };
 
+  const handleNotificationToggle = async (field, value) => {
+    const updatedFormData = {
+      ...formData,
+      [field]: value
+    };
+    setFormData(updatedFormData);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axiosClient.put('/auth/profile', updatedFormData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      const updatedUser = { ...user, ...response.data };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      setUser(updatedUser);
+    } catch (error) {
+      console.error('Error saving notification settings:', error);
+      alert('❌ Lưu cài đặt thất bại. Vui lòng thử lại.');
+      // Trả lại giá trị cũ
+      setFormData(formData);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -143,11 +179,11 @@ function Profile() {
 
   return (
     <div className="profile-container">
-      <h1>👤 Hồ Sơ Của Tôi</h1>
+      <h1>Hồ Sơ Của Tôi</h1>
       
       <div className="profile-content">
         <div className="profile-sidebar">
-          <div className="user-avatar">
+          <div className="profile-user-avatar">
             <div className="avatar-icon">👤</div>
             <h3>{user?.name || 'Người dùng'}</h3>
             <p>{user?.email}</p>
@@ -158,23 +194,23 @@ function Profile() {
               className={`menu-item ${activeTab === 'profile' ? 'active' : ''}`}
               onClick={() => setActiveTab('profile')}
             >
-              📝 Thông tin cá nhân
+              Thông tin cá nhân
             </button>
             <button 
               className={`menu-item ${activeTab === 'orders' ? 'active' : ''}`}
               onClick={() => setActiveTab('orders')}
             >
-              📦 Đơn hàng của tôi
+              Đơn hàng của tôi
             </button>
-            <Link 
-              to="/addresses"
-              className={`menu-item ${activeTab === 'address' ? 'active' : ''}`}
-              onClick={() => setActiveTab('address')}
+
+            <button 
+              className={`menu-item ${activeTab === 'notification-settings' ? 'active' : ''}`}
+              onClick={() => setActiveTab('notification-settings')}
             >
-              🏠 Sổ địa chỉ
-            </Link>
+              Cài đặt thông báo
+            </button>
             <button className="menu-item logout" onClick={handleLogout}>
-              🚪 Đăng xuất
+              Đăng xuất
             </button>
           </div>
         </div>
@@ -189,7 +225,7 @@ function Profile() {
                     className="btn-edit"
                     onClick={() => setEditMode(true)}
                   >
-                    ✏️ Chỉnh sửa
+                    Chỉnh sửa
                   </button>
                 )}
               </div>
@@ -269,10 +305,125 @@ function Profile() {
                       onClick={handleSaveProfile}
                       disabled={saving}
                     >
-                      {saving ? 'Đang lưu...' : '💾 Lưu thay đổi'}
+                      {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
                     </button>
                   </div>
                 )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'notification-settings' && (
+            <div className="profile-section">
+              <h2>Cài đặt thông báo</h2>
+              <p className="section-description" style={{ color: '#666', marginBottom: '20px', fontSize: '13px' }}>
+                Chọn loại thông báo bạn muốn nhận qua hệ thống và email.
+              </p>
+              
+              <div className="notification-settings-form" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <div className="setting-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'white', borderRadius: '8px', border: '1px solid #eee' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#333' }}>Bài viết mới</h4>
+                    <span style={{ fontSize: '12px', color: '#888' }}>Nhận thông báo khi có bài viết/tin tức mới được xuất bản.</span>
+                  </div>
+                  <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={formData.notifyNewArticle} 
+                      onChange={(e) => handleNotificationToggle('notifyNewArticle', e.target.checked)}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span className="slider" style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      backgroundColor: formData.notifyNewArticle ? '#ff4d4f' : '#ccc',
+                      transition: '.4s', borderRadius: '34px'
+                    }}>
+                      <span className="slider-knob" style={{
+                        position: 'absolute', content: '""', height: '18px', width: '18px', left: '4px', bottom: '4px',
+                        backgroundColor: 'white', transition: '.4s', borderRadius: '50%',
+                        transform: formData.notifyNewArticle ? 'translateX(24px)' : 'none'
+                      }}></span>
+                    </span>
+                  </label>
+                </div>
+
+                <div className="setting-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'white', borderRadius: '8px', border: '1px solid #eee' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#333' }}>Chương trình Flash Sale</h4>
+                    <span style={{ fontSize: '12px', color: '#888' }}>Nhận thông báo về các đợt giảm giá chớp nhoáng (Flash Sale) sắp diễn ra.</span>
+                  </div>
+                  <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={formData.notifyFlashSale} 
+                      onChange={(e) => handleNotificationToggle('notifyFlashSale', e.target.checked)}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span className="slider" style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      backgroundColor: formData.notifyFlashSale ? '#ff4d4f' : '#ccc',
+                      transition: '.4s', borderRadius: '34px'
+                    }}>
+                      <span className="slider-knob" style={{
+                        position: 'absolute', content: '""', height: '18px', width: '18px', left: '4px', bottom: '4px',
+                        backgroundColor: 'white', transition: '.4s', borderRadius: '50%',
+                        transform: formData.notifyFlashSale ? 'translateX(24px)' : 'none'
+                      }}></span>
+                    </span>
+                  </label>
+                </div>
+
+                <div className="setting-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'white', borderRadius: '8px', border: '1px solid #eee' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#333' }}>Cập nhật đơn hàng</h4>
+                    <span style={{ fontSize: '12px', color: '#888' }}>Nhận thông báo khi đặt hàng thành công hoặc khi trạng thái đơn hàng của bạn thay đổi.</span>
+                  </div>
+                  <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={formData.notifyOrder} 
+                      onChange={(e) => handleNotificationToggle('notifyOrder', e.target.checked)}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span className="slider" style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      backgroundColor: formData.notifyOrder ? '#ff4d4f' : '#ccc',
+                      transition: '.4s', borderRadius: '34px'
+                    }}>
+                      <span className="slider-knob" style={{
+                        position: 'absolute', content: '""', height: '18px', width: '18px', left: '4px', bottom: '4px',
+                        backgroundColor: 'white', transition: '.4s', borderRadius: '50%',
+                        transform: formData.notifyOrder ? 'translateX(24px)' : 'none'
+                      }}></span>
+                    </span>
+                  </label>
+                </div>
+
+                <div className="setting-item" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'white', borderRadius: '8px', border: '1px solid #eee' }}>
+                  <div>
+                    <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#333' }}>Tin nhắn từ Trợ lý AI</h4>
+                    <span style={{ fontSize: '12px', color: '#888' }}>Nhận thông báo khi Trợ lý AI tự động phản hồi tin nhắn của bạn.</span>
+                  </div>
+                  <label className="switch" style={{ position: 'relative', display: 'inline-block', width: '50px', height: '26px', cursor: 'pointer' }}>
+                    <input 
+                      type="checkbox" 
+                      checked={formData.notifyAiMessage} 
+                      onChange={(e) => handleNotificationToggle('notifyAiMessage', e.target.checked)}
+                      style={{ opacity: 0, width: 0, height: 0 }}
+                    />
+                    <span className="slider" style={{
+                      position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                      backgroundColor: formData.notifyAiMessage ? '#ff4d4f' : '#ccc',
+                      transition: '.4s', borderRadius: '34px'
+                    }}>
+                      <span className="slider-knob" style={{
+                        position: 'absolute', content: '""', height: '18px', width: '18px', left: '4px', bottom: '4px',
+                        backgroundColor: 'white', transition: '.4s', borderRadius: '50%',
+                        transform: formData.notifyAiMessage ? 'translateX(24px)' : 'none'
+                      }}></span>
+                    </span>
+                  </label>
+                </div>
               </div>
             </div>
           )}
@@ -283,11 +434,10 @@ function Profile() {
               
               {orders.length === 0 ? (
                 <div className="empty-orders">
-                  <div className="empty-icon">📦</div>
                   <h3>Chưa có đơn hàng nào</h3>
                   <p>Bạn chưa đặt mua sản phẩm nào từ cửa hàng của chúng tôi</p>
                   <button onClick={() => navigate('/figures')} className="btn-shop">
-                    🛒 Mua sắm ngay
+                    Mua sắm ngay
                   </button>
                 </div>
               ) : (
@@ -298,7 +448,7 @@ function Profile() {
                         <div>
                           <h4>Mã đơn hàng: {order.orderCode}</h4>
                           <p className="order-date">
-                            📅 {new Date(order.createdAt).toLocaleDateString('vi-VN')}
+                            {new Date(order.createdAt).toLocaleDateString('vi-VN')}
                           </p>
                         </div>
                         <div className="order-status">
@@ -315,7 +465,7 @@ function Profile() {
                         {order.items?.map(item => (
                           <div key={item.id} className="order-item">
                             <img 
-                              src={item.figure?.imageUrl || '/placeholder.png'} 
+                              src={getImageUrl(item.figure?.imageUrl || item.figure?.image || '/placeholder.png')} 
                               alt={item.figure?.name || 'Sản phẩm'}
                               onError={(e) => { e.target.src = '/placeholder.png'; }}
                             />
@@ -348,35 +498,7 @@ function Profile() {
             </div>
           )}
 
-          {activeTab === 'address' && (
-            <div className="address-section">
-              <h2>Sổ địa chỉ</h2>
-              <div className="address-list">
-                {user?.address ? (
-                  <div className="address-card">
-                    <h4>🏠 Địa chỉ mặc định</h4>
-                    <p>{user.address}</p>
-                    <p>📞 {user.phone || 'Chưa có số điện thoại'}</p>
-                    <div className="address-actions">
-                      <Link to="/addresses" className="btn-manage-address">
-                        📝 Quản lý địa chỉ
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="empty-address">
-                    <p>Chưa có địa chỉ nào</p>
-                    <Link to="/addresses" className="btn-add-address">
-                      + Thêm địa chỉ mới
-                    </Link>
-                  </div>
-                )}
-              </div>
-              <Link to="/addresses" className="btn-add-address">
-                + Thêm địa chỉ mới
-              </Link>
-            </div>
-          )}
+
         </div>
       </div>
     </div>
@@ -386,12 +508,12 @@ function Profile() {
 // Helper function
 function getStatusText(status) {
   const statusMap = {
-    'pending': '⏳ Chờ xác nhận',
-    'confirmed': '✅ Đã xác nhận',
-    'processing': '⚙️ Đang xử lý',
-    'shipped': '🚚 Đang giao hàng',
-    'delivered': '📦 Đã giao hàng',
-    'cancelled': '❌ Đã hủy'
+    'pending': 'Chờ xác nhận',
+    'confirmed': 'Đã xác nhận',
+    'processing': 'Đang xử lý',
+    'shipped': 'Đang giao hàng',
+    'delivered': 'Đã giao hàng',
+    'cancelled': 'Đã hủy'
   };
   return statusMap[status] || status;
 }

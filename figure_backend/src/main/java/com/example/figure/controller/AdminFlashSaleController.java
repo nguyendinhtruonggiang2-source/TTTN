@@ -22,6 +22,9 @@ public class AdminFlashSaleController {
     
     private final FlashSaleRepository flashSaleRepository;
     private final FigureRepository figureRepository;
+    private final com.example.figure.repository.UserRepository userRepository;
+    private final com.example.figure.repository.NotificationRepository notificationRepository;
+    private final com.example.figure.websocket.NotificationWebSocketHandler notificationWebSocketHandler;
     
     // Lấy tất cả flash sale
     @GetMapping
@@ -63,6 +66,14 @@ public class AdminFlashSaleController {
                 .build();
             
             FlashSale saved = flashSaleRepository.save(flashSale);
+            
+            // Gửi thông báo flash sale mới cho tất cả các user chọn nhận thông báo flash sale
+            try {
+                notifyAllUsersAboutFlashSale(saved);
+            } catch (Exception e) {
+                System.err.println("Error pushing flash sale notification: " + e.getMessage());
+            }
+            
             return ResponseEntity.ok(convertToDTO(saved));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -135,5 +146,30 @@ public class AdminFlashSaleController {
         dto.setFigure(figureInfo);
         
         return dto;
+    }
+
+    private void notifyAllUsersAboutFlashSale(FlashSale sale) {
+        List<com.example.figure.entity.User> users = userRepository.findAll();
+        for (com.example.figure.entity.User u : users) {
+            // Kiểm tra tùy chọn nhận thông báo flash sale của user
+            if (u.getNotifyFlashSale() != null && u.getNotifyFlashSale()) {
+                com.example.figure.entity.Notification notif = com.example.figure.entity.Notification.builder()
+                        .user(u)
+                        .title("⚡ Flash Sale mới!")
+                        .content("Sản phẩm " + sale.getFigure().getName() + " chuẩn bị Flash Sale giảm giá còn: " + sale.getSalePrice())
+                        .type("PROMOTION")
+                        .redirectUrl("/flash-sale")
+                        .isRead(false)
+                        .build();
+                com.example.figure.entity.Notification savedNotif = notificationRepository.save(notif);
+                
+                // Gửi realtime qua websocket
+                try {
+                    notificationWebSocketHandler.sendNotificationToUser(u.getUsername(), savedNotif);
+                } catch (Exception e) {
+                    System.err.println("Error sending Flash Sale WS to " + u.getUsername() + ": " + e.getMessage());
+                }
+            }
+        }
     }
 }

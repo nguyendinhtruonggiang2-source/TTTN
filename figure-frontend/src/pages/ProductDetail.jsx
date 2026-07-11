@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaExchangeAlt, FaEye, FaHeart, FaRegHeart, FaRegStar, FaStar, FaStarHalfAlt } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import axiosClient, { getImageUrl } from "../api/axiosClient";
+import ProductReviews from "./ProductReviews";
 import "../styles/product.css";
 
 function ProductDetail() {
@@ -18,6 +19,7 @@ function ProductDetail() {
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [togglingWishlist, setTogglingWishlist] = useState(false);
   const [reviewStats, setReviewStats] = useState({ averageRating: 0, totalReviews: 0 });
+  const [selectedImage, setSelectedImage] = useState("");
   const isAuthenticated = !!localStorage.getItem("token");
 
   useEffect(() => {
@@ -67,14 +69,32 @@ function ProductDetail() {
         branch: response.data.branch || null,
         branchName: response.data.branch?.name || response.data.branchName || "Chưa phân bổ",
         branchAddress: response.data.branch?.address || response.data.branchAddress || "",
-        branchPhone: response.data.branch?.phone || response.data.branchPhone || ""
+        branchPhone: response.data.branch?.phone || response.data.branchPhone || "",
+        imagesList: response.data.imagesList || "",
+        videoUrl: response.data.videoUrl || ""
       };
       
       if (figureData.discount > 0 && figureData.originalPrice > 0) {
         figureData.price = figureData.originalPrice * (1 - figureData.discount / 100);
       }
       
+      // Check for active flash sale
+      try {
+        const fsRes = await axiosClient.get(`/flash-sale/figure/${figureData.id}`);
+        const flashSale = fsRes.data || fsRes;
+        if (flashSale && flashSale.salePrice) {
+          console.log("⚡ Active flash sale found for figure:", flashSale);
+          figureData.originalPrice = figureData.price || figureData.originalPrice;
+          figureData.price = flashSale.salePrice;
+          figureData.isFlashSale = true;
+          figureData.flashSale = flashSale;
+        }
+      } catch (e) {
+        console.error("Error fetching flash sale for details:", e);
+      }
+      
       setFigure(figureData);
+      setSelectedImage(figureData.image);
       console.log("✅ Processed figure data:", figureData);
       
     } catch (err) {
@@ -390,11 +410,11 @@ function ProductDetail() {
     return (
       <div className="product-detail-container">
         <div className="error-message">
-          <h3>⚠️ {error}</h3>
+          <h3>{error}</h3>
           <div className="error-actions">
-            <button onClick={() => navigate("/")}>🏠 Về trang chủ</button>
-            <button onClick={() => navigate("/figures")}>📦 Xem sản phẩm khác</button>
-            <button onClick={fetchFigure}>🔄 Thử lại</button>
+            <button onClick={() => navigate("/")}>Về trang chủ</button>
+            <button onClick={() => navigate("/figures")}>Xem sản phẩm khác</button>
+            <button onClick={fetchFigure}>Thử lại</button>
           </div>
         </div>
       </div>
@@ -405,11 +425,11 @@ function ProductDetail() {
     return (
       <div className="product-detail-container">
         <div className="error-message">
-          <h3>🔍 Không tìm thấy sản phẩm</h3>
+          <h3>Không tìm thấy sản phẩm</h3>
           <p>Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.</p>
           <div className="error-actions">
-            <button onClick={() => navigate("/")}>🏠 Về trang chủ</button>
-            <button onClick={() => navigate("/figures")}>📦 Xem tất cả sản phẩm</button>
+            <button onClick={() => navigate("/")}>Về trang chủ</button>
+            <button onClick={() => navigate("/figures")}>Xem tất cả sản phẩm</button>
           </div>
         </div>
       </div>
@@ -420,8 +440,8 @@ function ProductDetail() {
     <div className="product-detail-container">
       {/* Breadcrumb */}
       <div className="breadcrumb">
-        <Link to="/">🏠 Trang chủ</Link> &gt; 
-        <Link to="/figures">📦 Figure</Link> &gt; 
+        <Link to="/">Trang chủ</Link> &gt; 
+        <Link to="/figures">Figure</Link> &gt; 
         {figure.series && <Link to={`/figures?series=${figure.series}`}>{figure.series}</Link>}
         {figure.series && " > "}
         <span className="current">{figure.name}</span>
@@ -429,11 +449,11 @@ function ProductDetail() {
 
       {/* Product Main Section */}
       <div className="product-detail">
-        {/* Product Images */}
+        {/* Product Images & Gallery */}
         <div className="product-images">
           <div className="main-image">
             <img 
-              src={figure.image} 
+              src={selectedImage || figure.image} 
               alt={figure.name}
               onError={(e) => {
                 console.warn("❌ Image failed to load, using fallback");
@@ -442,22 +462,86 @@ function ProductDetail() {
               }}
             />
             {figure.isNew && (
-              <div className="product-badge new">🆕 MỚI</div>
+              <div className="product-badge new">MỚI</div>
             )}
             {figure.discount > 0 && (
-              <div className="product-badge discount">🔥 -{figure.discount}%</div>
+              <div className="product-badge discount">-{figure.discount}%</div>
             )}
           </div>
+
+          {/* Gallery thumbnails */}
+          {Array.from(new Set([
+            figure.image,
+            ...(figure.imagesList ? figure.imagesList.split(',').filter(Boolean).map(img => getImageUrl(img)) : [])
+          ])).filter(Boolean).length > 1 && (
+            <div className="product-gallery-thumbnails">
+              {Array.from(new Set([
+                figure.image,
+                ...(figure.imagesList ? figure.imagesList.split(',').filter(Boolean).map(img => getImageUrl(img)) : [])
+              ])).filter(Boolean).map((imgUrl, idx) => (
+                <div 
+                  key={idx} 
+                  className={`thumbnail-item ${selectedImage === imgUrl ? 'active' : ''}`}
+                  onClick={() => setSelectedImage(imgUrl)}
+                >
+                  <img src={imgUrl} alt={`Thumb ${idx}`} />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Product Video */}
+          {figure.videoUrl && (
+            (() => {
+              const url = figure.videoUrl;
+              const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+              const match = url.match(regExp);
+              
+              if (match && match[2].length === 11) {
+                const youtubeId = match[2];
+                return (
+                  <div className="product-video-section">
+                    <h4>🎥 Video giới thiệu</h4>
+                    <div className="product-video-container">
+                      <iframe
+                        width="100%"
+                        height="240"
+                        src={`https://www.youtube.com/embed/${youtubeId}`}
+                        title="Product Video"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </div>
+                );
+              } else {
+                return (
+                  <div className="product-video-section">
+                    <h4>🎥 Video giới thiệu</h4>
+                    <div className="product-video-container">
+                      <video width="100%" height="auto" controls>
+                        <source src={url.startsWith('http') ? url : getImageUrl(url)} type="video/mp4" />
+                        Trình duyệt của bạn không hỗ trợ phát video này.
+                      </video>
+                    </div>
+                  </div>
+                );
+              }
+            })()
+          )}
           
           <div className="product-tags">
             {figure.category && (
-              <span className="tag category">🏷️ {figure.category}</span>
+              <span className="tag category">
+                {typeof figure.category === 'object' ? figure.category.name : figure.category}
+              </span>
             )}
             {figure.series && (
-              <span className="tag series">📺 {figure.series}</span>
+              <span className="tag series">{figure.series}</span>
             )}
             {figure.manufacturer && (
-              <span className="tag manufacturer">🏭 {figure.manufacturer}</span>
+              <span className="tag manufacturer">{figure.manufacturer}</span>
             )}
           </div>
         </div>
@@ -499,7 +583,19 @@ function ProductDetail() {
           </div>
 
           <div className="product-price">
-            {figure.discount > 0 && figure.originalPrice > figure.price ? (
+            {figure.isFlashSale ? (
+              <>
+                <div className="price-original">
+                  <del>{figure.originalPrice.toLocaleString()}₫</del>
+                  <span className="discount-percent flash-discount" style={{ backgroundColor: '#ff3838', color: 'white', padding: '2px 6px', borderRadius: '4px', marginLeft: '8px', fontSize: '12px', fontWeight: 'bold' }}>
+                    ⚡ -{figure.flashSale.discountPercent}% FLASH SALE
+                  </span>
+                </div>
+                <div className="price-current flash-price-current" style={{ color: '#ff3838', fontWeight: '800', fontSize: '28px' }}>
+                  {figure.price.toLocaleString()}₫
+                </div>
+              </>
+            ) : figure.discount > 0 && figure.originalPrice > figure.price ? (
               <>
                 <div className="price-original">
                   <del>{figure.originalPrice.toLocaleString()}₫</del>
@@ -518,16 +614,16 @@ function ProductDetail() {
 
           <div className="product-branch-info">
             <div className="branch-title">
-              <span className="branch-icon">🏪</span>
+              <span className="branch-icon"></span>
               <strong>Chi nhánh phân phối:</strong>
             </div>
             <div className="branch-details">
               <div className="branch-name">{figure.branchName}</div>
               {figure.branchAddress && (
-                <div className="branch-address">📍 {figure.branchAddress}</div>
+                <div className="branch-address">{figure.branchAddress}</div>
               )}
               {figure.branchPhone && (
-                <div className="branch-phone">📞 {figure.branchPhone}</div>
+                <div className="branch-phone">{figure.branchPhone}</div>
               )}
               <Link to={`/branches/${figure.branch?.id || '#'}`} className="branch-link">
                 Xem chi tiết chi nhánh →
@@ -543,7 +639,7 @@ function ProductDetail() {
               </span>
             </div>
             <div className="stock-note">
-              ⚡ Giao hàng nhanh trong 2-4 ngày
+              Giao hàng nhanh trong 2-4 ngày
             </div>
           </div>
 
@@ -592,7 +688,7 @@ function ProductDetail() {
                   </>
                 ) : (
                   <>
-                    🛒 Thêm vào giỏ hàng
+                    Thêm vào giỏ hàng
                   </>
                 )}
               </button>
@@ -602,7 +698,7 @@ function ProductDetail() {
                 onClick={handleBuyNow}
                 disabled={figure.quantity <= 0}
               >
-                ⚡ Mua ngay
+                Mua ngay
               </button>
               
               <button 
@@ -658,7 +754,7 @@ function ProductDetail() {
 
       {/* Product Description */}
       <div className="product-description">
-        <h2>📝 Mô tả sản phẩm</h2>
+        <h2>Mô tả sản phẩm</h2>
         <div className="description-content">
           <div className={`description-text ${showMoreDescription ? 'expanded' : ''}`}>
             <p>{figure.description}</p>
@@ -673,7 +769,7 @@ function ProductDetail() {
           )}
           
           <div className="specs">
-            <h3>📋 Thông số kỹ thuật</h3>
+            <h3>Thông số kỹ thuật</h3>
             <table>
               <tbody>
                 <tr>
@@ -714,7 +810,7 @@ function ProductDetail() {
                   <td><strong>Chi nhánh</strong></td>
                   <td>
                     <span className="branch-info-cell">
-                      🏪 {figure.branchName}
+                      {figure.branchName}
                     </span>
                   </td>
                 </tr>
@@ -746,14 +842,14 @@ function ProductDetail() {
       {/* Related Products - Cùng series */}
       {relatedFigures.length > 0 && (
         <div className="related-products">
-          <h2>📦 Sản phẩm cùng series</h2>
+          <h2>Sản phẩm cùng series</h2>
           <div className="related-list">
             {relatedFigures.map((relatedFigure) => (
               <div key={relatedFigure.id} className="related-card">
                 <Link to={`/product/${relatedFigure.id}`}>
                   <div className="related-image">
                     <img 
-                      src={relatedFigure.image} 
+                      src={getImageUrl(relatedFigure.image)} 
                       alt={relatedFigure.name}
                       onError={(e) => {
                         e.target.src = "/default-figure.jpg";
@@ -790,14 +886,14 @@ function ProductDetail() {
       {/* Random Products */}
       {randomFigures.length > 0 && (
         <div className="random-products">
-          <h2>🎲 Gợi ý sản phẩm ngẫu nhiên</h2>
+          <h2>Gợi ý sản phẩm ngẫu nhiên</h2>
           <div className="random-list">
             {randomFigures.map((randomFigure) => (
               <div key={randomFigure.id} className="random-card">
                 <Link to={`/product/${randomFigure.id}`}>
                   <div className="random-image">
                     <img 
-                      src={randomFigure.image} 
+                      src={getImageUrl(randomFigure.image)} 
                       alt={randomFigure.name}
                       onError={(e) => {
                         e.target.src = "/default-figure.jpg";
@@ -832,11 +928,17 @@ function ProductDetail() {
               className="btn-refresh-random"
               onClick={fetchRandomFigures}
             >
-              🔄 Làm mới gợi ý
+              Làm mới gợi ý
             </button>
           </div>
         </div>
       )}
+
+      {/* Product Reviews */}
+      <div className="product-detail-reviews-section">
+        <h2>Đánh giá từ khách hàng</h2>
+        <ProductReviews isEmbedded={true} />
+      </div>
 
       {/* Back to List Button */}
       <div className="back-to-list">

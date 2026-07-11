@@ -5,7 +5,7 @@ import {
   FaHeart, FaTrash, FaShoppingCart, FaEye, 
   FaSpinner, FaRegHeart, FaStar, FaFire, FaArrowLeft
 } from 'react-icons/fa';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/Wishlist.css';
 
 const Wishlist = () => {
@@ -101,16 +101,7 @@ const Wishlist = () => {
     navigate('/checkout');
   };
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/default-figure.jpg';
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    if (imagePath.startsWith('/uploads/')) {
-      return `http://localhost:8080${imagePath}`;
-    }
-    return imagePath;
-  };
+
 
   const formatPrice = (price) => {
     if (!price) return '0₫';
@@ -183,13 +174,7 @@ const Wishlist = () => {
                     <h3>{item.figure.name}</h3>
                   </Link>
                   
-                  {item.figure.series && (
-                    <p className="product-series">📺 {item.figure.series}</p>
-                  )}
-                  
-                  {item.figure.manufacturer && (
-                    <p className="product-manufacturer">🏭 {item.figure.manufacturer}</p>
-                  )}
+
                   
                   <div className="product-price">
                     {item.figure.discount > 0 ? (

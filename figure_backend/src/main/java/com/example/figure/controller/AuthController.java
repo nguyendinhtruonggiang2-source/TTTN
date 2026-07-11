@@ -213,11 +213,98 @@ public class AuthController {
             user.setPassword(passwordEncoder.encode(newPassword));
             user.setResetCode(null);
             user.setResetCodeExpiry(null);
-            userRepository.save(user);
+            user = userRepository.save(user);
             
-            java.util.Map<String, String> response = new java.util.HashMap<>();
-            response.put("message", "Đặt lại mật khẩu thành công!");
+            // Load UserDetails & Generate Token to auto login
+            UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+            String jwtToken = jwtService.generateToken(userDetails);
+            
+            AuthResponse response = new AuthResponse();
+            response.setId(user.getId());
+            response.setUsername(user.getUsername());
+            response.setName(user.getName());
+            response.setEmail(user.getEmail());
+            response.setPhone(user.getPhone());
+            response.setAddress(user.getAddress());
+            response.setToken(jwtToken);
+            
             return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<?> getProfile(org.springframework.security.core.Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(401).body("Unauthorized");
+            }
+            String username = authentication.getName();
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            java.util.Map<String, Object> profileData = new java.util.HashMap<>();
+            profileData.put("id", user.getId());
+            profileData.put("username", user.getUsername());
+            profileData.put("name", user.getName() != null ? user.getName() : "");
+            profileData.put("email", user.getEmail() != null ? user.getEmail() : "");
+            profileData.put("phone", user.getPhone() != null ? user.getPhone() : "");
+            profileData.put("address", user.getAddress() != null ? user.getAddress() : "");
+            profileData.put("notifyNewArticle", user.getNotifyNewArticle() != null ? user.getNotifyNewArticle() : true);
+            profileData.put("notifyFlashSale", user.getNotifyFlashSale() != null ? user.getNotifyFlashSale() : true);
+            profileData.put("notifyOrder", user.getNotifyOrder() != null ? user.getNotifyOrder() : true);
+            profileData.put("notifyAiMessage", user.getNotifyAiMessage() != null ? user.getNotifyAiMessage() : true);
+            
+            return ResponseEntity.ok(profileData);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+    
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody java.util.Map<String, Object> request, org.springframework.security.core.Authentication authentication) {
+        try {
+            if (authentication == null || !authentication.isAuthenticated()) {
+                return ResponseEntity.status(401).body("Unauthorized");
+            }
+            String username = authentication.getName();
+            User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            if (request.containsKey("name")) user.setName((String) request.get("name"));
+            if (request.containsKey("phone")) user.setPhone((String) request.get("phone"));
+            if (request.containsKey("address")) user.setAddress((String) request.get("address"));
+            if (request.containsKey("email")) user.setEmail((String) request.get("email"));
+            
+            if (request.containsKey("notifyNewArticle")) {
+                user.setNotifyNewArticle(Boolean.valueOf(request.get("notifyNewArticle").toString()));
+            }
+            if (request.containsKey("notifyFlashSale")) {
+                user.setNotifyFlashSale(Boolean.valueOf(request.get("notifyFlashSale").toString()));
+            }
+            if (request.containsKey("notifyOrder")) {
+                user.setNotifyOrder(Boolean.valueOf(request.get("notifyOrder").toString()));
+            }
+            if (request.containsKey("notifyAiMessage")) {
+                user.setNotifyAiMessage(Boolean.valueOf(request.get("notifyAiMessage").toString()));
+            }
+            
+            User saved = userRepository.save(user);
+            
+            java.util.Map<String, Object> profileData = new java.util.HashMap<>();
+            profileData.put("id", saved.getId());
+            profileData.put("username", saved.getUsername());
+            profileData.put("name", saved.getName() != null ? saved.getName() : "");
+            profileData.put("email", saved.getEmail() != null ? saved.getEmail() : "");
+            profileData.put("phone", saved.getPhone() != null ? saved.getPhone() : "");
+            profileData.put("address", saved.getAddress() != null ? saved.getAddress() : "");
+            profileData.put("notifyNewArticle", saved.getNotifyNewArticle() != null ? saved.getNotifyNewArticle() : true);
+            profileData.put("notifyFlashSale", saved.getNotifyFlashSale() != null ? saved.getNotifyFlashSale() : true);
+            profileData.put("notifyOrder", saved.getNotifyOrder() != null ? saved.getNotifyOrder() : true);
+            profileData.put("notifyAiMessage", saved.getNotifyAiMessage() != null ? saved.getNotifyAiMessage() : true);
+            
+            return ResponseEntity.ok(profileData);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }

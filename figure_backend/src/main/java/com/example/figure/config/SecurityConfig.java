@@ -83,13 +83,18 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/ai/**").permitAll()
+                .requestMatchers("/api/chat/**").permitAll()
+                .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/api/figures/**").permitAll()
                 .requestMatchers("/api/categories").permitAll()
+                .requestMatchers("/api/series").permitAll()
                 .requestMatchers("/api/test/**").permitAll()
                 .requestMatchers("/api/posts/**").permitAll()
                 .requestMatchers("/api/comments/post/**").permitAll()
                 .requestMatchers("/api/branches/**").permitAll()
                 .requestMatchers("/api/promotions/**").permitAll()
+                .requestMatchers("/api/banners/**").permitAll()
                 .requestMatchers("/images/**").permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/static/**").permitAll()
@@ -119,12 +124,12 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
                 // 👉 USER ENDPOINTS - Yêu cầu đăng nhập
-                .requestMatchers("/api/profile/**").authenticated()
-                .requestMatchers("/api/orders/**").authenticated()
-                .requestMatchers("/api/user/**").authenticated()
-                .requestMatchers("/api/cart/**").authenticated()
-                .requestMatchers("/api/comments/**").authenticated()
-                .requestMatchers("/api/upload/**").authenticated()
+                .requestMatchers("/api/profile", "/api/profile/**").authenticated()
+                .requestMatchers("/api/orders", "/api/orders/**").authenticated()
+                .requestMatchers("/api/user", "/api/user/**").authenticated()
+                .requestMatchers("/api/cart", "/api/cart/**").authenticated()
+                .requestMatchers("/api/comments", "/api/comments/**").authenticated()
+                .requestMatchers("/api/upload", "/api/upload/**").authenticated()
                 
                 .anyRequest().authenticated()
             )

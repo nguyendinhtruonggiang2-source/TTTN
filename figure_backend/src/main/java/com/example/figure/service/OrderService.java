@@ -20,6 +20,8 @@ public class OrderService {
     private final FigureRepository figureRepository;
     private final CartService cartService;
     private final OrderItemRepository orderItemRepository;
+    private final NotificationRepository notificationRepository;
+    private final com.example.figure.websocket.NotificationWebSocketHandler notificationWebSocketHandler;
     
     @Transactional
     public Order createOrder(OrderRequest request, String username) {
@@ -77,6 +79,27 @@ public class OrderService {
         
         Order finalOrder = orderRepository.save(savedOrder);
         cartService.clearCart(user);
+
+        // Tạo thông báo cho Admin khi có đơn hàng mới
+        try {
+            User adminUser = userRepository.findByUsername("admin").orElse(null);
+            if (adminUser != null && (adminUser.getNotifyOrder() == null || adminUser.getNotifyOrder())) {
+                Notification notif = Notification.builder()
+                        .user(adminUser)
+                        .title("Đơn hàng mới!")
+                        .content("Khách hàng " + (user.getName() != null ? user.getName() : user.getUsername()) + " vừa đặt đơn hàng mới: " + finalOrder.getOrderCode())
+                        .type("ORDER")
+                        .redirectUrl("/admin/orders")
+                        .isRead(false)
+                        .build();
+                Notification savedNotif = notificationRepository.save(notif);
+                
+                // Gửi realtime qua WebSocket
+                notificationWebSocketHandler.sendNotificationToUser("admin", savedNotif);
+            }
+        } catch (Exception e) {
+            System.err.println("Error saving/pushing admin notification: " + e.getMessage());
+        }
         
         return finalOrder;
     }

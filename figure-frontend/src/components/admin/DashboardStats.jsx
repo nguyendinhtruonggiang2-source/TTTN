@@ -9,7 +9,8 @@ import {
     LinearScale,
     PointElement,
     Title,
-    Tooltip
+    Tooltip,
+    Filler
 } from 'chart.js';
 import React, { useEffect, useState } from 'react';
 import { Bar, Line, Pie } from 'react-chartjs-2';
@@ -24,7 +25,7 @@ import {
     FaStar,
     FaUsers
 } from 'react-icons/fa';
-import axiosClient from '../../api/axiosClient';
+import axiosClient, { getImageUrl } from '../../api/axiosClient';
 import '../../styles/DashboardStats.css';
 
 // Register ChartJS components
@@ -37,7 +38,8 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  Filler
 );
 
 const DashboardStats = () => {
@@ -341,7 +343,7 @@ const DashboardStats = () => {
                 <div key={product.id} className="top-product-item">
                   <div className="top-product-rank">#{index + 1}</div>
                   <div className="top-product-image">
-                    <img src={product.image || '/default-figure.jpg'} alt={product.name} />
+                    <img src={getImageUrl(product.image || product.imageUrl || '/default-figure.jpg')} alt={product.name} />
                   </div>
                   <div className="top-product-info">
                     <div className="top-product-name">{product.name}</div>

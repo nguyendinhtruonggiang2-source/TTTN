@@ -268,7 +268,7 @@ function Orders() {
     return (
       <div className="orders-loading-container">
         <div className="orders-spinner"></div>
-        <p>📋 Đang tải đơn hàng của bạn...</p>
+        <p>Đang tải đơn hàng của bạn...</p>
       </div>
     );
   }
@@ -277,7 +277,7 @@ function Orders() {
     <div className="orders-container">
       <div className="orders-header">
         <div className="header-title">
-          <h1>📦 Đơn Hàng Của Tôi</h1>
+          <h1>Đơn Hàng Của Tôi</h1>
           <p className="orders-count">Tổng số: {orders.length} đơn hàng</p>
         </div>
         
@@ -286,38 +286,37 @@ function Orders() {
             className={`filter-btn ${statusFilter === 'all' ? 'active' : ''}`}
             onClick={() => setStatusFilter('all')}
           >
-            🎯 Tất cả ({orders.length})
+            Tất cả ({orders.length})
           </button>
           <button 
             className={`filter-btn ${statusFilter === 'pending' ? 'active' : ''}`}
             onClick={() => setStatusFilter('pending')}
           >
-            ⏳ Chờ xác nhận ({orders.filter(o => o.status === 'pending').length})
+            Chờ xác nhận ({orders.filter(o => o.status === 'pending').length})
           </button>
           <button 
             className={`filter-btn ${statusFilter === 'shipping' ? 'active' : ''}`}
             onClick={() => setStatusFilter('shipping')}
           >
-            🚚 Đang giao ({orders.filter(o => o.status === 'shipping').length})
+            Đang giao ({orders.filter(o => o.status === 'shipping').length})
           </button>
           <button 
             className={`filter-btn ${statusFilter === 'delivered' ? 'active' : ''}`}
             onClick={() => setStatusFilter('delivered')}
           >
-            ✅ Đã giao ({orders.filter(o => o.status === 'delivered').length})
+            Đã giao ({orders.filter(o => o.status === 'delivered').length})
           </button>
           <button 
             className={`filter-btn ${statusFilter === 'cancelled' ? 'active' : ''}`}
             onClick={() => setStatusFilter('cancelled')}
           >
-            ❌ Đã hủy ({orders.filter(o => o.status === 'cancelled').length})
+            Đã hủy ({orders.filter(o => o.status === 'cancelled').length})
           </button>
         </div>
       </div>
 
       {filteredOrders.length === 0 ? (
         <div className="empty-orders">
-          <div className="empty-icon">📦</div>
           <h2>Không có đơn hàng nào</h2>
           <p>
             {statusFilter !== 'all' 
@@ -325,7 +324,7 @@ function Orders() {
               : 'Bạn chưa đặt đơn hàng nào cả'}
           </p>
           <button onClick={() => navigate('/figures')} className="btn-shop-now">
-            🛍️ Mua sắm ngay
+            Mua sắm ngay
           </button>
         </div>
       ) : (
@@ -339,7 +338,7 @@ function Orders() {
                     <strong className="code-value">{order.orderCode}</strong>
                   </div>
                   <div className="order-date">
-                    <span className="date-label">📅 Đặt ngày:</span>
+                    <span className="date-label">Đặt ngày:</span>
                     <span>{formatDate(order.createdAt)}</span>
                   </div>
                 </div>
@@ -375,7 +374,7 @@ function Orders() {
                           }}
                         />
                       ) : (
-                        <div className="image-placeholder">🖼️</div>
+                        <div className="image-placeholder">Ảnh sản phẩm</div>
                       )}
                     </div>
                     <div className="preview-details">
@@ -408,20 +407,16 @@ function Orders() {
               {/* Thông tin giao hàng */}
               <div className="order-shipping">
                 <div className="shipping-row">
-                  <span className="shipping-icon">📦</span>
                   <span><strong>Địa chỉ:</strong> {order.shippingAddress}</span>
                 </div>
                 <div className="shipping-row">
-                  <span className="shipping-icon">👤</span>
                   <span><strong>Người nhận:</strong> {order.shippingName} - {order.shippingPhone}</span>
                 </div>
                 <div className="shipping-row">
-                  <span className="shipping-icon">💳</span>
                   <span><strong>Thanh toán:</strong> {getPaymentMethod(order.paymentMethod)}</span>
                 </div>
                 {order.note && (
                   <div className="shipping-row">
-                    <span className="shipping-icon">📝</span>
                     <span><strong>Ghi chú:</strong> {order.note}</span>
                   </div>
                 )}
@@ -433,7 +428,7 @@ function Orders() {
                   className="btn-detail"
                   onClick={() => navigate(`/orders/${order.id}`)}
                 >
-                  👁️ Xem chi tiết
+                  Xem chi tiết
                 </button>
                 
                 {order.status === 'pending' && (
@@ -448,7 +443,7 @@ function Orders() {
                         Đang xử lý...
                       </>
                     ) : (
-                      '❌ Hủy đơn'
+                      'Hủy đơn'
                     )}
                   </button>
                 )}
@@ -458,7 +453,7 @@ function Orders() {
                     className="btn-reorder"
                     onClick={() => reorder(order)}
                   >
-                    🔄 Đặt lại
+                    Đặt lại
                   </button>
                 )}
 
@@ -466,7 +461,7 @@ function Orders() {
                   className="btn-track"
                   onClick={() => window.open(`/track-order/${order.id}`, '_blank')}
                 >
-                  📍 Theo dõi đơn hàng
+                  Theo dõi đơn hàng
                 </button>
               </div>
             </div>

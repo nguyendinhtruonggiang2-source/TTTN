@@ -23,6 +23,8 @@ public class ProductDTO {
     private LocalDate releaseDate;
     private String description;
     private String image;
+    private String imagesList;
+    private String videoUrl;
     private CategoryDTO category;
     private BranchDTO branch;        // Thêm branch
     private Long branchId;           // Thêm branchId để dễ xử lý

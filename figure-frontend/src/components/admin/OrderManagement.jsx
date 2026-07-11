@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaSearch, FaEye, FaShippingFast, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
-import axiosClient from '../../api/axiosClient';
+import axiosClient, { getImageUrl } from '../../api/axiosClient';
 import '../../styles/OrderManagement.css';
 
 const OrderManagement = () => {
@@ -308,7 +308,16 @@ const OrderManagement = () => {
                                         {selectedOrder.items?.map((item, index) => (
                                             <tr key={index}>
                                                 <td className="product-cell">
-                                                    <div className="product-name">{item.figure?.name || item.productName}</div>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                        <div className="product-image-container" style={{ width: '50px', height: '50px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e2e8f0', flexShrink: 0 }}>
+                                                            <img 
+                                                                src={getImageUrl(item.figure?.image || item.figure?.imageUrl || '/default-figure.jpg')} 
+                                                                alt={item.figure?.name || item.productName} 
+                                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                            />
+                                                        </div>
+                                                        <div className="product-name" style={{ fontWeight: '600' }}>{item.figure?.name || item.productName}</div>
+                                                    </div>
                                                 </td>
                                                 <td className="price-cell">{formatCurrency(item.price)}</td>
                                                 <td className="quantity-cell">{item.quantity}</td>

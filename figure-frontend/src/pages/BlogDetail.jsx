@@ -8,7 +8,7 @@ import {
   FaReply, FaTrash, FaUserCircle, FaRegThumbsUp,
   FaAngleDown, FaAngleUp
 } from 'react-icons/fa';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/BlogDetail.css';
 
 const BlogDetail = () => {
@@ -41,23 +41,7 @@ const BlogDetail = () => {
   const isAuthenticated = !!localStorage.getItem('token');
   const isAdmin = currentUser?.roles?.includes('ROLE_ADMIN');
 
-  // Hàm lấy đường dẫn ảnh đúng
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return '/default-blog.jpg';
-    
-    // Nếu đã là URL đầy đủ (http:// hoặc https://)
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    
-    // Nếu là đường dẫn từ upload (bắt đầu bằng /uploads/)
-    if (imagePath.startsWith('/uploads/')) {
-      return `http://localhost:8080${imagePath}`;
-    }
-    
-    // Nếu là đường dẫn tương đối khác
-    return imagePath;
-  };
+
 
   useEffect(() => {
     fetchPost();
@@ -431,7 +415,7 @@ const BlogDetail = () => {
         {post.image && (
           <div className="blog-hero-image">
             <img 
-              src={getImageUrl(post.image)} 
+              src={getImageUrl(post.image, '/default-blog.jpg')} 
               alt={post.title}
               onError={(e) => {
                 e.target.src = '/default-blog.jpg';
@@ -544,7 +528,7 @@ const BlogDetail = () => {
             <div className="author-section">
               <div className="author-avatar">
                 {post.authorAvatar ? (
-                  <img src={getImageUrl(post.authorAvatar)} alt={post.author} />
+                  <img src={getImageUrl(post.authorAvatar, '/default-avatar.jpg')} alt={post.author} />
                 ) : (
                   <div className="avatar-placeholder">
                     {post.author?.charAt(0) || 'A'}
@@ -571,7 +555,7 @@ const BlogDetail = () => {
                     {related.image && (
                       <div className="related-image">
                         <img 
-                          src={getImageUrl(related.image)} 
+                          src={getImageUrl(related.image, '/default-blog.jpg')} 
                           alt={related.title}
                           onError={(e) => {
                             e.target.src = '/default-blog.jpg';
@@ -629,7 +613,7 @@ const BlogDetail = () => {
         <div className="comment-form-container">
           <div className="comment-avatar">
             {currentUser?.avatar ? (
-              <img src={getImageUrl(currentUser.avatar)} alt={currentUser.name} />
+              <img src={getImageUrl(currentUser.avatar, '/default-avatar.jpg')} alt={currentUser.name} />
             ) : (
               <div className="avatar-placeholder">
                 {currentUser?.username?.charAt(0) || 'U'}

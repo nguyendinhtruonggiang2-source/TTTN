@@ -17,7 +17,13 @@ function Home() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationMessage, setNotificationMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [banners, setBanners] = useState([]);
+  const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const itemsPerPage = 24;
+
+  // Flash Sale States
+  const [flashSales, setFlashSales] = useState([]);
+  const [flashSaleTimeLeft, setFlashSaleTimeLeft] = useState("00:00:00");
 
   // Phân trang
   const totalPages = Math.ceil(figures.length / itemsPerPage);
@@ -353,15 +359,96 @@ function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const fetchBanners = useCallback(async () => {
+    try {
+      const response = await axiosClient.get("/banners");
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        setBanners(response.data);
+      } else {
+        setBanners([
+          {
+            id: 'default',
+            title: 'KHO MÔ HÌNH ANIME CHÍNH HÃNG',
+            subtitle: 'Khám phá bộ sưu tập figure từ các tựa game và anime nổi tiếng với chất lượng cao cấp',
+            imageUrl: '',
+            linkUrl: '/figures'
+          }
+        ]);
+      }
+    } catch (error) {
+      console.log("Error fetching banners:", error);
+      setBanners([
+        {
+          id: 'default-err',
+          title: 'KHO MÔ HÌNH ANIME CHÍNH HÃNG',
+          subtitle: 'Khám phá bộ sưu tập figure từ các tựa game và anime nổi tiếng với chất lượng cao cấp',
+          imageUrl: '',
+          linkUrl: '/figures'
+        }
+      ]);
+    }
+  }, []);
+
+  const fetchFlashSales = useCallback(async () => {
+    try {
+      console.log("⚡ Fetching active flash sales...");
+      const response = await axiosClient.get("/flash-sale/active");
+      setFlashSales(response.data || []);
+    } catch (error) {
+      console.error("Error fetching active flash sales for home:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (flashSales.length === 0) return;
+    
+    const activeSales = flashSales.filter(s => s.status === 'ACTIVE');
+    if (activeSales.length === 0) return;
+    
+    const endTime = new Date(activeSales[0].endTime).getTime();
+    
+    const interval = setInterval(() => {
+      const now = new Date().getTime();
+      const diff = endTime - now;
+      
+      if (diff > 0) {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        const hStr = hours < 10 ? `0${hours}` : hours;
+        const mStr = minutes < 10 ? `0${minutes}` : minutes;
+        const sStr = seconds < 10 ? `0${seconds}` : seconds;
+        
+        setFlashSaleTimeLeft(`${hStr}:${mStr}:${sStr}`);
+      } else {
+        setFlashSaleTimeLeft("00:00:00");
+        clearInterval(interval);
+      }
+    }, 1000);
+    
+    return () => clearInterval(interval);
+  }, [flashSales]);
+
   useEffect(() => {
     fetchFigures();
     fetchCartCount();
+    fetchBanners();
+    fetchFlashSales();
     
     const token = localStorage.getItem("token");
     if (token && token.split(".").length !== 3) {
       console.warn("⚠️ Invalid token format");
     }
-  }, [fetchFigures, fetchCartCount]);
+  }, [fetchFigures, fetchCartCount, fetchBanners]);
+
+  useEffect(() => {
+    if (banners.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentBannerIndex(prev => (prev + 1) % banners.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [banners]);
 
   // Render UI
   if (loading) {
@@ -415,65 +502,98 @@ function Home() {
         )}
       </button>
 
-      {/* Hero Banner */}
-      <div className="home-hero-banner">
-        <div className="home-hero-content">
-          <h1>KHO MÔ HÌNH ANIME CHÍNH HÃNG</h1>
-          <p className="home-hero-subtitle">
-            Khám phá bộ sưu tập figure từ các tựa game và anime nổi tiếng với chất lượng cao cấp
-          </p>
-          
-          <div className="home-hero-stats">
-            <div className="home-stat-item">
-              <span className="home-stat-number">{figures.length}+</span>
-              <span className="home-stat-label">Sản phẩm</span>
+      {/* Hero Banner Slider */}
+      {banners.length > 0 && (
+        <div 
+          className="home-hero-banner"
+          style={{
+            backgroundImage: banners[currentBannerIndex].imageUrl 
+              ? `linear-gradient(rgba(15, 23, 42, 0.55), rgba(15, 23, 42, 0.55)), url(${getImageUrl(banners[currentBannerIndex].imageUrl)})`
+              : 'linear-gradient(135deg, var(--primary-color), var(--primary-hover))',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: '520px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background-image 0.5s ease-in-out',
+            padding: '100px 40px',
+            position: 'relative'
+          }}
+        >
+          <div className="home-hero-content" style={{ zIndex: 2, position: 'relative' }}>
+            <h1>{banners[currentBannerIndex].title}</h1>
+            <p className="home-hero-subtitle">
+              {banners[currentBannerIndex].subtitle}
+            </p>
+            
+            <div className="home-hero-stats">
+              <div className="home-stat-item">
+                <span className="home-stat-number">{figures.length}+</span>
+                <span className="home-stat-label">Sản phẩm</span>
+              </div>
+              <div className="home-stat-item">
+                <span className="home-stat-number">
+                  {new Set(figures.map(f => f.manufacturer)).size}+
+                </span>
+                <span className="home-stat-label">Thương hiệu</span>
+              </div>
+              <div className="home-stat-item">
+                <span className="home-stat-number">100%</span>
+                <span className="home-stat-label">Chính hãng</span>
+              </div>
             </div>
-            <div className="home-stat-item">
-              <span className="home-stat-number">
-                {new Set(figures.map(f => f.manufacturer)).size}+
-              </span>
-              <span className="home-stat-label">Thương hiệu</span>
-            </div>
-            <div className="home-stat-item">
-              <span className="home-stat-number">100%</span>
-              <span className="home-stat-label">Chính hãng</span>
-            </div>
-          </div>
-          
-          <div className="home-hero-cta">
-            <button 
-              className="home-btn-primary" 
-              onClick={() => navigate("/figures")}
-            >
-              <span>MUA NGAY</span>
-            </button>
-            <button 
-              className="home-btn-secondary" 
-              onClick={() => navigate("/figures")}
-            >
-              <span>XEM TẤT CẢ</span>
-            </button>
-            <button 
-              className="home-btn-cart-view" 
-              onClick={handleViewCart}
-              style={{ 
-                background: cartCount > 0 ? '#ef4444' : '#2563eb',
-                marginLeft: '10px'
-              }}
-            >
-              <span>🛒 GIỎ HÀNG ({cartCount})</span>
-            </button>
-            {cartCount > 0 && (
+            
+            <div className="home-hero-cta" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', alignItems: 'center' }}>
               <button 
-                className="checkout-button" 
-                onClick={handleCheckout}
+                className="home-btn-primary" 
+                onClick={() => {
+                  const url = banners[currentBannerIndex].linkUrl;
+                  if (url) {
+                    if (url.startsWith('http://') || url.startsWith('https://')) {
+                      window.open(url, '_blank');
+                    } else {
+                      navigate(url);
+                    }
+                  } else {
+                    navigate("/figures");
+                  }
+                }}
               >
-                ⚡ THANH TOÁN
+                <span>MUA NGAY</span>
               </button>
+              <button 
+                className="home-btn-secondary" 
+                onClick={() => navigate("/figures")}
+              >
+                <span>XEM TẤT CẢ</span>
+              </button>
+            </div>
+
+            {/* Slide Navigation Dots */}
+            {banners.length > 1 && (
+              <div className="banner-dots" style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '28px' }}>
+                {banners.map((_, idx) => (
+                  <span 
+                    key={idx}
+                    onClick={() => setCurrentBannerIndex(idx)}
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      backgroundColor: currentBannerIndex === idx ? 'var(--primary-color)' : 'rgba(255,255,255,0.4)',
+                      border: '1px solid rgba(0,0,0,0.1)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      transform: currentBannerIndex === idx ? 'scale(1.2)' : 'none'
+                    }}
+                  />
+                ))}
+              </div>
             )}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Dịch vụ / Ưu đãi như Shopee */}
       <div className="services-section">
@@ -534,7 +654,7 @@ function Home() {
         
         <div className="home-products-grid">
           {figures.slice(0, 4).map((figure, index) => (
-            <div className="home-product-card" key={figure.id}>
+            <div className="home-product-card" key={figure.id} onClick={() => handleViewDetail(figure)}>
               {figure.discount > 0 && (
                 <div className="home-product-badge discount">-{figure.discount}%</div>
               )}
@@ -552,7 +672,13 @@ function Home() {
               </div>
               
               <div className="home-product-info">
+                <div className="home-product-series-tag">{figure.series || "Various Series"}</div>
                 <h3 className="home-product-name">{figure.name}</h3>
+                
+                <div className="home-product-specs">
+                  <span className="home-product-scale-tag">{figure.scale || "Scale 1/7"}</span>
+                  <span className="home-product-manufacturer-tag">{figure.manufacturer || "Good Smile Company"}</span>
+                </div>
                 
                 <div className="home-product-rating">
                   <span className="stars">★★★★★</span>
@@ -576,7 +702,7 @@ function Home() {
                   )}
                 </div>
                 
-                <div className="home-product-actions">
+                <div className="home-product-actions" onClick={(e) => e.stopPropagation()}>
                   <button 
                     className="home-btn-buynow"
                     onClick={() => handleBuyNow(figure)}
@@ -595,13 +721,6 @@ function Home() {
                       <FaShoppingCart />
                     )}
                   </button>
-                  <button 
-                    className="home-btn-view"
-                    onClick={() => handleViewDetail(figure)}
-                    title="Xem chi tiết"
-                  >
-                    <FaEye />
-                  </button>
                 </div>
               </div>
             </div>
@@ -615,73 +734,150 @@ function Home() {
           <h2 className="home-section-title">⚡ FLASH SALE</h2>
           <div className="flash-sale-timer">
             <span>Kết thúc sau: </span>
-            <span className="timer">23:59:59</span>
+            <span className="timer">{flashSaleTimeLeft}</span>
           </div>
         </div>
         
         <div className="home-products-grid">
-          {figures.slice(8, 12).map((figure, index) => (
-            <div className="home-product-card flash-sale" key={`flash-${figure.id}`}>
-              {figure.discount > 0 && (
-                <div className="home-product-badge discount">-{figure.discount}%</div>
-              )}
-              
-              <div className="home-product-image">
-                <img 
-                  src={figure.imageUrl} 
-                  alt={figure.name}
-                  onError={(e) => handleImageError(e, index + 8)}
-                  loading="lazy"
-                />
-              </div>
-              
-              <div className="home-product-info">
-                <h3 className="home-product-name">{figure.name}</h3>
-                
-                <div className="home-product-rating">
-                  <span className="stars">★★★★★</span>
-                  <span className="sold-count">Đã bán {figure.soldCount}</span>
-                </div>
-                
-                <div className="home-product-pricing">
-                  <span className="home-current-price flash-price">
-                    {figure.price.toLocaleString()}₫
-                  </span>
-                  <span className="home-original-price">
-                    {figure.originalPrice.toLocaleString()}₫
-                  </span>
-                </div>
-                
-                <div className="flash-progress">
-                  <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${Math.min(100, figure.soldCount / 10)}%` }}></div>
-                  </div>
-                  <span className="sold-percent">Đã bán {Math.min(100, Math.floor(figure.soldCount / 10))}%</span>
-                </div>
-                
-                <div className="home-product-actions">
-                  <button 
-                    className="home-btn-buynow flash-btn"
-                    onClick={() => handleBuyNow(figure)}
-                  >
-                    ⚡ Mua ngay
-                  </button>
-                  <button 
-                    className="home-btn-cart"
-                    onClick={() => handleAddToCart(figure)}
-                    disabled={addingToCart}
-                    title="Thêm vào giỏ hàng"
-                  >
-                    {addingToCart ? (
-                      <span className="spinner-small"></span>
-                    ) : (
-                      <FaShoppingCart />
-                    )}
-                  </button>
-                </div>
-              </div>
+          {flashSales.length === 0 ? (
+            <div className="no-flash-sales" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px 20px', color: '#64748b', background: '#f8fafc', borderRadius: '12px', border: '1px dashed #cbd5e1' }}>
+              <div style={{ fontSize: '32px', marginBottom: '12px' }}>⚡</div>
+              <p style={{ fontWeight: '600' }}>Hiện tại không có chương trình Flash Sale nào đang diễn ra.</p>
+              <p style={{ fontSize: '13px', marginTop: '6px' }}>Vui lòng quay lại sau hoặc xem các sản phẩm khuyến mãi khác của shop.</p>
             </div>
-          ))}
+          ) : (
+            flashSales.slice(0, 4).map((sale, index) => {
+              const figure = sale.figure;
+              if (!figure) return null;
+              
+              const imageUrl = getImageUrl(figure.image || figure.imageUrl) || getPlaceholderImage(index);
+              const soldCount = sale.soldCount || 0;
+              const limitQty = sale.quantity || 10;
+              const progressPercent = limitQty > 0 ? Math.round((soldCount / limitQty) * 100) : 0;
+              
+              return (
+                <div 
+                  className="home-product-card flash-sale" 
+                  key={`flash-${sale.id}`} 
+                  onClick={() => navigate(`/product/${figure.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {sale.discountPercent > 0 && (
+                    <div className="home-product-badge discount">-{sale.discountPercent}%</div>
+                  )}
+                  
+                  <div className="home-product-image">
+                    <img 
+                      src={imageUrl} 
+                      alt={figure.name}
+                      onError={(e) => {
+                        e.target.src = getPlaceholderImage(index);
+                        e.target.onerror = null;
+                      }}
+                      loading="lazy"
+                    />
+                  </div>
+                  
+                  <div className="home-product-info">
+                    <div className="home-product-series-tag">{figure.series || "Various Series"}</div>
+                    <h3 className="home-product-name">{figure.name}</h3>
+                    
+                    <div className="home-product-specs">
+                      <span className="home-product-scale-tag">{figure.scale || "Scale 1/7"}</span>
+                      <span className="home-product-manufacturer-tag">{figure.manufacturer || "Good Smile Company"}</span>
+                    </div>
+                    
+                    <div className="home-product-rating">
+                      <span className="stars">★★★★★</span>
+                      <span className="sold-count">Đã bán {soldCount} / {limitQty}</span>
+                    </div>
+                    
+                    <div className="home-product-pricing">
+                      <span className="home-current-price flash-price">
+                        {sale.salePrice.toLocaleString()}₫
+                      </span>
+                      <span className="home-original-price">
+                        {(figure.originalPrice || figure.price || sale.salePrice).toLocaleString()}₫
+                      </span>
+                    </div>
+                    
+                    <div className="flash-progress">
+                      <div className="progress-bar">
+                        <div className="progress-fill" style={{ width: `${Math.min(100, progressPercent)}%` }}></div>
+                      </div>
+                      <span className="sold-percent">Đã bán {Math.min(100, progressPercent)}%</span>
+                    </div>
+                    
+                    <div className="home-product-actions" onClick={(e) => e.stopPropagation()}>
+                      <button 
+                        className="home-btn-buynow flash-btn"
+                        onClick={() => {
+                          const checkoutItem = {
+                            figureId: figure.id,
+                            name: figure.name,
+                            price: sale.salePrice,
+                            originalPrice: figure.originalPrice || figure.price,
+                            quantity: 1,
+                            image: getImageUrl(figure.image || figure.imageUrl),
+                            series: figure.series,
+                            fromBuyNow: true
+                          };
+                          sessionStorage.setItem('buyNowItem', JSON.stringify(checkoutItem));
+                          navigate("/checkout", {
+                            state: {
+                              items: [checkoutItem],
+                              fromProduct: true,
+                              buyNow: true
+                            }
+                          });
+                        }}
+                        disabled={figure.quantity <= 0 || (limitQty - soldCount) <= 0}
+                      >
+                        ⚡ Mua ngay
+                      </button>
+                      <button 
+                        className="home-btn-cart"
+                        onClick={async () => {
+                          try {
+                            const token = localStorage.getItem("token");
+                            if (!token) {
+                              alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
+                              navigate("/login");
+                              return;
+                            }
+                            setAddingToCart(true);
+                            const response = await axiosClient.post("/cart/add", {
+                              productId: figure.id,
+                              quantity: 1
+                            });
+                            if (response.data.success) {
+                              alert(`✅ Đã thêm ${figure.name} vào giỏ hàng!`);
+                              fetchCartCount();
+                            } else {
+                              alert("❌ " + (response.data.message || "Không thể thêm vào giỏ hàng"));
+                            }
+                          } catch (err) {
+                            console.error(err);
+                            alert("❌ Lỗi kết nối khi thêm vào giỏ hàng");
+                          } finally {
+                            setAddingToCart(false);
+                          }
+                        }}
+                        disabled={addingToCart || figure.quantity <= 0 || (limitQty - soldCount) <= 0}
+                        title="Thêm vào giỏ hàng"
+                      >
+                        {addingToCart ? (
+                          <span className="spinner-small"></span>
+                        ) : (
+                          <FaShoppingCart />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </section>
 
@@ -721,16 +917,16 @@ function Home() {
           </div>
           <div 
             className="home-category-banner small"
-            onClick={() => handleCategoryClick("Gundam")}
+            onClick={() => handleCategoryClick("honkai")}
           >
             <div className="home-category-banner-content">
-              <h3>Gundam Series</h3>
-              <p>Mô hình robot</p>
+              <h3>Honkai Series</h3>
+              <p>Mô hình Valkyrie</p>
               <button 
                 className="banner-small-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleCategoryClick("Gundam");
+                  handleCategoryClick("honkai");
                 }}
               >
                 XEM SẢN PHẨM
@@ -751,7 +947,7 @@ function Home() {
         
         <div className="home-products-grid">
           {figures.slice(4, 8).map((figure, index) => (
-            <div className="home-product-card" key={`new-${figure.id}`}>
+            <div className="home-product-card" key={`new-${figure.id}`} onClick={() => handleViewDetail(figure)}>
               {figure.isNew && (
                 <div className="home-product-badge new">MỚI</div>
               )}
@@ -766,7 +962,13 @@ function Home() {
               </div>
               
               <div className="home-product-info">
+                <div className="home-product-series-tag">{figure.series || "Various Series"}</div>
                 <h3 className="home-product-name">{figure.name}</h3>
+                
+                <div className="home-product-specs">
+                  <span className="home-product-scale-tag">{figure.scale || "Scale 1/7"}</span>
+                  <span className="home-product-manufacturer-tag">{figure.manufacturer || "Good Smile Company"}</span>
+                </div>
                 
                 <div className="home-product-rating">
                   <span className="stars">★★★★★</span>
@@ -790,7 +992,7 @@ function Home() {
                   )}
                 </div>
                 
-                <div className="home-product-actions">
+                <div className="home-product-actions" onClick={(e) => e.stopPropagation()}>
                   <button 
                     className="home-btn-buynow"
                     onClick={() => handleBuyNow(figure)}
@@ -809,13 +1011,6 @@ function Home() {
                       <FaShoppingCart />
                     )}
                   </button>
-                  <button 
-                    className="home-btn-view"
-                    onClick={() => handleViewDetail(figure)}
-                    title="Xem chi tiết"
-                  >
-                    <FaEye />
-                  </button>
                 </div>
               </div>
             </div>
@@ -826,7 +1021,7 @@ function Home() {
       {/* Popular Categories */}
       <section className="home-popular-categories">
         <div className="home-section-header">
-          <h2 className="home-section-title">🏷️ DANH MỤC PHỔ BIẾN</h2>
+          <h2 className="home-section-title">DANH MỤC PHỔ BIẾN</h2>
         </div>
         
         <div className="home-categories-grid">
@@ -837,7 +1032,7 @@ function Home() {
           >
             <div className="home-category-info">
               <h3>Genshin Impact</h3>
-              <p>{figures.filter(f => f.series === "Genshin Impact" || f.category === "Genshin Impact").length || 15} sản phẩm</p>
+              <p>{figures.filter(f => f.series === "Genshin Impact" || (f.category?.name || f.category) === "Genshin Impact").length || 15} sản phẩm</p>
               <button 
                 className="category-card-btn"
                 onClick={(e) => {
@@ -853,16 +1048,16 @@ function Home() {
           <div 
             className="home-category-card" 
             style={{backgroundImage: `url(${placeholderImages[1]})`}}
-            onClick={() => handleCategoryClick("Gundam")}
+            onClick={() => handleCategoryClick("honkai")}
           >
             <div className="home-category-info">
-              <h3>Gundam Series</h3>
-              <p>{figures.filter(f => f.series === "Gundam" || f.category === "Gundam").length || 12} sản phẩm</p>
+              <h3>Honkai Series</h3>
+              <p>{figures.filter(f => f.series?.toLowerCase() === "honkai" || (f.category?.name || f.category)?.toLowerCase() === "honkai").length || 8} sản phẩm</p>
               <button 
                 className="category-card-btn"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleCategoryClick("Gundam");
+                  handleCategoryClick("honkai");
                 }}
               >
                 XEM NGAY
@@ -914,7 +1109,7 @@ function Home() {
             <ul>
               <li onClick={() => navigate("/figures")}>Tất cả sản phẩm</li>
               <li onClick={() => handleCategoryClick("Genshin Impact")}>Genshin Impact</li>
-              <li onClick={() => handleCategoryClick("Gundam")}>Gundam Series</li>
+              <li onClick={() => handleCategoryClick("honkai")}>Honkai Series</li>
               <li onClick={() => handleCategoryClick("Anime")}>Anime Figures</li>
             </ul>
           </div>

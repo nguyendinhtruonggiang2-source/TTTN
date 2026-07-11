@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 import '../styles/ProductReviews.css';
 
-const ProductReviews = () => {
+const ProductReviews = ({ isEmbedded = false }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [reviews, setReviews] = useState([]);
@@ -148,13 +148,15 @@ const ProductReviews = () => {
   }
 
   return (
-    <div className="product-reviews-container">
-      <div className="reviews-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>
-          ← Quay lại
-        </button>
-        <h1>Đánh giá sản phẩm</h1>
-      </div>
+    <div className={`product-reviews-container ${isEmbedded ? 'embedded' : ''}`}>
+      {!isEmbedded && (
+        <div className="reviews-header">
+          <button className="back-btn" onClick={() => navigate(-1)}>
+            ← Quay lại
+          </button>
+          <h1>Đánh giá sản phẩm</h1>
+        </div>
+      )}
 
       {/* Rating Summary */}
       <div className="rating-summary">

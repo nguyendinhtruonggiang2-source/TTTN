@@ -3,7 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { 
   FaTachometerAlt, FaBox, FaTags, FaUsers, FaShoppingBag, 
   FaSignOutAlt, FaStore, FaBuilding, FaNewspaper, FaTag,
-  FaFire, FaGift, FaHeart, FaExchangeAlt, FaQuestionCircle
+  FaFire, FaGift, FaHeart, FaExchangeAlt, FaQuestionCircle,
+  FaStar, FaImage, FaRobot
 } from 'react-icons/fa';
 import '../../styles/AdminSidebar.css';
 
@@ -14,12 +15,14 @@ const AdminSidebar = () => {
         { path: '/admin', label: 'Dashboard', icon: <FaTachometerAlt /> },
         { path: '/admin/products', label: 'Sản phẩm', icon: <FaBox /> },
         { path: '/admin/categories', label: 'Danh mục', icon: <FaTags /> },
+        { path: '/admin/banners', label: 'Banners', icon: <FaImage /> },
         { path: '/admin/branches', label: 'Chi nhánh', icon: <FaBuilding /> },
         { path: '/admin/posts', label: 'Bài viết', icon: <FaNewspaper /> },
         { path: '/admin/promotions', label: 'Khuyến mãi', icon: <FaTag /> },
         { path: '/admin/flash-sale', label: 'Flash Sale', icon: <FaFire /> }, // 👈 THÊM MỚI
         { path: '/admin/users', label: 'Người dùng', icon: <FaUsers /> },
         { path: '/admin/orders', label: 'Đơn hàng', icon: <FaShoppingBag /> },
+        { path: '/admin/ai-chat', label: 'Trợ lý AI', icon: <FaRobot /> },
     ];
 
     const handleBackToShop = () => {

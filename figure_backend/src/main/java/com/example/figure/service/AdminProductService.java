@@ -52,6 +52,8 @@ public class AdminProductService {
         figure.setReleaseDate(dto.getReleaseDate());
         figure.setDescription(dto.getDescription());
         figure.setImage(dto.getImage());
+        figure.setImagesList(dto.getImagesList());
+        figure.setVideoUrl(dto.getVideoUrl());
         figure.setCategory(category);
         figure.setBranch(branch);  // Set branch
         
@@ -89,6 +91,8 @@ public class AdminProductService {
         figure.setReleaseDate(dto.getReleaseDate());
         figure.setDescription(dto.getDescription());
         figure.setImage(dto.getImage());
+        figure.setImagesList(dto.getImagesList());
+        figure.setVideoUrl(dto.getVideoUrl());
         figure.setCategory(category);
         figure.setBranch(branch);  // Update branch
         
@@ -128,6 +132,8 @@ public class AdminProductService {
         dto.setReleaseDate(figure.getReleaseDate());
         dto.setDescription(figure.getDescription());
         dto.setImage(figure.getImage());
+        dto.setImagesList(figure.getImagesList());
+        dto.setVideoUrl(figure.getVideoUrl());
         dto.setCreatedAt(figure.getCreatedAt());
         dto.setUpdatedAt(figure.getUpdatedAt());
         

@@ -29,6 +29,12 @@ public class Figure {
     
     private String image;
     
+    @Column(name = "images_list", columnDefinition = "TEXT")
+    private String imagesList;
+    
+    @Column(name = "video_url")
+    private String videoUrl;
+    
     @Column(name = "original_price")
     private Double originalPrice;
     
@@ -112,6 +118,11 @@ public class Figure {
     public void setBranch(Branch branch) { this.branch = branch; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    
+    public String getImagesList() { return imagesList; }
+    public void setImagesList(String imagesList) { this.imagesList = imagesList; }
+    public String getVideoUrl() { return videoUrl; }
+    public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
     
     // Helper methods
     public Long getBranchId() {

@@ -20,4 +20,5 @@ public class UserDTO {
     private boolean enabled;
     private Set<String> roles;
     private String status;
+    private String password;
 }

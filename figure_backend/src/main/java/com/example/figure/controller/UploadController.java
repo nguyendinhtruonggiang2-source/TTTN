@@ -42,11 +42,11 @@ public class UploadController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Kiểm tra định dạng file
+            // Kiểm tra định dạng file (Cho phép cả ảnh và video)
             String contentType = file.getContentType();
-            if (contentType == null || !contentType.startsWith("image/")) {
+            if (contentType == null || (!contentType.startsWith("image/") && !contentType.startsWith("video/"))) {
                 Map<String, String> error = new HashMap<>();
-                error.put("error", "Only image files are allowed");
+                error.put("error", "Only image and video files are allowed");
                 return ResponseEntity.badRequest().body(error);
             }
             

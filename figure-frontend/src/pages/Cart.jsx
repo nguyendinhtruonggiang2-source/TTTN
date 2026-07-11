@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { getImageUrl } from '../api/axiosClient';
 import "../styles/cart.css";
 
 const Cart = () => {
@@ -42,6 +43,10 @@ const Cart = () => {
     itemId: null,
     action: ''
   });
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState(null);
+  const [promoError, setPromoError] = useState('');
+  const [promoDiscount, setPromoDiscount] = useState(0);
 
   // API base URL
   const API_URL = 'http://localhost:8080/api';
@@ -87,8 +92,9 @@ const Cart = () => {
       if (response.data && Array.isArray(response.data)) {
         const validItems = response.data.filter(item => item && item.figure);
         console.log('Valid cart items:', validItems.length);
-        setCartItems(validItems);
-        calculateCartSummary(validItems);
+        const itemsWithFlashSale = await checkFlashSalesForCart(validItems);
+        setCartItems(itemsWithFlashSale);
+        calculateCartSummary(itemsWithFlashSale);
       } else if (response.data?.success === false) {
         setSnackbar({
           open: true,
@@ -270,8 +276,73 @@ const Cart = () => {
     }
   };
 
+  // Kiểm tra Flash Sale cho các sản phẩm trong giỏ hàng
+  const checkFlashSalesForCart = async (items) => {
+    const updated = await Promise.all(items.map(async (item) => {
+      if (!item.figure) return item;
+      try {
+        const response = await axios.get(`${API_URL}/flash-sale/figure/${item.figure.id}`);
+        const flashSale = response.data || response;
+        if (flashSale && flashSale.salePrice) {
+          console.log(`⚡ Cart Flash Sale applied for ${item.figure.name}: ${item.figure.price} -> ${flashSale.salePrice}`);
+          return {
+            ...item,
+            originalPrice: item.figure.price,
+            figure: {
+              ...item.figure,
+              price: flashSale.salePrice
+            },
+            isFlashSale: true
+          };
+        }
+      } catch (e) {
+        console.error("Error checking flash sale in cart:", e);
+      }
+      return item;
+    }));
+    return updated;
+  };
+
+  // Áp dụng mã giảm giá
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      setPromoError('Vui lòng nhập mã giảm giá');
+      return;
+    }
+    setPromoError('');
+    try {
+      const response = await axios.post(`${API_URL}/promotions/validate`, {
+        code: promoCode.trim(),
+        orderAmount: cartSummary.subtotal
+      });
+      if (response.data && response.data.valid) {
+        const promotion = response.data.promotion;
+        setAppliedPromo(promotion);
+        calculateCartSummary(cartItems, promotion);
+        setSnackbar({
+          open: true,
+          message: '✅ Áp dụng mã giảm giá thành công!',
+          severity: 'success'
+        });
+      } else {
+        setPromoError(response.data.message || 'Mã giảm giá không hợp lệ');
+      }
+    } catch (error) {
+      console.error('Error validating promo code:', error);
+      setPromoError(error.response?.data?.message || 'Mã giảm giá không hợp lệ hoặc không đủ điều kiện');
+    }
+  };
+
+  // Hủy mã giảm giá
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
+    setPromoDiscount(0);
+    calculateCartSummary(cartItems, null);
+  };
+
   // Tính tổng giỏ hàng
-  const calculateCartSummary = (items) => {
+  const calculateCartSummary = (items, currentPromo = appliedPromo) => {
     const validItems = items.filter(item => item.figure && item.figure.price);
     
     const subtotal = validItems.reduce((sum, item) => {
@@ -282,9 +353,21 @@ const Cart = () => {
 
     const totalItems = validItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
     const shipping = subtotal > 1000000 ? 0 : 30000;
-    const total = subtotal + shipping;
+    
+    let discount = 0;
+    if (currentPromo) {
+      discount = subtotal * (currentPromo.discount || 0) / 100;
+      if (currentPromo.maxDiscountAmount && discount > currentPromo.maxDiscountAmount) {
+        discount = currentPromo.maxDiscountAmount;
+      }
+      setPromoDiscount(discount);
+    } else {
+      setPromoDiscount(0);
+    }
 
-    console.log('Cart summary calculated:', { totalItems, subtotal, shipping, total });
+    const total = Math.max(0, subtotal + shipping - discount);
+
+    console.log('Cart summary calculated:', { totalItems, subtotal, shipping, discount, total });
 
     setCartSummary({
       totalItems,
@@ -330,7 +413,12 @@ const Cart = () => {
       console.log('Validation response:', validationResponse.data);
 
       if (validationResponse.data?.valid) {
-        navigate('/checkout');
+        navigate('/checkout', {
+          state: {
+            appliedPromo: appliedPromo,
+            promoDiscount: promoDiscount
+          }
+        });
       } else {
         setSnackbar({
           open: true,
@@ -387,23 +475,7 @@ const Cart = () => {
     navigate('/figures');
   };
 
-  // Hiển thị hình ảnh mặc định
-  const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return '/default-figure.jpg';
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
-      return imageUrl;
-    }
-    if (imageUrl.startsWith('/uploads/')) {
-      return `http://localhost:8080${imageUrl}`;
-    }
-    if (imageUrl.startsWith('uploads/')) {
-      return `http://localhost:8080/${imageUrl}`;
-    }
-    if (imageUrl.startsWith('/')) {
-      return imageUrl;
-    }
-    return '/default-figure.jpg';
-  };
+
 
   // Load giỏ hàng khi component mount
   useEffect(() => {
@@ -517,7 +589,7 @@ const Cart = () => {
                                 {item.figure?.name || 'Không có tên'}
                               </Typography>
                               <Typography variant="body2" color="text.secondary">
-                                {item.figure?.category || 'Không có danh mục'}
+                                {item.figure?.category?.name || item.figure?.category || 'Không có danh mục'}
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
                                 Còn lại: {item.figure?.quantity || 0} sản phẩm
@@ -526,9 +598,23 @@ const Cart = () => {
                           </Box>
                         </TableCell>
                         <TableCell align="center">
-                          <Typography variant="body1" fontWeight="medium">
-                            {formatCurrency(item.figure?.price || 0)}
-                          </Typography>
+                          {item.isFlashSale ? (
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                              <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through' }}>
+                                {formatCurrency(item.originalPrice || 0)}
+                              </Typography>
+                              <Typography variant="body1" color="error.main" fontWeight="bold">
+                                {formatCurrency(item.figure?.price || 0)}
+                              </Typography>
+                              <Typography variant="caption" sx={{ bgcolor: '#fee2e2', color: '#ef4444', px: 1, py: 0.2, borderRadius: 1, fontWeight: 'bold', fontSize: '10px', mt: 0.5 }}>
+                                ⚡ FLASH SALE
+                              </Typography>
+                            </Box>
+                          ) : (
+                            <Typography variant="body1" fontWeight="medium">
+                              {formatCurrency(item.figure?.price || 0)}
+                            </Typography>
+                          )}
                         </TableCell>
                         <TableCell align="center">
                           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} className="quantity-controls">
@@ -629,14 +715,71 @@ const Cart = () => {
                   </Typography>
                 </Box>
                 
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-                  <Typography variant="body1">Phí vận chuyển:</Typography>
-                  <Typography variant="body1" color={cartSummary.shipping === 0 ? 'success.main' : 'inherit'}>
-                    {cartSummary.shipping === 0 ? 'Miễn phí' : formatCurrency(cartSummary.shipping)}
-                  </Typography>
-                </Box>
+                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                   <Typography variant="body1">Phí vận chuyển:</Typography>
+                   <Typography variant="body1" color={cartSummary.shipping === 0 ? 'success.main' : 'inherit'}>
+                     {cartSummary.shipping === 0 ? 'Miễn phí' : formatCurrency(cartSummary.shipping)}
+                   </Typography>
+                 </Box>
 
-                <Divider sx={{ my: 2 }} />
+                 {/* Promo Code Input Form */}
+                 <Box sx={{ mt: 2, mb: 2 }}>
+                   <Typography variant="subtitle2" fontWeight="bold" gutterBottom>
+                     🎟️ Mã giảm giá / Voucher
+                   </Typography>
+                   {appliedPromo ? (
+                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: '#f0fdf4', p: 1, borderRadius: 1, border: '1px solid #b7ebc6' }}>
+                       <Box>
+                         <Typography variant="body2" fontWeight="bold" color="success.main">
+                           Đã áp dụng: {appliedPromo.code}
+                         </Typography>
+                         <Typography variant="caption" color="text.secondary" display="block">
+                           Giảm: -{formatCurrency(promoDiscount)}
+                         </Typography>
+                       </Box>
+                       <Button size="small" color="error" onClick={handleRemovePromo}>
+                         Hủy
+                       </Button>
+                     </Box>
+                   ) : (
+                     <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
+                       <Box sx={{ display: 'flex', gap: 1 }}>
+                         <TextField
+                           size="small"
+                           placeholder="Nhập mã..."
+                           value={promoCode}
+                           onChange={(e) => setPromoCode(e.target.value)}
+                           error={!!promoError}
+                           sx={{ flexGrow: 1 }}
+                         />
+                         <Button 
+                           variant="outlined" 
+                           size="small" 
+                           onClick={handleApplyPromo}
+                           sx={{ minWidth: '80px' }}
+                         >
+                           Áp dụng
+                         </Button>
+                       </Box>
+                       {promoError && (
+                         <Typography variant="caption" color="error">
+                           {promoError}
+                         </Typography>
+                       )}
+                     </Box>
+                   )}
+                 </Box>
+
+                 {appliedPromo && (
+                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+                     <Typography variant="body1" color="success.main">Giảm giá ({appliedPromo.code}):</Typography>
+                     <Typography variant="body1" color="success.main" fontWeight="medium">
+                       -{formatCurrency(promoDiscount)}
+                     </Typography>
+                   </Box>
+                 )}
+
+                 <Divider sx={{ my: 2 }} />
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Typography variant="h6">Tổng cộng:</Typography>

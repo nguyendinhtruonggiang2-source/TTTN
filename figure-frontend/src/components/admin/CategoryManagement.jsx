@@ -91,12 +91,12 @@ const CategoryManagement = () => {
             const response = await axiosClient.get('/admin/categories');
             
             console.log('✅ Fetch successful!');
-            console.log('📦 Data count:', response?.length || 0);
+            const categoryList = response?.data || response;
             
-            if (response && Array.isArray(response) && response.length > 0) {
+            if (categoryList && Array.isArray(categoryList)) {
                 // Có dữ liệu từ API
-                setCategories(response);
-                console.log('📝 Categories from API:', response);
+                setCategories(categoryList);
+                console.log('📝 Categories from API:', categoryList);
             } else {
                 // Không có dữ liệu, dùng dữ liệu mẫu
                 console.log('📝 No data from API, using sample data');
@@ -312,7 +312,7 @@ const CategoryManagement = () => {
     const handleTestAdminLogin = async () => {
         try {
             const credentials = {
-                email: 'admin@figure.com',
+                username: 'admin',
                 password: 'admin123'
             };
             
@@ -379,14 +379,6 @@ const CategoryManagement = () => {
                     <button className="btn-secondary" onClick={handleRefresh} disabled={loading}>
                         <FaSync /> {loading ? 'Đang tải...' : 'Làm mới'}
                     </button>
-                    <button className="btn-test" onClick={handleTestAdminLogin}>
-                        <FaExclamationTriangle /> Test Admin
-                    </button>
-                    {debugInfo.token && (
-                        <button className="btn-logout" onClick={handleLogout}>
-                            Đăng xuất
-                        </button>
-                    )}
                     <button className="btn-primary" onClick={handleAddCategory}>
                         <FaPlus /> Thêm danh mục
                     </button>
@@ -417,29 +409,6 @@ const CategoryManagement = () => {
                             {debugInfo.user ? '✅ Có' : '❌ Không'}
                         </span>
                     </div>
-                    <div className="status-item">
-                        <span className="status-label">Role:</span>
-                        <span className={`status-value ${debugInfo.userRole === 'ADMIN' ? 'success' : 'warning'}`}>
-                            {debugInfo.userRole || 'Chưa đăng nhập'}
-                        </span>
-                    </div>
-                    <div className="status-item">
-                        <span className="status-label">API:</span>
-                        <span className={`status-value ${debugInfo.apiStatus === 'success' ? 'success' : debugInfo.apiStatus === 'demo_mode' ? 'warning' : 'error'}`}>
-                            {getStatusIcon(debugInfo.apiStatus)}
-                            {debugInfo.apiStatus === 'success' ? 'Hoạt động' : 
-                             debugInfo.apiStatus === 'loading' ? 'Đang tải' :
-                             debugInfo.apiStatus === 'demo_mode' ? 'Chế độ demo' :
-                             debugInfo.apiStatus === 'forbidden' ? 'Không có quyền' :
-                             debugInfo.apiStatus === 'not_found' ? 'Không tìm thấy' :
-                             debugInfo.apiStatus === 'network_error' ? 'Lỗi mạng' :
-                             'Đang kiểm tra'}
-                        </span>
-                    </div>
-                </div>
-                <div className="debug-info">
-                    <code>Endpoint: /api/admin/categories</code>
-                    <code>Method: GET/POST/PUT/DELETE</code>
                 </div>
             </div>
 

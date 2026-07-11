@@ -454,6 +454,8 @@ body {
   transition: all 0.2s ease;
   z-index: 100;
   border: 1px solid #eef2f6;
+  max-height: 350px;
+  overflow-y: auto;
 }
 
 .dropdown:hover .dropdown-menu,

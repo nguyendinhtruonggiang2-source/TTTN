@@ -626,3 +626,44 @@
     justify-content: center;
   }
 }
+
+/* Type Filters Group */
+.type-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Individual Filter Tag Buttons */
+.type-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid var(--border-color, #e2e8f0);
+  background: #ffffff;
+  color: var(--text-secondary, #64748b);
+  border-radius: var(--radius-md, 8px);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.type-filter-btn:hover {
+  background: #f8fafc;
+  color: var(--text-primary, #1e293b);
+  border-color: var(--text-muted, #94a3b8);
+}
+
+.type-filter-btn.active {
+  background: var(--primary-color, #ff3838) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color, #ff3838) !important;
+  box-shadow: 0 4px 10px rgba(255, 56, 56, 0.2);
+}
+
+.type-filter-btn svg {
+  font-size: 14px;
+}

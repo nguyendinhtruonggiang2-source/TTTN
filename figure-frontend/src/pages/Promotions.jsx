@@ -5,7 +5,7 @@ import {
   FaShoppingCart, FaArrowRight, FaPercent, FaCalendarAlt,
   FaCopy, FaCheck, FaBell, FaTimes, FaAngleDown, FaAngleUp
 } from 'react-icons/fa';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/Promotions.css';
 
 const Promotions = () => {
@@ -168,7 +168,7 @@ const Promotions = () => {
 
       {/* Header */}
       <div className="promotions-header">
-        <h1>🎉 Khuyến mãi & Ưu đãi</h1>
+        <h1>Khuyến mãi & Ưu đãi</h1>
         <p>Những chương trình ưu đãi hấp dẫn chỉ có tại Figure Store</p>
       </div>
 
@@ -240,7 +240,18 @@ const Promotions = () => {
           {filteredPromotions.map(promo => (
             <div key={promo.id} className={`promo-card ${promo.type === 'flashsale' ? 'flash-sale' : ''}`}>
               <div className="promo-image">
-                <img src={promo.image || '/default-promo.jpg'} alt={promo.title} />
+                {promo.image ? (
+                  <img 
+                    src={getImageUrl(promo.image)} 
+                    alt={promo.title} 
+                    onError={(e) => { e.target.src = '/default-promo.jpg'; }} 
+                  />
+                ) : (
+                  <div className="promo-image-placeholder">
+                    {getTypeIcon(promo.type)}
+                    <span>{getTypeName(promo.type)}</span>
+                  </div>
+                )}
                 {promo.type === 'flashsale' && (
                   <div className="flash-badge">
                     <FaFire /> FLASH SALE

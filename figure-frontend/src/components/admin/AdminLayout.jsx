@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaBell, FaUserCircle } from 'react-icons/fa';
 import { Outlet, useLocation } from 'react-router-dom';
-import axiosClient from '../../api/axiosClient';
+import axiosClient, { getImageUrl } from '../../api/axiosClient';
 import '../../styles/AdminLayout.css';
 import AdminSidebar from './AdminSidebar';
 
@@ -23,12 +23,23 @@ const AdminLayout = ({ user, onLogout }) => {
         if (user) {
             fetchUnreadCount();
         }
+
+        const handleNewNotification = (e) => {
+            const data = e.detail;
+            setUnreadCount(prev => prev + 1);
+            setNotifications(prev => [data, ...prev]);
+        };
+
+        window.addEventListener('new-notification', handleNewNotification);
+        return () => {
+            window.removeEventListener('new-notification', handleNewNotification);
+        };
     }, [user]);
 
     const fetchUnreadCount = async () => {
         try {
             const response = await axiosClient.get('/notifications/count');
-            setUnreadCount(response.data.count || 0);
+            setUnreadCount(response.data?.admin || 0);
         } catch (error) {
             console.error('Error fetching unread count:', error);
         }
@@ -36,7 +47,7 @@ const AdminLayout = ({ user, onLogout }) => {
 
     const fetchNotifications = async () => {
         try {
-            const response = await axiosClient.get('/notifications?page=0&size=5');
+            const response = await axiosClient.get('/notifications?scope=admin&page=0&size=5');
             setNotifications(response.data.content || []);
             setShowNotifications(!showNotifications);
         } catch (error) {
@@ -61,12 +72,14 @@ const AdminLayout = ({ user, onLogout }) => {
         if (path.includes('/admin/dashboard') || path === '/admin') return 'Tổng quan';
         if (path.includes('/admin/products')) return 'Quản lý sản phẩm';
         if (path.includes('/admin/categories')) return 'Quản lý danh mục';
+        if (path.includes('/admin/banners')) return 'Quản lý Banners';
         if (path.includes('/admin/branches')) return 'Quản lý chi nhánh';
         if (path.includes('/admin/posts')) return 'Quản lý bài viết';
         if (path.includes('/admin/promotions')) return 'Quản lý khuyến mãi';
         if (path.includes('/admin/flash-sale')) return 'Quản lý Flash Sale';
         if (path.includes('/admin/users')) return 'Quản lý người dùng';
         if (path.includes('/admin/orders')) return 'Quản lý đơn hàng';
+        if (path.includes('/admin/ai-chat')) return 'Trợ lý AI';
         return 'Dashboard';
     };
 
@@ -119,29 +132,24 @@ const AdminLayout = ({ user, onLogout }) => {
                                             notifications.map(notif => (
                                                 <div 
                                                     key={notif.id} 
-                                                    className={`notification-item ${!notif.isRead ? 'unread' : ''}`}
+                                                    className={`admin-notif-item ${!notif.isRead ? 'unread' : ''}`}
                                                     onClick={() => {
                                                         if (!notif.isRead) markAsRead(notif.id);
                                                         if (notif.redirectUrl) window.location.href = notif.redirectUrl;
                                                         setShowNotifications(false);
                                                     }}
                                                 >
-                                                    <div className="notification-content">
-                                                        <div className="notification-title">{notif.title}</div>
-                                                        <div className="notification-message">{notif.content}</div>
-                                                        <div className="notification-time">
+                                                    <div className="admin-notif-content">
+                                                        <div className="admin-notif-title">{notif.title}</div>
+                                                        <div className="admin-notif-message">{notif.content}</div>
+                                                        <div className="admin-notif-time">
                                                             {new Date(notif.createdAt).toLocaleString('vi-VN')}
                                                         </div>
                                                     </div>
-                                                    {!notif.isRead && <div className="unread-dot"></div>}
+                                                    {!notif.isRead && <div className="admin-notif-unread-dot"></div>}
                                                 </div>
                                             ))
                                         )}
-                                    </div>
-                                    <div className="notification-footer">
-                                        <button onClick={() => window.location.href = '/notifications'}>
-                                            Xem tất cả
-                                        </button>
                                     </div>
                                 </div>
                             )}
@@ -150,7 +158,7 @@ const AdminLayout = ({ user, onLogout }) => {
                         <div className="admin-user-info">
                             <div className="user-avatar">
                                 {user?.avatar ? (
-                                    <img src={user.avatar} alt={user.username} />
+                                    <img src={getImageUrl(user.avatar)} alt={user.username} />
                                 ) : (
                                     <FaUserCircle />
                                 )}

@@ -12,22 +12,13 @@ const api = axios.create({
   // KHÔNG dùng withCredentials: true vì gây lỗi với CORS và JWT
 });
 
-// Helper function để kiểm tra token hợp lệ
+// Helper function để kiểm tra token hợp lệ (đơn giản, an toàn với base64url)
 const isValidToken = (token) => {
   if (!token || typeof token !== 'string') return false;
   
   // JWT token phải có 3 phần cách nhau bởi dấu chấm
   const parts = token.split('.');
-  if (parts.length !== 3) return false;
-  
-  // Kiểm tra các phần có decode được không
-  try {
-    // Phần payload (phần thứ 2) phải decode được
-    const payload = JSON.parse(atob(parts[1]));
-    return payload && typeof payload === 'object' && 'sub' in payload;
-  } catch {
-    return false;
-  }
+  return parts.length === 3;
 };
 
 // Request interceptor
@@ -50,14 +41,6 @@ api.interceptors.request.use(
       console.log('✅ Added valid token to request');
     } else {
       console.log('ℹ️ No valid token found, request will be unauthenticated');
-      
-      // Xóa token không hợp lệ khỏi localStorage
-      if (token && !isValidToken(token)) {
-        console.warn('⚠️ Invalid token format found, removing from localStorage');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
-      
       // Đảm bảo không có Authorization header
       delete config.headers.Authorization;
     }
@@ -119,23 +102,7 @@ api.interceptors.response.use(
       
       switch (status) {
         case 401:
-          console.warn('⚠️ 401 Unauthorized - Token expired or invalid');
-          // Xóa token và user info
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          
-          // Chỉ redirect nếu không ở trang auth
-          const currentPath = window.location.pathname;
-          const isAuthPage = currentPath.includes('/login') || 
-                             currentPath.includes('/register') || 
-                             currentPath.includes('/auth');
-          
-          if (!isAuthPage && data?.message !== 'Invalid username or password') {
-            // Thêm delay để tránh redirect ngay lập tức
-            setTimeout(() => {
-              window.location.href = '/login?session_expired=true';
-            }, 1000);
-          }
+          console.warn('⚠️ 401 Unauthorized - Session token returned 401, but keeping user logged in per user preferences');
           break;
           
         case 403:
@@ -179,18 +146,28 @@ api.interceptors.response.use(
 );
 
 // Export
-export const getImageUrl = (imagePath) => {
-  if (!imagePath) return '/default-figure.jpg';
+export const getImageUrl = (imagePath, fallback = '/default-figure.jpg') => {
+  if (!imagePath) return fallback;
+  
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://') || imagePath.startsWith('data:image')) {
     return imagePath;
   }
+  
+  let origin = 'http://localhost:8080';
+  try {
+    const url = new URL(API_URL);
+    origin = url.origin;
+  } catch (e) {
+    // Fallback
+  }
+
   if (imagePath.startsWith('/uploads/')) {
-    return `http://localhost:8080${imagePath}`;
+    return `${origin}${imagePath}`;
   }
   if (imagePath.startsWith('uploads/')) {
-    return `http://localhost:8080/${imagePath}`;
+    return `${origin}/${imagePath}`;
   }
-  return imagePath;
+  return `${origin}/uploads/${imagePath}`;
 };
 
 export const axiosClient = api;

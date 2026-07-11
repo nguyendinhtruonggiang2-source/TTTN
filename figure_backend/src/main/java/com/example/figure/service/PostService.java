@@ -3,6 +3,8 @@ package com.example.figure.service;
 import com.example.figure.dto.PostDTO;
 import com.example.figure.entity.Post;
 import com.example.figure.repository.PostRepository;
+import com.example.figure.repository.UserRepository;
+import com.example.figure.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +20,9 @@ public class PostService {
     
     private final PostRepository postRepository;
     private final CommentService commentService;
+    private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
+    private final com.example.figure.websocket.NotificationWebSocketHandler notificationWebSocketHandler;
     
     @Transactional(readOnly = true)
     public List<PostDTO> getAllPosts() {
@@ -90,7 +95,42 @@ public class PostService {
         post.setTags(dto.getTags() != null ? dto.getTags() : List.of());
         post.setFeatured(dto.getFeatured() != null ? dto.getFeatured() : false);
         post.setHot(dto.getHot() != null ? dto.getHot() : false);
-        return convertToDTO(postRepository.save(post));
+        
+        Post savedPost = postRepository.save(post);
+        
+        // Gửi thông báo bài viết mới cho tất cả các user chọn nhận thông báo bài viết
+        try {
+            notifyAllUsersAboutNewPost(savedPost);
+        } catch (Exception e) {
+            System.err.println("Error pushing new article notification: " + e.getMessage());
+        }
+        
+        return convertToDTO(savedPost);
+    }
+    
+    private void notifyAllUsersAboutNewPost(Post post) {
+        List<com.example.figure.entity.User> users = userRepository.findAll();
+        for (com.example.figure.entity.User u : users) {
+            // Kiểm tra tùy chọn nhận thông báo bài viết của user
+            if (u.getNotifyNewArticle() != null && u.getNotifyNewArticle()) {
+                com.example.figure.entity.Notification notif = com.example.figure.entity.Notification.builder()
+                        .user(u)
+                        .title("Bài viết mới!")
+                        .content("Đã xuất bản bài viết mới: " + post.getTitle())
+                        .type("SYSTEM")
+                        .redirectUrl("/blog/" + post.getId())
+                        .isRead(false)
+                        .build();
+                com.example.figure.entity.Notification savedNotif = notificationRepository.save(notif);
+                
+                // Gửi realtime qua websocket
+                try {
+                    notificationWebSocketHandler.sendNotificationToUser(u.getUsername(), savedNotif);
+                } catch (Exception e) {
+                    System.err.println("Error sending WS message to " + u.getUsername() + ": " + e.getMessage());
+                }
+            }
+        }
     }
     
     @Transactional

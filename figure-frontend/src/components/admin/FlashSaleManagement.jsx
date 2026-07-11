@@ -227,8 +227,8 @@ const FlashSaleManagement = () => {
                 <tr key={item.id}>
                   <td>{item.id}</td>
                   <td>
-                    <div className="product-info">
-                      <img src={getImageUrl(item.figure.image)} alt={item.figure.name} />
+                    <div className="product-cell">
+                      <img className="product-img" src={getImageUrl(item.figure.image)} alt={item.figure.name} />
                       <div>
                         <div className="product-name">{item.figure.name}</div>
                         <div className="product-series">{item.figure.series}</div>

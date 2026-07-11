@@ -17,7 +17,7 @@ import {
     FaEye,
     FaTimes
 } from 'react-icons/fa';
-import axiosClient from '../../api/axiosClient';
+import axiosClient, { getImageUrl } from '../../api/axiosClient';
 import '../../styles/BranchManagement.css';
 
 const BranchManagement = () => {
@@ -533,7 +533,7 @@ const BranchManagement = () => {
                                 />
                                 {formData.imageUrl && (
                                     <div className="image-preview">
-                                        <img src={formData.imageUrl} alt="Branch preview" />
+                                        <img src={getImageUrl(formData.imageUrl)} alt="Branch preview" />
                                     </div>
                                 )}
                             </div>

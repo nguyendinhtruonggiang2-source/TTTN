@@ -372,3 +372,90 @@
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+
+  /* Embedded styles for Product Detail integration */
+  .product-reviews-container.embedded {
+    background: transparent;
+    padding: 0;
+    min-height: auto;
+    max-width: 100%;
+  }
+
+  .product-reviews-container.embedded .rating-summary {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .reviews-toolbar {
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .write-review-form {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .write-review-form h3 {
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .write-review-form label {
+    color: var(--text-secondary);
+  }
+
+  .product-reviews-container.embedded .write-review-form textarea {
+    background: var(--bg-body);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: var(--radius-sm);
+  }
+
+  .product-reviews-container.embedded .write-review-form textarea:focus {
+    border-color: var(--primary-color);
+    outline: none;
+  }
+
+  .product-reviews-container.embedded .review-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .reviewer-name {
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .review-date {
+    color: var(--text-secondary);
+  }
+
+  .product-reviews-container.embedded .review-content p {
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .no-reviews {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+  }
+
+  .product-reviews-container.embedded .filter-btn {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .product-reviews-container.embedded .filter-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }

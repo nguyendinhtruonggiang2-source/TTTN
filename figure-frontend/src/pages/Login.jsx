@@ -2,10 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import "../styles/auth.css";
-import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
+import { FaUser, FaLock, FaEnvelope, FaEye, FaEyeSlash, FaInfoCircle } from "react-icons/fa";
 
 function Login({ updateAuthStatus }) {
   const location = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: ""
@@ -217,13 +218,13 @@ function Login({ updateAuthStatus }) {
 
           {successMessage && (
             <div className="success-alert">
-              ✅ {successMessage}
+              {successMessage}
             </div>
           )}
           
           {error && (
             <div className="error-alert">
-              ⚠️ {error}
+              {error}
             </div>
           )}
 
@@ -235,7 +236,7 @@ function Login({ updateAuthStatus }) {
               onClick={() => handleQuickLogin("admin")}
               disabled={loading}
             >
-              👑 Login as Admin
+              Login as Admin
             </button>
             <button 
               type="button" 
@@ -243,7 +244,7 @@ function Login({ updateAuthStatus }) {
               onClick={() => handleQuickLogin("user")}
               disabled={loading}
             >
-              👤 Login as User
+              Login as User
             </button>
           </div>
 
@@ -264,20 +265,45 @@ function Login({ updateAuthStatus }) {
               />
             </div>
 
-            <div className="input-group">
+            <div className="input-group" style={{ position: 'relative' }}>
               <label>
                 <FaLock /> Mật khẩu
               </label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Nhập mật khẩu"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                disabled={loading}
-                autoComplete="current-password"
-              />
+              <div className="password-input-wrapper" style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Nhập mật khẩu"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  disabled={loading}
+                  autoComplete="current-password"
+                  style={{ paddingRight: '45px' }}
+                />
+                <button
+                  type="button"
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#94a3b8',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '6px',
+                    zIndex: 2
+                  }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
             </div>
 
             <div className="form-options">
@@ -326,7 +352,7 @@ function Login({ updateAuthStatus }) {
 
         <div className="auth-banner">
           <div className="banner-content">
-            <h2>🎯 FIGURE STORE</h2>
+            <h2>FIGURE STORE</h2>
             <p>Khám phá bộ sưu tập mô hình độc đáo!</p>
             <div className="features">
               <p>✓ Mua sắm nhanh chóng</p>
@@ -335,23 +361,28 @@ function Login({ updateAuthStatus }) {
               <p>✓ Ưu đãi thành viên</p>
               <p>✓ Quản lý Admin (cho admin)</p>
             </div>
-            <div className="banner-tips">
-              <h4>💡 Thông tin đăng nhập mặc định:</h4>
-              <p><strong>👑 Tài khoản Admin:</strong></p>
-              <p>• Username: <code>admin</code></p>
-              <p>• Password: <code>admin123</code></p>
-              <p>• Email: <code>admin@figurestore.com</code></p>
-              <p><strong>👤 Tài khoản User mẫu:</strong></p>
-              <p>• Username: <code>user123</code></p>
-              <p>• Password: <code>password123</code></p>
-            </div>
-            <div className="admin-note">
-              <h4>⚠️ Lưu ý:</h4>
-              <p>Sau khi login với admin, các nút Admin Panel sẽ hiện ở:</p>
-              <p>• Floating button góc phải</p>
-              <p>• Trong hero section</p>
-              <p>• Footer</p>
-            </div>
+            <details className="dev-tips-details" style={{ marginTop: '20px', cursor: 'pointer', textAlign: 'left' }}>
+              <summary style={{ color: '#fbbf24', fontSize: '13px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px', userSelect: 'none' }}>
+                <FaInfoCircle /> Hướng dẫn tài khoản kiểm thử
+              </summary>
+              <div className="banner-tips" style={{ marginTop: '10px', background: 'rgba(0, 0, 0, 0.2)', padding: '15px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h4 style={{ margin: '0 0 8px 0', color: '#fbbf24', fontSize: '14px' }}>Thông tin đăng nhập mặc định:</h4>
+                <p style={{ margin: '4px 0', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}><strong>Tài khoản Admin:</strong></p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Username: <code>admin</code></p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Password: <code>admin123</code></p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Email: <code>admin@figurestore.com</code></p>
+                <p style={{ margin: '8px 0 4px 0', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}><strong>Tài khoản User mẫu:</strong></p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Username: <code>user123</code></p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Password: <code>password123</code></p>
+              </div>
+              <div className="admin-note" style={{ marginTop: '10px', background: 'rgba(0, 0, 0, 0.2)', padding: '15px', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                <h4 style={{ margin: '0 0 8px 0', color: '#fbbf24', fontSize: '14px' }}>Lưu ý:</h4>
+                <p style={{ margin: '4px 0', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>Sau khi đăng nhập với admin, các nút Admin Panel sẽ xuất hiện ở:</p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Nút nổi góc phải màn hình</p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Trong banner trang chủ</p>
+                <p style={{ margin: '4px 0 4px 10px', fontSize: '12px', color: 'rgba(255,255,255,0.8)' }}>• Dưới chân trang (Footer)</p>
+              </div>
+            </details>
           </div>
         </div>
       </div>

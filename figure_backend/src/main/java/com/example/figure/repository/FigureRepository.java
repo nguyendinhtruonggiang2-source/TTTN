@@ -12,6 +12,14 @@ public interface FigureRepository extends JpaRepository<Figure, Long> {
     
     List<Figure> findByNameContainingIgnoreCase(String name);
     
+    @Query("SELECT f FROM Figure f LEFT JOIN FETCH f.category LEFT JOIN FETCH f.branch " +
+           "WHERE LOWER(f.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+           "OR LOWER(f.series) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+           "OR LOWER(f.manufacturer) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+           "OR LOWER(f.type) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+           "OR (f.category IS NOT NULL AND LOWER(f.category.name) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    List<Figure> searchAllFields(String keyword);
+    
     List<Figure> findBySeriesContainingIgnoreCase(String series);
     
     List<Figure> findByManufacturerContainingIgnoreCase(String manufacturer);
@@ -39,6 +47,8 @@ public interface FigureRepository extends JpaRepository<Figure, Long> {
     
     @Query("SELECT DISTINCT f.type FROM Figure f WHERE f.type IS NOT NULL")
     List<String> findAllTypes();
+    
+    long countBySeries(String series);
     
     List<Figure> findByOrderByCreatedAtDesc();
     

@@ -192,6 +192,8 @@ public class FigureController {
             figure.setReleaseDate(figureDetails.getReleaseDate());
             figure.setDescription(figureDetails.getDescription());
             figure.setImage(figureDetails.getImage());
+            figure.setImagesList(figureDetails.getImagesList());
+            figure.setVideoUrl(figureDetails.getVideoUrl());
             figure.setBranch(figureDetails.getBranch()); // Thêm cập nhật branch
             
             Figure updatedFigure = figureService.saveFigure(figure);

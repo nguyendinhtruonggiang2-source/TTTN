@@ -1,7 +1,7 @@
 // src/pages/OrderDetail.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/orderDetail.css';
 
 function OrderDetail() {
@@ -83,20 +83,7 @@ function OrderDetail() {
     }
   };
 
-  const getImageUrl = (figure) => {
-    const imagePath = figure?.image || figure?.imageUrl;
-    if (!imagePath) return '/default-figure.jpg';
-    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-      return imagePath;
-    }
-    if (imagePath.startsWith('/uploads/')) {
-      return `http://localhost:8080${imagePath}`;
-    }
-    if (imagePath.startsWith('uploads/')) {
-      return `http://localhost:8080/${imagePath}`;
-    }
-    return imagePath;
-  };
+
 
   if (loading) {
     return (
@@ -174,7 +161,7 @@ function OrderDetail() {
                 <td>
                   <div className="product-cell">
                     <img 
-                      src={getImageUrl(item.figure)} 
+                      src={getImageUrl(item.figure?.image || item.figure?.imageUrl)} 
                       alt={item.figure?.name || 'Sản phẩm'}
                       onError={(e) => e.target.src = '/default-figure.jpg'}
                     />

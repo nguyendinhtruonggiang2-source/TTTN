@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Bao cao Phan bien - Figure Store</title>
+<style>
+  @page {
+    size: A4;
+    margin: 2.5cm 2.5cm 2.5cm 2.5cm;
+  }
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 13pt;
+    line-height: 1.5;
+    color: #000000;
+  }
+  h1 {
+    font-size: 18pt;
+    color: #1b365d;
+    text-align: center;
+    margin-top: 24pt;
+    margin-bottom: 12pt;
+    font-weight: bold;
+  }
+  h2 {
+    font-size: 14pt;
+    color: #ef4444;
+    border-bottom: 1px solid #ef4444;
+    margin-top: 18pt;
+    margin-bottom: 9pt;
+    padding-bottom: 3pt;
+    font-weight: bold;
+  }
+  h3 {
+    font-size: 13pt;
+    color: #0f172a;
+    margin-top: 14pt;
+    margin-bottom: 6pt;
+    font-weight: bold;
+  }
+  p {
+    margin-top: 0;
+    margin-bottom: 8pt;
+    text-align: justify;
+    text-indent: 1cm;
+  }
+  ul {
+    margin-top: 0;
+    margin-bottom: 8pt;
+    padding-left: 24pt;
+  }
+  li {
+    margin-bottom: 4pt;
+    text-align: justify;
+  }
+  code {
+    font-family: Consolas, Courier, monospace;
+    background-color: #f1f5f9;
+    padding: 1pt 3pt;
+    font-size: 10.5pt;
+    border: 1px solid #e2e8f0;
+  }
+  hr {
+    border: none;
+    border-top: 1px solid #cbd5e1;
+    margin: 20pt 0;
+  }
+  strong {
+    font-weight: bold;
+  }
+  a {
+    color: #ef4444;
+    text-decoration: underline;
+  }
+</style>
+</head>
+<body>
+  <h1>BÁO CÁO PHÂN BIỆT & TÀI LIỆU VẬN HÀNH CHI TIẾT HỆ THỐNG FIGURE STORE</h1>
+<p>*Tài liệu hỗ trợ phản biện khóa luận tốt nghiệp / Báo cáo thực tập*</p>
+<hr />
+<h2>PHẦN I: TỔNG QUAN KIẾN TRÚC HỆ THỐNG (SYSTEM ARCHITECTURE)</h2>
+<p>Hệ thống được xây dựng theo mô hình <strong>Decoupled Architecture</strong> (Kiến trúc tách rời giữa Frontend và Backend) giao tiếp hoàn toàn qua giao thức <strong>RESTful API</strong>:</p>
+<h3>1. Kiến trúc Frontend (React.js SPA)</h3>
+<ul>
+  <li><strong>Công nghệ chính</strong>: React.js (v18+), React Router DOM (Điều hướng trang), Axios (HTTP Client giao tiếp API).</li>
+  <li><strong>Quản lý trạng thái (State Management)</strong>: Sử dụng <strong>Context API</strong> (ví dụ <code>CategoryContext</code>) để chia sẻ trạng thái danh mục sản phẩm toàn cục và các hooks cục bộ (<code>useState</code>, <code>useEffect</code>).</li>
+  <li><strong>Xác thực người dùng</strong>: JWT (JSON Web Token) được lưu trữ tại <code>localStorage</code>. Token tự động được gắn vào Header (<code>Authorization: Bearer <token></code>) thông qua <strong>Axios Interceptors</strong> tại <a href="file:///d:/file_mon_hoc/TTTN/bao_cao/figure-frontend/src/api/axiosClient.js">axiosClient.js</a> trong mỗi yêu cầu gửi đi.</li>
+  <li><strong>Phân quyền Route (Route Guards)</strong>:</li>
+  <li><code>PublicRoute</code>: Chặn người dùng đã đăng nhập truy cập trang Login/Register.</li>
+  <li><code>ProtectedRoute</code>: Yêu cầu đăng nhập trước khi truy cập trang thanh toán, giỏ hàng, hồ sơ cá nhân.</li>
+  <li><code>AdminRoute</code>: Kiểm tra người dùng có quyền <code>ROLE_ADMIN</code> để cho phép vào trang quản trị <code>/admin/*</code>.</li>
+</ul>
+<h3>2. Kiến trúc Backend (Spring Boot REST API)</h3>
+<ul>
+  <li><strong>Công nghệ chính</strong>: Java, Spring Boot, Spring Security (Xác thực phân quyền), Hibernate / JPA (Ánh xạ thực thể cơ sở dữ liệu), MySQL (Cơ sở dữ liệu quan hệ).</li>
+  <li><strong>Luồng xử lý yêu cầu (Request Flow)</strong>:</li>
+</ul>
+<p>1. <code>Client Yêu cầu HTTP</code> -> 2. <code>JwtAuthenticationFilter</code> (Giải mã, kiểm tra tính hợp lệ của Token) -> 3. <code>Controller</code> (Tiếp nhận và validate dữ liệu đầu vào) -> 4. <code>Service</code> (Thực thi logic nghiệp vụ) -> 5. <code>Repository</code> (Giao tiếp database thông qua Spring Data JPA) -> 6. Trả về kết quả JSON.</p>
+<h3>3. Tích hợp Trí tuệ nhân tạo (Gemini LLM Integration)</h3>
+<ul>
+  <li>Hệ thống tích hợp Trợ lý AI hội thoại thông minh hỗ trợ khách hàng, được kết nối động trực tiếp với dữ liệu thời gian thực trong Database (bao gồm sản phẩm, khuyến mãi, flash sale) giúp trả lời thông tin chính xác thay vì phản hồi tĩnh.</li>
+</ul>
+<hr />
+<h2>PHẦN II: CHI TIẾT CÁCH HOẠT ĐỘNG CỦA TỪNG TRANG NGƯỜI DÙNG (STOREFRONT)</h2>
+<h3>1. Trang chủ (<code>Home.jsx</code> / <code>/</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Giao diện gồm Banner băng chuyền (Carousel), danh sách danh mục nổi bật, các khu vực sản phẩm mới nhất, sản phẩm bán chạy, và phần Blog tin tức tóm tắt.</li>
+  <li>Khi tải trang, Frontend kích hoạt các yêu cầu GET đồng thời để lấy dữ liệu banner, danh mục, và sản phẩm từ backend.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/banners</code> (Lấy danh sách các ảnh slide quảng cáo đang hoạt động).</li>
+  <li><code>GET /api/categories</code> (Lấy danh sách danh mục).</li>
+  <li><code>GET /api/figures?page=0&size=8&sortBy=createdAt</code> (Sản phẩm mới).</li>
+</ul>
+<h3>2. Trang danh sách sản phẩm (<code>FigureList.jsx</code> / <code>/figures</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Hiển thị toàn bộ mô hình (Figures) có phân trang.</li>
+  <li>Cung cấp thanh lọc đa năng bên trái: Lọc theo Danh mục (Category), Hãng sản xuất (Manufacturer), Series truyện, Tầm giá tiền, và ô tìm kiếm theo tên sản phẩm.</li>
+  <li>Khi người dùng thay đổi bộ lọc, các tham số truy vấn (<code>?category=...&price=...</code>) sẽ được cập nhật lên URL, kích hoạt <code>useEffect</code> gọi lại API để làm mới danh sách mà không cần tải lại trang.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/figures</code> (Hỗ trợ lọc động bằng JPQL/Specification qua các tham số: <code>keyword</code>, <code>categoryId</code>, <code>minPrice</code>, <code>maxPrice</code>, <code>page</code>, <code>size</code>, <code>sort</code>).</li>
+</ul>
+<h3>3. Trang chi tiết sản phẩm (<code>ProductDetail.jsx</code> / <code>/product/:id</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Hiển thị chi tiết thông tin một mô hình: Tên, Hãng, Tỷ lệ (Scale), Giá bán, Số lượng kho, Mô tả chi tiết, hình ảnh bổ sung (Gallery) và Video giới thiệu sản phẩm.</li>
+  <li>Tích hợp tính năng thêm sản phẩm vào giỏ hàng, mua ngay, và thêm vào danh sách yêu thích (Wishlist).</li>
+  <li>Hiển thị các đánh giá (Reviews) kèm số sao của khách hàng đã mua trước đó.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/figures/{id}</code> (Lấy thông tin chi tiết sản phẩm).</li>
+  <li><code>GET /api/figures/{id}/related</code> (Đề xuất sản phẩm cùng danh mục).</li>
+  <li><code>GET /api/reviews/product/{id}</code> (Lấy đánh giá của sản phẩm).</li>
+</ul>
+<h3>4. Trang giỏ hàng (<code>Cart.jsx</code> / <code>/cart</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Hiển thị danh sách sản phẩm người dùng đã thêm vào giỏ kèm số lượng.</li>
+  <li>Người dùng có thể tăng/giảm số lượng trực tiếp (gọi API cập nhật và kiểm tra hàng tồn kho thực tế ở backend) hoặc xóa sản phẩm khỏi giỏ.</li>
+  <li>Tính toán tổng tiền tạm tính thời gian thực.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/cart</code> (Lấy giỏ hàng của user hiện tại, yêu cầu Token).</li>
+  <li><code>PUT /api/cart/items/{itemId}</code> (Cập nhật số lượng mặt hàng).</li>
+  <li><code>DELETE /api/cart/items/{itemId}</code> (Xóa mặt hàng khỏi giỏ).</li>
+</ul>
+<h3>5. Trang thanh toán (<code>Checkout.jsx</code> / <code>/checkout</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Thu thập thông tin giao hàng: Họ tên, Số điện thoại, Địa chỉ nhận hàng.</li>
+  <li>Cho phép chọn phương thức thanh toán: COD (Thanh toán khi nhận hàng) hoặc Chuyển khoản ngân hàng.</li>
+  <li>Nhập mã giảm giá (Voucher) - gọi API áp dụng voucher để trừ tiền trực tiếp vào hóa đơn.</li>
+  <li>Khi nhấn đặt hàng, Frontend gửi toàn bộ thông tin lên backend. Nếu đặt hàng thành công, giỏ hàng sẽ được xóa và chuyển hướng đến trang lịch sử đơn hàng.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>POST /api/orders</code> (Tạo đơn hàng mới từ giỏ hàng hiện tại, kiểm tra số lượng tồn kho và giảm số lượng sản phẩm tương ứng trong DB).</li>
+  <li><code>GET /api/promotions/check?code={code}</code> (Kiểm tra và áp dụng mã giảm giá).</li>
+</ul>
+<h3>6. Trang thông tin cá nhân (<code>Profile.jsx</code> / <code>/profile</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Quản lý thông tin tài khoản của khách hàng: Tên, Email, Số điện thoại, Địa chỉ mặc định.</li>
+  <li>Cho phép người dùng bật/tắt nhận thông báo hệ thống qua email (Bài viết mới, Flash Sale, Cập nhật trạng thái đơn hàng, và Phản hồi từ trợ lý AI).</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/auth/profile</code> (Lấy thông tin tài khoản đang đăng nhập).</li>
+  <li><code>PUT /api/auth/profile</code> (Cập nhật thông tin cá nhân và cấu hình nhận thông báo).</li>
+</ul>
+<h3>7. Trang chương trình Flash Sale (<code>FlashSale.jsx</code> / <code>/flash-sale</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Hiển thị các sản phẩm đang được giảm giá cực sốc theo các mốc thời gian quy định sẵn.</li>
+  <li>Tích hợp bộ đếm ngược (Countdown Timer) thời gian thực.</li>
+  <li>Hiển thị thanh tiến trình (Progress Bar) mô tả trực quan tỷ lệ sản phẩm đã bán / còn lại trong kho của chiến dịch Flash Sale đó.</li>
+  <li>Chia làm các danh mục nhỏ: Flash Sale sản phẩm, Vouchers giảm giá, Mã miễn phí vận chuyển (Freeship) và Ưu đãi khác.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/flash-sales/active</code> (Lấy các chương trình Flash Sale đang diễn ra).</li>
+  <li><code>GET /api/promotions/active</code> (Lấy danh sách mã giảm giá đang chạy).</li>
+</ul>
+<h3>8. Trang khuyến mãi tổng hợp (<code>Promotions.jsx</code> / <code>/promotions</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Nơi tập hợp tất cả các voucher, chương trình tặng quà, freeship của cửa hàng.</li>
+  <li>Người dùng có thể nhấn nút "Sao chép" (Copy) mã giảm giá nhanh hoặc nhấn "Áp dụng" để chuyển trực tiếp đến giỏ hàng áp dụng ưu đãi.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/promotions/vouchers</code> (Lấy danh sách Voucher active).</li>
+  <li><code>GET /api/promotions/freeship</code> (Lấy danh sách mã giảm phí vận chuyển).</li>
+</ul>
+<h3>9. Trang Blog tin tức (<code>Blog.jsx</code> & <code>BlogDetail.jsx</code> / <code>/blog</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Trang tin tức hiển thị các bài viết chia sẻ về thế giới figure, hướng dẫn chơi mô hình, tin tức phát hành sản phẩm mới và thông tin khuyến mãi.</li>
+  <li>Có các chuyên mục bài viết nổi bật (Featured), bài viết nhiều người xem nhất (Hot Posts) và công cụ tìm kiếm bài viết theo từ khóa/tag.</li>
+  <li>Chi tiết bài viết (<code>BlogDetail.jsx</code>) hiển thị đầy đủ văn bản nội dung bài viết, ảnh, tác giả và phần bình luận thảo luận bên dưới của người dùng.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/posts</code> (Lấy danh sách bài viết phân trang).</li>
+  <li><code>GET /api/posts/{id}</code> (Chi tiết bài viết và tăng lượt xem - view count).</li>
+  <li><code>POST /api/comments/post/{postId}</code> (Gửi bình luận mới).</li>
+</ul>
+<h3>10. Các trang chức năng bổ trợ khác</h3>
+<ul>
+  <li><strong>Tra cứu đơn hàng (<code>TrackOrder.jsx</code> / <code>/track-order</code>)</strong>: Cho phép khách hàng vãng lai hoặc khách hàng đã đăng nhập nhập Mã đơn hàng để kiểm tra trực tiếp trạng thái vận chuyển (Chờ xác nhận, Đang giao, Đã giao...) mà không cần đăng nhập tài khoản.</li>
+  <li><strong>Sản phẩm yêu thích (<code>Wishlist.jsx</code> / <code>/wishlist</code>)</strong>: Lưu trữ danh sách mô hình người dùng yêu thích để theo dõi giá và dễ dàng mua sau này.</li>
+  <li><strong>So sánh sản phẩm (<code>Compare.jsx</code> / <code>/compare</code>)</strong>: Cho phép đưa tối đa 3 mô hình lên bàn cân để so sánh trực quan về kích thước, tỷ lệ, giá cả, hãng sản xuất.</li>
+  <li><strong>Thông báo (<code>Notifications.jsx</code> / <code>/notifications</code>)</strong>: Xem danh sách các thông báo cá nhân hóa gửi từ hệ thống (xác nhận đơn hàng, khuyến mãi mới...).</li>
+</ul>
+<h3>11. Widget Chatbot AI hỗ trợ thông minh (<code>AiChatWidget.jsx</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Xuất hiện dưới góc màn hình toàn trang.</li>
+  <li>Khi người dùng gửi câu hỏi, Frontend gọi API backend. Backend nhận tin nhắn, truy vấn thông tin sản phẩm hoặc các chương trình khuyến mãi/Flash Sale đang chạy trong DB để chèn vào ngữ cảnh (context), sau đó gọi API Gemini để tạo ra phản hồi thông minh, chính xác nhất bằng ngôn ngữ tự nhiên.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>POST /api/ai/chat</code> (Nhận câu hỏi của user, xử lý hội thoại dựa trên dữ liệu database thực tế và trả về tin nhắn AI).</li>
+</ul>
+<hr />
+<h2>PHẦN III: CHI TIẾT CÁCH HOẠT ĐỘNG CỦA CÁC TRANG QUẢN TRỊ (ADMIN PANEL)</h2>
+<h3>1. Trang chủ thống kê (<code>DashboardStats.jsx</code> / <code>/admin/dashboard</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Trung tâm hiển thị báo cáo số liệu kinh doanh: Tổng doanh thu, Số đơn hàng mới, Số khách hàng đăng ký mới, Tổng sản phẩm đã bán.</li>
+  <li>Vẽ biểu đồ cột/đường xu hướng doanh thu theo các ngày trong tháng, biểu đồ cơ cấu danh mục sản phẩm bán chạy nhất.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/admin/dashboard/stats</code> (Trả về các con số thống kê tổng hợp).</li>
+  <li><code>GET /api/admin/dashboard/revenue-chart</code> (Trả về dữ liệu vẽ biểu đồ doanh thu theo thời gian).</li>
+</ul>
+<h3>2. Quản lý sản phẩm (<code>ProductManagement.jsx</code> / <code>/admin/products</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Giao diện bảng (Table) hiển thị danh sách tất cả sản phẩm mô hình, hỗ trợ tìm kiếm, lọc nhanh.</li>
+  <li>Cung cấp form modal Thêm mới / Chỉnh sửa sản phẩm: Nhập tên, giá, số lượng, chọn danh mục, tải ảnh chính, danh sách ảnh gallery, đường dẫn video review.</li>
+  <li>Tích hợp tải ảnh trực tiếp từ máy tính lên server thông qua API upload trung gian.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET/POST/PUT/DELETE /api/admin/products</code> (Các phương thức CRUD sản phẩm).</li>
+  <li><code>POST /api/upload</code> (Upload hình ảnh lên thư mục lưu trữ của server).</li>
+</ul>
+<h3>3. Quản lý danh mục (<code>CategoryManagement.jsx</code> / <code>/admin/categories</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Quản lý các phân loại mô hình (ví dụ: Scale Figure, Chibi, Nendoroid, Action Figure...).</li>
+  <li>Thêm, sửa tên danh mục, mô tả, và biểu tượng đại diện.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET/POST/PUT/DELETE /api/admin/categories</code> (CRUD danh mục).</li>
+</ul>
+<h3>4. Quản lý khuyến mãi (<code>PromotionManagement.jsx</code> / <code>/admin/promotions</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Nơi Admin thiết lập mã giảm giá (Vouchers), mã miễn phí vận chuyển.</li>
+  <li>Nhập tiêu đề, mã code, % giảm giá, mô tả, điều kiện áp dụng, sản phẩm áp dụng và khoảng thời gian hiệu lực.</li>
+  <li>Cho phép tải ảnh banner khuyến mãi trực tiếp lên server để hiển thị ngoài trang chủ người dùng.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET/POST/PUT/DELETE /api/admin/promotions</code> (CRUD khuyến mãi).</li>
+</ul>
+<h3>5. Quản lý Flash Sale (<code>FlashSaleManagement.jsx</code> / <code>/admin/flash-sale</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Quản lý các chiến dịch giảm giá chớp nhoáng cho các sản phẩm cụ thể.</li>
+  <li>Admin chọn sản phẩm trong hệ thống, thiết lập giá Flash Sale đặc biệt, giới hạn số lượng bán ra tối đa trong đợt sale đó, và đặt thời gian bắt đầu - kết thúc cụ thể.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET/POST/PUT/DELETE /api/admin/flash-sales</code> (CRUD sự kiện Flash Sale).</li>
+</ul>
+<h3>6. Quản lý đơn hàng (<code>OrderManagement.jsx</code> / <code>/admin/orders</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Hiển thị danh sách tất cả đơn đặt hàng của toàn bộ hệ thống.</li>
+  <li>Admin kiểm tra chi tiết đơn hàng (thông tin người mua, danh sách sản phẩm mua, phương thức thanh toán) và cập nhật trạng thái đơn hàng (từ Chờ xác nhận -> Đã xác nhận -> Đang giao -> Đã giao).</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/admin/orders</code> (Danh sách đơn hàng).</li>
+  <li><code>PUT /api/admin/orders/{id}/status</code> (Cập nhật trạng thái đơn hàng).</li>
+</ul>
+<h3>7. Quản lý người dùng (<code>UserManagement.jsx</code> / <code>/admin/users</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Quản lý tài khoản khách hàng và nhân viên trong hệ thống.</li>
+  <li>Cho phép kích hoạt hoặc tạm khóa tài khoản người dùng, thay đổi phân quyền (Role) giữa Admin và User.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET/PUT /api/admin/users</code> (Xem danh sách và khóa/mở khóa tài khoản).</li>
+</ul>
+<h3>8. Lịch sử hội thoại AI (<code>AdminAiChat.jsx</code> / <code>/admin/ai-chat</code>)</h3>
+<ul>
+  <li><strong>Cách hoạt động</strong>:</li>
+  <li>Hiển thị danh sách các phiên trò chuyện giữa khách hàng và Trợ lý AI.</li>
+  <li>Admin có thể đọc lại lịch sử chat để nắm bắt nhu cầu khách hàng, hỗ trợ trực tiếp khi AI chưa giải quyết được triệt để thắc mắc của khách.</li>
+  <li><strong>API Backend tương ứng</strong>:</li>
+  <li><code>GET /api/admin/ai-chat/sessions</code> (Lấy danh sách hội thoại).</li>
+  <li><code>GET /api/admin/ai-chat/sessions/{sessionId}/messages</code> (Chi tiết tin nhắn trong cuộc trò chuyện).</li>
+</ul>
+</body>
+</html>

@@ -11,7 +11,7 @@ import {
     FaSpinner
 } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
-import axiosClient from '../api/axiosClient';
+import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/TrackOrder.css';
 
 const TrackOrder = () => {
@@ -112,10 +112,10 @@ const TrackOrder = () => {
 
   // Timeline steps
   const timelineSteps = [
-    { status: 'PENDING', label: 'Đặt hàng', icon: '📦' },
-    { status: 'PROCESSING', label: 'Xác nhận', icon: '✓' },
-    { status: 'SHIPPED', label: 'Vận chuyển', icon: '🚚' },
-    { status: 'DELIVERED', label: 'Giao hàng', icon: '🏠' }
+    { status: 'PENDING', label: 'Đặt hàng', icon: '' },
+    { status: 'PROCESSING', label: 'Xác nhận', icon: '' },
+    { status: 'SHIPPED', label: 'Vận chuyển', icon: '' },
+    { status: 'DELIVERED', label: 'Giao hàng', icon: '' }
   ];
 
   const getCurrentStepIndex = () => {
@@ -127,7 +127,7 @@ const TrackOrder = () => {
   return (
     <div className="track-order-container">
       <div className="track-order-header">
-        <h1>📦 Theo dõi đơn hàng</h1>
+        <h1>Theo dõi đơn hàng</h1>
         <p>Nhập mã đơn hàng để kiểm tra trạng thái</p>
       </div>
 
@@ -206,14 +206,14 @@ const TrackOrder = () => {
             </div>
             {order.status === 'CANCELLED' && (
               <div className="cancelled-note">
-                ⚠️ Đơn hàng đã bị hủy
+                Đơn hàng đã bị hủy
               </div>
             )}
           </div>
 
           {/* Shipping Info */}
           <div className="shipping-info">
-            <h3>📬 Thông tin giao hàng</h3>
+            <h3>Thông tin giao hàng</h3>
             <div className="info-grid">
               <div className="info-item">
                 <FaMapMarkerAlt className="info-icon" />
@@ -241,12 +241,12 @@ const TrackOrder = () => {
 
           {/* Order Items */}
           <div className="order-items">
-            <h3>🛍️ Sản phẩm đã đặt</h3>
+            <h3>Sản phẩm đã đặt</h3>
             <div className="items-list">
               {order.items?.map((item, idx) => (
                 <div key={idx} className="item-card">
                   <div className="item-image">
-                    <img src={item.image || '/default-figure.jpg'} alt={item.name} />
+                    <img src={getImageUrl(item.image || item.imageUrl || '/default-figure.jpg')} alt={item.name} />
                   </div>
                   <div className="item-details">
                     <div className="item-name">{item.name}</div>
@@ -274,7 +274,6 @@ const TrackOrder = () => {
 
       {searched && !loading && !order && !error && (
         <div className="no-result">
-          <div className="no-result-icon">🔍</div>
           <p>Nhập mã đơn hàng để tra cứu</p>
         </div>
       )}

@@ -35,6 +35,18 @@ public class User {
     
     @Column(nullable = false)
     private boolean enabled = true;
+
+    @Column(name = "notify_new_article")
+    private Boolean notifyNewArticle = true;
+
+    @Column(name = "notify_flash_sale")
+    private Boolean notifyFlashSale = true;
+
+    @Column(name = "notify_order")
+    private Boolean notifyOrder = true;
+
+    @Column(name = "notify_ai_message")
+    private Boolean notifyAiMessage = true;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -50,6 +62,10 @@ public class User {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (notifyNewArticle == null) notifyNewArticle = true;
+        if (notifyFlashSale == null) notifyFlashSale = true;
+        if (notifyOrder == null) notifyOrder = true;
+        if (notifyAiMessage == null) notifyAiMessage = true;
     }
     
     // Getters
@@ -64,6 +80,10 @@ public class User {
     public String getResetCode() { return resetCode; }
     public LocalDateTime getResetCodeExpiry() { return resetCodeExpiry; }
     public boolean isEnabled() { return enabled; }
+    public Boolean getNotifyNewArticle() { return notifyNewArticle == null ? true : notifyNewArticle; }
+    public Boolean getNotifyFlashSale() { return notifyFlashSale == null ? true : notifyFlashSale; }
+    public Boolean getNotifyOrder() { return notifyOrder == null ? true : notifyOrder; }
+    public Boolean getNotifyAiMessage() { return notifyAiMessage == null ? true : notifyAiMessage; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public Set<Role> getRoles() { return roles; }
     
@@ -79,6 +99,10 @@ public class User {
     public void setResetCode(String resetCode) { this.resetCode = resetCode; }
     public void setResetCodeExpiry(LocalDateTime resetCodeExpiry) { this.resetCodeExpiry = resetCodeExpiry; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+    public void setNotifyNewArticle(Boolean notifyNewArticle) { this.notifyNewArticle = notifyNewArticle; }
+    public void setNotifyFlashSale(Boolean notifyFlashSale) { this.notifyFlashSale = notifyFlashSale; }
+    public void setNotifyOrder(Boolean notifyOrder) { this.notifyOrder = notifyOrder; }
+    public void setNotifyAiMessage(Boolean notifyAiMessage) { this.notifyAiMessage = notifyAiMessage; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
 

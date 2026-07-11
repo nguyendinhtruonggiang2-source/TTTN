@@ -18,6 +18,7 @@ const ProductManagement = () => {
     const [saving, setSaving] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [seriesList, setSeriesList] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editingProduct, setEditingProduct] = useState(null);
     
@@ -30,7 +31,7 @@ const ProductManagement = () => {
     const modalRef = useRef(null);
     const cardRefs = useRef({});
 
-    // Product Form Data - THÊM branchId
+    // Product Form Data - THÊM branchId, imagesList, videoUrl
     const [formData, setFormData] = useState({
         name: '',
         series: '',
@@ -42,14 +43,25 @@ const ProductManagement = () => {
         releaseDate: '',
         description: '',
         image: '',
+        imagesList: '',
+        videoUrl: '',
         categoryId: '',
-        branchId: ''  // THÊM TRƯỜNG branchId
+        branchId: ''
     });
+
+    // Gallery upload states
+    const [galleryFiles, setGalleryFiles] = useState([]);
+    const [galleryPreviews, setGalleryPreviews] = useState([]);
+
+    // Video upload states
+    const [videoFile, setVideoFile] = useState(null);
+    const [videoPreview, setVideoPreview] = useState('');
 
     useEffect(() => {
         fetchProducts();
         fetchCategories();
         fetchBranches(); // Thêm fetch branches
+        fetchSeriesList();
     }, []);
 
     // Xử lý click outside để đóng modal
@@ -145,6 +157,16 @@ const ProductManagement = () => {
         }
     };
 
+    const fetchSeriesList = async () => {
+        try {
+            console.log('📡 Fetching series list...');
+            const response = await axiosClient.get('/admin/series');
+            setSeriesList(response.data || response || []);
+        } catch (error) {
+            console.error('Error fetching series list:', error);
+        }
+    };
+
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
@@ -212,10 +234,82 @@ const ProductManagement = () => {
         setFormData(prev => ({ ...prev, image: '' }));
     };
 
+    // Xử lý chọn ảnh bộ sưu tập
+    const handleGallerySelect = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
+
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        const validFiles = files.filter(file => {
+            if (!allowedTypes.includes(file.type)) {
+                alert(`File ${file.name} không đúng định dạng ảnh`);
+                return false;
+            }
+            return true;
+        });
+
+        setGalleryFiles(prev => [...prev, ...validFiles]);
+
+        validFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setGalleryPreviews(prev => [...prev, reader.result]);
+            };
+            reader.readAsDataURL(file);
+        });
+    };
+
+    // Xóa ảnh khỏi bộ sưu tập
+    const handleRemoveGalleryItem = (index) => {
+        const preview = galleryPreviews[index];
+        if (preview.startsWith('data:')) {
+            const dataUrlPreviews = galleryPreviews.filter(p => p.startsWith('data:'));
+            const dataIndex = dataUrlPreviews.indexOf(preview);
+            if (dataIndex !== -1) {
+                setGalleryFiles(prev => prev.filter((_, idx) => idx !== dataIndex));
+            }
+        }
+        setGalleryPreviews(prev => prev.filter((_, idx) => idx !== index));
+    };
+
+    // Xử lý chọn video từ máy tính
+    const handleVideoSelect = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const allowedTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Vui lòng chọn file video định dạng MP4, WebM, OGG hoặc MOV');
+            return;
+        }
+
+        if (file.size > 50 * 1024 * 1024) {
+            alert('Video không được vượt quá 50MB');
+            return;
+        }
+
+        setVideoFile(file);
+        
+        // Tạo đường dẫn tạm blob để xem trước cục bộ
+        const previewUrl = URL.createObjectURL(file);
+        setVideoPreview(previewUrl);
+    };
+
+    // Xóa video đã chọn
+    const handleRemoveVideo = () => {
+        setVideoFile(null);
+        setVideoPreview('');
+        setFormData(prev => ({ ...prev, videoUrl: '' }));
+    };
+
     const handleAddProduct = () => {
         setEditingProduct(null);
         setImageFile(null);
         setImagePreview('');
+        setGalleryFiles([]);
+        setGalleryPreviews([]);
+        setVideoFile(null);
+        setVideoPreview('');
         setSelectedCardRef(null);
         setFormData({
             name: '',
@@ -228,8 +322,10 @@ const ProductManagement = () => {
             releaseDate: '',
             description: '',
             image: '',
+            imagesList: '',
+            videoUrl: '',
             categoryId: '',
-            branchId: ''  // Reset branchId
+            branchId: ''
         });
         setModalPosition({
             top: window.scrollY + 100,
@@ -243,6 +339,14 @@ const ProductManagement = () => {
         setSelectedCardRef(cardElement);
         setImageFile(null);
         setImagePreview(product.image || '');
+        
+        const existingGallery = product.imagesList ? product.imagesList.split(',').filter(Boolean) : [];
+        setGalleryPreviews(existingGallery);
+        setGalleryFiles([]);
+        
+        setVideoFile(null);
+        setVideoPreview(product.videoUrl || '');
+
         setFormData({
             name: product.name || '',
             series: product.series || '',
@@ -254,8 +358,10 @@ const ProductManagement = () => {
             releaseDate: product.releaseDate || '',
             description: product.description || '',
             image: product.image || '',
+            imagesList: product.imagesList || '',
+            videoUrl: product.videoUrl || '',
             categoryId: product.category?.id || '',
-            branchId: product.branchId || ''  // Lấy branchId từ product
+            branchId: product.branchId || ''
         });
         setShowModal(true);
     };
@@ -300,12 +406,36 @@ const ProductManagement = () => {
         setSaving(true);
         
         try {
+            // Upload main image
             let imageUrl = formData.image;
             if (imageFile) {
                 setUploading(true);
                 const uploadedUrl = await uploadImage(imageFile);
                 if (uploadedUrl) {
                     imageUrl = uploadedUrl;
+                }
+            }
+
+            // Upload gallery images in bulk
+            setUploading(true);
+            const uploadedGalleryUrls = [];
+            for (const file of galleryFiles) {
+                const url = await uploadImage(file);
+                if (url) {
+                    uploadedGalleryUrls.push(url);
+                }
+            }
+
+            const existingUrls = galleryPreviews.filter(p => !p.startsWith('data:'));
+            const finalGalleryList = [...existingUrls, ...uploadedGalleryUrls].join(',');
+
+            // Upload video file
+            let videoUrl = formData.videoUrl;
+            if (videoFile) {
+                setUploading(true);
+                const uploadedUrl = await uploadImage(videoFile);
+                if (uploadedUrl) {
+                    videoUrl = uploadedUrl;
                 }
             }
 
@@ -320,8 +450,10 @@ const ProductManagement = () => {
                 releaseDate: formData.releaseDate || null,
                 description: formData.description?.trim() || null,
                 image: imageUrl || null,
-                categoryId: formData.categoryId || null,
-                branchId: formData.branchId || null  // THÊM branchId vào data gửi đi
+                imagesList: finalGalleryList || null,
+                videoUrl: videoUrl || null,
+                category: formData.categoryId ? { id: parseInt(formData.categoryId) } : null,
+                branchId: formData.branchId || null
             };
 
             console.log('📤 Sending product data:', productData);
@@ -629,13 +761,18 @@ const ProductManagement = () => {
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>Series</label>
-                                    <input
-                                        type="text"
+                                    <select
                                         value={formData.series}
                                         onChange={(e) => setFormData({...formData, series: e.target.value})}
-                                        placeholder="VD: Genshin Impact, One Piece..."
                                         disabled={saving}
-                                    />
+                                    >
+                                        <option value="">Chọn Series</option>
+                                        {seriesList.map(series => (
+                                            <option key={series.id} value={series.name}>
+                                                {series.name}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="form-group">
                                     <label>Nhà sản xuất</label>
@@ -758,6 +895,107 @@ const ProductManagement = () => {
                                             <FaUpload />
                                             <span>Chọn ảnh từ máy tính hoặc kéo thả vào đây</span>
                                             <small>Hỗ trợ: JPEG, PNG, GIF, WEBP</small>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Bộ sưu tập ảnh sản phẩm (Ảnh hàng loạt)</label>
+                                <div className="gallery-upload-wrapper">
+                                    <div className="gallery-previews-grid">
+                                        {galleryPreviews.map((preview, index) => (
+                                            <div key={index} className="gallery-preview-item">
+                                                <img src={preview.startsWith('data:') ? preview : getImageUrl(preview)} alt={`Preview ${index}`} />
+                                                <button 
+                                                    type="button" 
+                                                    className="remove-gallery-item-btn" 
+                                                    onClick={() => handleRemoveGalleryItem(index)}
+                                                    disabled={saving || uploading}
+                                                >
+                                                    <FaTimes />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <div 
+                                            className="gallery-add-placeholder"
+                                            onClick={() => document.getElementById('product-gallery-files').click()}
+                                        >
+                                            <FaPlus />
+                                            <span>Thêm ảnh</span>
+                                            <input 
+                                                type="file" 
+                                                id="product-gallery-files" 
+                                                style={{ display: 'none' }} 
+                                                onChange={handleGallerySelect}
+                                                accept="image/*"
+                                                multiple
+                                                disabled={saving || uploading}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label>Video giới thiệu sản phẩm (Từ thiết bị)</label>
+                                <div 
+                                    className="image-upload-area video-upload-area"
+                                    onClick={() => document.getElementById('product-video-file').click()}
+                                    style={{
+                                        border: '1px dashed #cbd5e1',
+                                        borderRadius: '12px',
+                                        padding: '20px',
+                                        textAlign: 'center',
+                                        cursor: 'pointer',
+                                        background: '#f8fafc',
+                                        position: 'relative'
+                                    }}
+                                >
+                                    <input 
+                                        type="file" 
+                                        id="product-video-file" 
+                                        style={{ display: 'none' }} 
+                                        onChange={handleVideoSelect}
+                                        accept="video/*"
+                                        disabled={saving || uploading}
+                                    />
+                                    {videoPreview ? (
+                                        <div className="preview-container video-preview-container" onClick={(e) => e.stopPropagation()}>
+                                            <video 
+                                                src={videoPreview.startsWith('blob:') ? videoPreview : getImageUrl(videoPreview)} 
+                                                controls 
+                                                style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                                            />
+                                            <button 
+                                                type="button" 
+                                                className="remove-img-btn" 
+                                                onClick={handleRemoveVideo}
+                                                disabled={saving || uploading}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-10px',
+                                                    right: '-10px',
+                                                    background: '#ef4444',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '50%',
+                                                    width: '24px',
+                                                    height: '24px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}
+                                            >
+                                                <FaTimes />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="upload-placeholder" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', color: '#64748b' }}>
+                                            <FaUpload style={{ fontSize: '24px' }} />
+                                            <span>Chọn video từ máy tính (.mp4, .webm...)</span>
+                                            <small style={{ fontSize: '11px', color: '#94a3b8' }}>Dung lượng tối đa: 50MB</small>
                                         </div>
                                     )}
                                 </div>

@@ -11,6 +11,76 @@ const UserManagement = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [selectedRoles, setSelectedRoles] = useState([]);
 
+    const [showUserModal, setShowUserModal] = useState(false);
+    const [modalMode, setModalMode] = useState('create'); // 'create' or 'edit'
+    const [userFormData, setUserFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        name: '',
+        phone: '',
+        address: '',
+        roles: ['ROLE_USER']
+    });
+
+    const handleOpenCreateModal = () => {
+        setModalMode('create');
+        setUserFormData({
+            username: '',
+            email: '',
+            password: '',
+            name: '',
+            phone: '',
+            address: '',
+            roles: ['ROLE_USER']
+        });
+        setShowUserModal(true);
+    };
+
+    const handleOpenEditModal = (user) => {
+        setModalMode('edit');
+        setUserFormData({
+            id: user.id,
+            username: user.username || '',
+            email: user.email || '',
+            password: '', // Để trống khi sửa
+            name: user.name || '',
+            phone: user.phone || '',
+            address: user.address || '',
+            roles: user.roles ? [...user.roles] : ['ROLE_USER']
+        });
+        setShowUserModal(true);
+    };
+
+    const handleFormInputChange = (e) => {
+        const { name, value } = e.target;
+        setUserFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmitUser = async (e) => {
+        e.preventDefault();
+        
+        if (userFormData.roles.length === 0) {
+            alert('Vui lòng chọn ít nhất một vai trò!');
+            return;
+        }
+
+        try {
+            if (modalMode === 'create') {
+                await axiosClient.post('/admin/users', userFormData);
+                alert('Tạo người dùng thành công!');
+            } else {
+                await axiosClient.put(`/admin/users/${userFormData.id}`, userFormData);
+                alert('Cập nhật người dùng thành công!');
+            }
+            setShowUserModal(false);
+            fetchUsers();
+        } catch (error) {
+            console.error('Error submitting user:', error);
+            alert(error.response?.data?.message || 'Thao tác thất bại!');
+        }
+    };
+
     useEffect(() => {
         fetchUsers();
     }, []);
@@ -111,8 +181,28 @@ const UserManagement = () => {
 
     return (
         <div className="user-management">
-            <div className="page-header">
-                <h1>Quản lý người dùng</h1>
+            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h1 style={{ margin: 0 }}>Quản lý người dùng</h1>
+                <button 
+                    className="add-user-btn" 
+                    onClick={handleOpenCreateModal}
+                    style={{
+                        backgroundColor: '#ff4d4f',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '10px 18px',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        boxShadow: '0 2px 6px rgba(255, 77, 79, 0.2)'
+                    }}
+                    onMouseOver={(e) => e.target.style.backgroundColor = '#ff7875'}
+                    onMouseOut={(e) => e.target.style.backgroundColor = '#ff4d4f'}
+                >
+                    + Thêm người dùng mới
+                </button>
             </div>
 
             <div className="filters">
@@ -193,6 +283,13 @@ const UserManagement = () => {
                                     </td>
                                     <td className="actions-cell">
                                         <div className="actions">
+                                            <button 
+                                                className="action-btn edit-btn"
+                                                onClick={() => handleOpenEditModal(user)}
+                                                title="Sửa thông tin"
+                                            >
+                                                <FaEdit />
+                                            </button>
                                             <button 
                                                 className="action-btn delete-btn"
                                                 onClick={() => handleDeleteUser(user)}
@@ -280,6 +377,135 @@ const UserManagement = () => {
                                 Cập nhật quyền
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal thêm/sửa người dùng */}
+            {showUserModal && (
+                <div className="modal-overlay">
+                    <div className="modal" style={{ maxWidth: '500px' }}>
+                        <div className="modal-header">
+                            <h2>{modalMode === 'create' ? 'Thêm người dùng mới' : 'Chỉnh sửa thông tin'}</h2>
+                            <button className="close-btn" onClick={() => setShowUserModal(false)}>
+                                ×
+                            </button>
+                        </div>
+                        <form onSubmit={handleSubmitUser}>
+                            <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Tên đăng nhập *</label>
+                                    <input
+                                        type="text"
+                                        name="username"
+                                        required
+                                        disabled={modalMode === 'edit' && userFormData.username === 'admin'}
+                                        value={userFormData.username}
+                                        onChange={handleFormInputChange}
+                                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                                    />
+                                </div>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Email *</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        required
+                                        value={userFormData.email}
+                                        onChange={handleFormInputChange}
+                                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                                    />
+                                </div>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Mật khẩu {modalMode === 'create' ? '*' : '(Để trống nếu không đổi)'}</label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        required={modalMode === 'create'}
+                                        value={userFormData.password}
+                                        placeholder={modalMode === 'create' ? "Nhập mật khẩu" : "Nhập mật khẩu mới"}
+                                        onChange={handleFormInputChange}
+                                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                                    />
+                                </div>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Họ và tên</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={userFormData.name}
+                                        onChange={handleFormInputChange}
+                                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                                    />
+                                </div>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Số điện thoại</label>
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={userFormData.phone}
+                                        onChange={handleFormInputChange}
+                                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px' }}
+                                    />
+                                </div>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Địa chỉ</label>
+                                    <textarea
+                                        name="address"
+                                        value={userFormData.address}
+                                        onChange={handleFormInputChange}
+                                        rows="2"
+                                        style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '14px', fontFamily: 'inherit' }}
+                                    />
+                                </div>
+                                <div className="form-group-modal" style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                                    <label style={{ fontWeight: '600', fontSize: '14px', color: '#475569', textAlign: 'left' }}>Vai trò (Quyền)</label>
+                                    <div style={{ display: 'flex', gap: '20px', marginTop: '5px' }}>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={userFormData.roles.includes('ROLE_USER')}
+                                                onChange={(e) => {
+                                                    const updated = e.target.checked 
+                                                        ? [...userFormData.roles, 'ROLE_USER']
+                                                        : userFormData.roles.filter(r => r !== 'ROLE_USER');
+                                                    setUserFormData(prev => ({ ...prev, roles: updated }));
+                                                }}
+                                            />
+                                            USER
+                                        </label>
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', cursor: 'pointer' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={userFormData.roles.includes('ROLE_ADMIN')}
+                                                onChange={(e) => {
+                                                    const updated = e.target.checked 
+                                                        ? [...userFormData.roles, 'ROLE_ADMIN']
+                                                        : userFormData.roles.filter(r => r !== 'ROLE_ADMIN');
+                                                    setUserFormData(prev => ({ ...prev, roles: updated }));
+                                                }}
+                                            />
+                                            ADMIN
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="modal-actions" style={{ borderTop: '1px solid #e2e8f0', padding: '15px 20px' }}>
+                                <button 
+                                    type="button" 
+                                    className="cancel-btn" 
+                                    onClick={() => setShowUserModal(false)}
+                                >
+                                    Hủy
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="save-btn"
+                                >
+                                    Lưu thay đổi
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
