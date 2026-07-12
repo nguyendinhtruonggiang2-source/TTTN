@@ -64,13 +64,21 @@ const NotificationListener = () => {
                 try {
                     const data = JSON.parse(event.data);
                     if (data) {
-                        // Không hiện cửa sổ thông báo quản trị (Toast) khi đang ở trang chính (/) hoặc là thông báo đơn hàng mới
+                        // Không hiện thông báo (toast & âm thanh) cho đơn hàng mới từ backend
+                        const isNewOrderNotification = data.title === 'Đơn hàng mới!' || data.content?.includes('vừa đặt đơn hàng mới');
+                        if (isNewOrderNotification) {
+                            console.log('Skipping new order notification toast/sound on frontend');
+                            // Vẫn phát Event để cập nhật ngầm danh sách đơn hàng
+                            window.dispatchEvent(new CustomEvent('new-notification', { detail: data }));
+                            return;
+                        }
+
+                        // Không hiện cửa sổ thông báo quản trị (Toast) khi đang ở trang chính (/)
                         const isAdminNotification = data.redirectUrl?.startsWith('/admin');
                         const isMainPage = window.location.pathname === '/';
-                        const isNewOrderNotification = data.title?.includes('Đơn hàng mới') || data.content?.includes('đặt đơn hàng mới');
                         
-                        if ((isAdminNotification && isMainPage) || isNewOrderNotification) {
-                            console.log('Skipping toast notification (admin on main page or new order notification)');
+                        if (isAdminNotification && isMainPage) {
+                            console.log('Skipping admin notification toast on main page');
                             // Vẫn phát Event để cập nhật số lượng badge ở các vị trí khác
                             window.dispatchEvent(new CustomEvent('new-notification', { detail: data }));
                             return;
