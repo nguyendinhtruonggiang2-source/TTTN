@@ -220,6 +220,9 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
                 <button onClick={() => handleNavigate("/notifications")}>
                   <FaBell /> Thông báo của tôi
                 </button>
+                <button onClick={() => handleNavigate("/compare")}>
+                  <FaExchangeAlt /> So sánh sản phẩm
+                </button>
                 {isAdmin && (
                   <button onClick={() => handleNavigate("/admin")} className="admin-btn">
                     <FaTachometerAlt /> Quản trị hệ thống
@@ -350,6 +353,15 @@ function Header({ isAuthenticated, user, updateAuthStatus, onLogout }) {
               title="Blog"
             >
               <FaBlog /> <span className="nav-text">Blog</span>
+            </button>
+
+            {/* So sánh */}
+            <button 
+              className={`nav-btn ${location.pathname === "/compare" ? "active" : ""}`}
+              onClick={() => handleNavigate("/compare")}
+              title="So sánh"
+            >
+              <FaExchangeAlt /> <span className="nav-text">So sánh</span>
             </button>
 
             {/* ===== MOBILE MENU EXTRA ===== */}
