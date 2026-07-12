@@ -441,11 +441,13 @@ function Home() {
 
   const fetchFlashSales = useCallback(async () => {
     try {
-      console.log("⚡ Fetching active flash sales...");
-      const response = await axiosClient.get("/flash-sale/active");
-      setFlashSales(response.data || []);
+      console.log("⚡ Fetching all flash sales for home...");
+      const response = await axiosClient.get("/flash-sale/all");
+      const allSales = response.data || [];
+      const mappedSales = allSales.map(s => ({ ...s, status: 'ACTIVE' }));
+      setFlashSales(mappedSales);
     } catch (error) {
-      console.error("Error fetching active flash sales for home:", error);
+      console.error("Error fetching flash sales for home:", error);
     }
   }, []);
 
