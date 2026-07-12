@@ -237,6 +237,8 @@ const FlashSaleManagement = () => {
           <tbody>
             {filteredFlashSales.map(item => {
               const status = getStatus(item.startTime, item.endTime, item.isActive);
+              const ended = new Date(item.endTime) < new Date();
+              const isChecked = item.isActive && !ended;
               return (
                 <tr key={item.id}>
                   <td>{item.id}</td>
@@ -265,10 +267,11 @@ const FlashSaleManagement = () => {
                       <span className={`status-badge ${status.class}`}>
                         {status.text}
                       </span>
-                      <label className="switch">
+                      <label className="switch" title={ended ? "Chiến dịch đã kết thúc, không thể thay đổi kích hoạt" : ""}>
                         <input 
                           type="checkbox" 
-                          checked={item.isActive ?? false} 
+                          checked={isChecked} 
+                          disabled={ended}
                           onChange={() => handleToggleActive(item)} 
                         />
                         <span className="slider round"></span>

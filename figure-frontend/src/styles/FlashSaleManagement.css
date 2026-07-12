@@ -557,3 +557,19 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+/* Style for disabled switch container & slider */
+input:disabled + .slider {
+  background-color: #e2e8f0;
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+input:disabled:checked + .slider {
+  background-color: #a7f3d0;
+}
+
+input:disabled + .slider:before {
+  background-color: #cbd5e1;
+  cursor: not-allowed;
+}
