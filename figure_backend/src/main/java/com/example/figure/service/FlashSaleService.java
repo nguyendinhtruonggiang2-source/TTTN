@@ -27,6 +27,15 @@ public class FlashSaleService {
             .map(this::convertToDTO)
             .collect(Collectors.toList());
     }
+
+    // Lấy tất cả flash sale (dành cho hiển thị demo)
+    @Transactional(readOnly = true)
+    public List<FlashSaleDTO> getAllFlashSales() {
+        List<FlashSale> flashSales = flashSaleRepository.findAll();
+        return flashSales.stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
     
     // Lấy flash sale sắp diễn ra
     @Transactional(readOnly = true)

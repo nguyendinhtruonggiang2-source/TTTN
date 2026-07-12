@@ -29,6 +29,19 @@ public class FlashSaleController {
             return ResponseEntity.badRequest().body(error);
         }
     }
+
+    // Lấy tất cả danh sách flash sale
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllFlashSales() {
+        try {
+            List<FlashSaleDTO> flashSales = flashSaleService.getAllFlashSales();
+            return ResponseEntity.ok(flashSales);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
     
     // Lấy danh sách flash sale sắp diễn ra
     @GetMapping("/upcoming")

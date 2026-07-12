@@ -20,6 +20,7 @@ const FlashSale = () => {
   const navigate = useNavigate();
   const [flashSales, setFlashSales] = useState([]);
   const [upcomingSales, setUpcomingSales] = useState([]);
+  const [endedSales, setEndedSales] = useState([]);
   const [promotions, setPromotions] = useState([]);
   const [activeTab, setActiveTab] = useState('flashsale');
   const [copiedId, setCopiedId] = useState(null);
@@ -30,8 +31,7 @@ const FlashSale = () => {
   const [notified, setNotified] = useState({});
 
   useEffect(() => {
-    fetchFlashSales();
-    fetchUpcomingSales();
+    fetchFlashSalesData();
     fetchActivePromotions();
   }, []);
 
@@ -56,29 +56,28 @@ const FlashSale = () => {
       updateTimeLeft();
     }, 1000);
     return () => clearInterval(interval);
-  }, [flashSales, upcomingSales]);
+  }, [flashSales, upcomingSales, endedSales]);
 
-  const fetchFlashSales = async () => {
+  const fetchFlashSalesData = async () => {
     try {
       setLoading(true);
-      const response = await axiosClient.get('/flash-sale/active');
-      console.log('Flash sales response:', response.data);
-      setFlashSales(response.data || []);
+      const response = await axiosClient.get('/flash-sale/all');
+      console.log('All flash sales response:', response.data);
+      const allSales = response.data || [];
+      
+      const active = allSales.filter(s => s.status === 'ACTIVE' && s.isActive);
+      const upcoming = allSales.filter(s => s.status === 'UPCOMING' && s.isActive);
+      const ended = allSales.filter(s => s.status === 'ENDED' || !s.isActive);
+      
+      setFlashSales(active);
+      setUpcomingSales(upcoming);
+      setEndedSales(ended);
       setError(null);
     } catch (err) {
       console.error('Error fetching flash sales:', err);
       setError('Không thể tải danh sách flash sale');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchUpcomingSales = async () => {
-    try {
-      const response = await axiosClient.get('/flash-sale/upcoming');
-      setUpcomingSales(response.data || []);
-    } catch (err) {
-      console.error('Error fetching upcoming sales:', err);
     }
   };
 
@@ -421,6 +420,57 @@ const FlashSale = () => {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          {/* Flash Sale đã kết thúc */}
+          {endedSales.length > 0 && (
+            <div className="upcoming-section ended-section" style={{ marginTop: '40px', opacity: 0.75 }}>
+              <div className="section-header">
+                <h2>
+                  <FaClock className="section-icon" style={{ color: '#64748b' }} />
+                  Đã diễn ra / Tạm dừng
+                </h2>
+              </div>
+              
+              <div className="upcoming-grid">
+                {endedSales.map(sale => (
+                  <div key={sale.id} className="upcoming-card ended-card">
+                    <div className="card-image" style={{ position: 'relative' }}>
+                      <img 
+                        src={getImageUrl(sale.figure.image)} 
+                        alt={sale.figure.name}
+                        onError={(e) => e.target.src = '/default-figure.jpg'}
+                      />
+                      <div className="discount-badge" style={{ backgroundColor: '#64748b' }}>-{sale.discountPercent}%</div>
+                      <div className="ended-overlay" style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        background: 'rgba(15, 23, 42, 0.4)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        fontSize: '14px'
+                      }}>
+                        {sale.isActive ? 'ĐÃ KẾT THÚC' : 'TẠM DỪNG'}
+                      </div>
+                    </div>
+                    <div className="card-content">
+                      <h4>{sale.figure.name}</h4>
+                      <div className="product-price">
+                        <span className="original-price">{formatPrice(sale.figure.originalPrice)}</span>
+                        <span className="flash-price" style={{ color: '#64748b' }}>{formatPrice(sale.salePrice)}</span>
+                      </div>
+                      <div className="countdown-timer ended" style={{ color: '#64748b' }}>
+                        <span>Đã kết thúc chương trình</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
