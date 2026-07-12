@@ -63,12 +63,21 @@ const DashboardStats = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
 
   useEffect(() => {
-    fetchDashboardStats();
+    fetchDashboardStats(false);
+    
+    // Tự động tải lại số liệu dashboard mỗi 15 giây
+    const intervalId = setInterval(() => {
+      fetchDashboardStats(true);
+    }, 15000);
+    
+    return () => clearInterval(intervalId);
   }, [selectedPeriod]);
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardStats = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground) {
+        setLoading(true);
+      }
       const response = await axiosClient.get(`/admin/dashboard/stats?period=${selectedPeriod}`);
       setStats(response.data);
     } catch (error) {
@@ -105,7 +114,9 @@ const DashboardStats = () => {
         ]
       });
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 

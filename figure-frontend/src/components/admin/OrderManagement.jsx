@@ -12,11 +12,29 @@ const OrderManagement = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
 
     useEffect(() => {
-        fetchOrders();
+        fetchOrders(false);
+
+        // 1. Phản hồi thời gian thực qua sự kiện Notification
+        const handleNotification = () => {
+            fetchOrders(true);
+        };
+        window.addEventListener('new-notification', handleNotification);
+
+        // 2. Tự động tải lại định kỳ mỗi 10 giây
+        const intervalId = setInterval(() => {
+            fetchOrders(true);
+        }, 10000);
+
+        return () => {
+            window.removeEventListener('new-notification', handleNotification);
+            clearInterval(intervalId);
+        };
     }, []);
 
-    const fetchOrders = async () => {
-        setLoading(true);
+    const fetchOrders = async (isBackground = false) => {
+        if (!isBackground) {
+            setLoading(true);
+        }
         try {
             const response = await axiosClient.get('/admin/orders');
             const sortedOrders = (response.data || []).sort((a, b) => b.id - a.id);
@@ -24,7 +42,9 @@ const OrderManagement = () => {
         } catch (error) {
             console.error('Error fetching orders:', error);
         } finally {
-            setLoading(false);
+            if (!isBackground) {
+                setLoading(false);
+            }
         }
     };
 
