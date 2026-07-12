@@ -13,27 +13,38 @@ function OrderDetail() {
   const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
-    fetchOrderDetail();
+    fetchOrderDetail(false);
+
+    // Tự động làm mới chi tiết đơn hàng định kỳ mỗi 10 giây ngầm
+    const intervalId = setInterval(() => {
+      fetchOrderDetail(true);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, [id]);
 
-  const fetchOrderDetail = async () => {
+  const fetchOrderDetail = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground) {
+        setLoading(true);
+      }
       const response = await axiosClient.get(`/orders/${id}`);
       console.log('Order detail response:', response.data);
       setOrder(response.data);
     } catch (err) {
       console.error('Error fetching order detail:', err);
       if (err.response?.status === 404) {
-        setError('Không tìm thấy đơn hàng');
+        if (!isBackground) setError('Không tìm thấy đơn hàng');
       } else if (err.response?.status === 401) {
-        setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại');
+        if (!isBackground) setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại');
         setTimeout(() => navigate('/login'), 1500);
       } else {
-        setError('Không thể tải thông tin đơn hàng');
+        if (!isBackground) setError('Không thể tải thông tin đơn hàng');
       }
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 

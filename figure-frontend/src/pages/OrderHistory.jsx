@@ -30,16 +30,25 @@ function OrderHistory() {
   };
 
   useEffect(() => {
-    fetchOrders();
+    fetchOrders(false);
+
+    // Tự động làm mới danh sách đơn hàng định kỳ mỗi 10 giây ngầm
+    const intervalId = setInterval(() => {
+      fetchOrders(true);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useEffect(() => {
     filterOrders();
   }, [statusFilter, searchTerm, dateRange, orders]);
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (isBackground = false) => {
     try {
-      setLoading(true);
+      if (!isBackground) {
+        setLoading(true);
+      }
       const response = await axiosClient.get('/orders');
       console.log('Orders response:', response.data);
       setOrders(response.data);
@@ -50,10 +59,14 @@ function OrderHistory() {
         setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại');
         setTimeout(() => navigate('/login'), 1500);
       } else {
-        setError('Không thể tải danh sách đơn hàng');
+        if (!isBackground) {
+          setError('Không thể tải danh sách đơn hàng');
+        }
       }
     } finally {
-      setLoading(false);
+      if (!isBackground) {
+        setLoading(false);
+      }
     }
   };
 
