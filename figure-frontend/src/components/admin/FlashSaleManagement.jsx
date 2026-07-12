@@ -94,6 +94,19 @@ const FlashSaleManagement = () => {
     }
   };
 
+  const handleToggleActive = async (item) => {
+    try {
+      const updatedStatus = !item.isActive;
+      await axiosClient.put(`/admin/flash-sale/${item.id}`, {
+        isActive: updatedStatus
+      });
+      setFlashSales(prev => prev.map(fs => fs.id === item.id ? { ...fs, isActive: updatedStatus } : fs));
+    } catch (error) {
+      console.error('Error toggling flash sale status:', error);
+      alert('❌ Không thể cập nhật trạng thái hoạt động');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -156,7 +169,8 @@ const FlashSaleManagement = () => {
     }
   };
 
-  const getStatus = (startTime, endTime) => {
+  const getStatus = (startTime, endTime, isActive) => {
+    if (isActive === false) return { text: 'Đã tắt', class: 'status-ended' };
     const now = new Date();
     const start = new Date(startTime);
     const end = new Date(endTime);
@@ -222,7 +236,7 @@ const FlashSaleManagement = () => {
           </thead>
           <tbody>
             {filteredFlashSales.map(item => {
-              const status = getStatus(item.startTime, item.endTime);
+              const status = getStatus(item.startTime, item.endTime, item.isActive);
               return (
                 <tr key={item.id}>
                   <td>{item.id}</td>
@@ -247,9 +261,19 @@ const FlashSaleManagement = () => {
                     </div>
                   </td>
                   <td>
-                    <span className={`status-badge ${status.class}`}>
-                      {status.text}
-                    </span>
+                    <div className="status-cell">
+                      <span className={`status-badge ${status.class}`}>
+                        {status.text}
+                      </span>
+                      <label className="switch">
+                        <input 
+                          type="checkbox" 
+                          checked={item.isActive ?? false} 
+                          onChange={() => handleToggleActive(item)} 
+                        />
+                        <span className="slider round"></span>
+                      </label>
+                    </div>
                   </td>
                   <td>
                     <div className="actions">
