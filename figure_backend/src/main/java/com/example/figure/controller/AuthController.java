@@ -20,6 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.figure.service.EmailService;
 import java.util.HashSet;
 
 @RestController
@@ -33,6 +34,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder; // THÊM PasswordEncoder
+    private final EmailService emailService;
     
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
@@ -165,6 +167,27 @@ public class AuthController {
             user.setResetCodeExpiry(java.time.LocalDateTime.now().plusMinutes(10));
             userRepository.save(user);
             
+            // Send Reset Password Email
+            String subject = "[Figure Store] Yêu cầu đặt lại mật khẩu";
+            String emailContent = "<div style=\"font-family: Arial, sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;\">" +
+                    "    <h2 style=\"color: #2563eb; text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px;\">YÊU CẦU ĐẶT LẠI MẬT KHẨU</h2>" +
+                    "    <p>Xin chào <strong>" + (user.getName() != null ? user.getName() : user.getUsername()) + "</strong>,</p>" +
+                    "    <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu của bạn. Vui lòng sử dụng mã xác nhận bên dưới để tạo mật khẩu mới:</p>" +
+                    "    " +
+                    "    <div style=\"background-color: #f8fafc; padding: 20px; text-align: center; border-radius: 8px; margin: 20px 0;\">" +
+                    "        <span style=\"font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #2563eb;\">" + resetCode + "</span>" +
+                    "    </div>" +
+                    "    " +
+                    "    <p style=\"color: #dc2626; font-size: 13px;\">⚠️ Mã này sẽ hết hạn trong vòng 10 phút. Nếu bạn không yêu cầu thay đổi này, bạn có thể bỏ qua email này một cách an sau.</p>" +
+                    "    " +
+                    "    <div style=\"border-top: 1px solid #e2e8f0; margin-top: 25px; padding-top: 15px; text-align: center; color: #64748b; font-size: 12px;\">" +
+                    "        <p>Đây là email tự động, vui lòng không phản hồi lại email này.</p>" +
+                    "        <p>© 2026 Figure Store. All rights reserved.</p>" +
+                    "    </div>" +
+                    "</div>";
+
+            emailService.sendEmail(email, subject, emailContent);
+
             // Log to console for local testing / verification
             System.out.println("=================================================");
             System.out.println("RESET CODE FOR EMAIL " + email + ": " + resetCode);
@@ -172,7 +195,7 @@ public class AuthController {
             
             // Return response. Include code in response to make it easy for frontend testing/deployment
             java.util.Map<String, String> response = new java.util.HashMap<>();
-            response.put("message", "Mã xác thực đặt lại mật khẩu đã được tạo.");
+            response.put("message", "Mã xác thực đặt lại mật khẩu đã được gửi về Gmail của bạn.");
             response.put("email", email);
             response.put("resetCode", resetCode);
             return ResponseEntity.ok(response);
