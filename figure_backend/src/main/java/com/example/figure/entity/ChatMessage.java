@@ -18,6 +18,9 @@ public class ChatMessage {
     
     private LocalDateTime createdAt;
     
+    @Transient
+    private Boolean isPreset = false;
+    
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
@@ -38,4 +41,7 @@ public class ChatMessage {
     
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public Boolean getIsPreset() { return isPreset != null ? isPreset : false; }
+    public void setIsPreset(Boolean isPreset) { this.isPreset = isPreset; }
 }

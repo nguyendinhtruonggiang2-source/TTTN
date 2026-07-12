@@ -218,7 +218,7 @@ const AiChatWidget = () => {
         '🛡️ Cam kết chính hãng'
     ];
 
-    const sendQuestion = async (text) => {
+    const sendQuestion = async (text, isPreset = false) => {
         if (!text.trim() || isLoading) return;
         
         // Thêm tin nhắn vào giao diện cục bộ ngay lập tức
@@ -235,7 +235,8 @@ const AiChatWidget = () => {
         const payload = {
             sessionId: sessionId,
             sender: 'customer',
-            text: text
+            text: text,
+            isPreset: isPreset
         };
 
         const ws = socketRef.current;
@@ -274,7 +275,7 @@ const AiChatWidget = () => {
         if (!inputValue.trim()) return;
         const text = inputValue.trim();
         setInputValue('');
-        await sendQuestion(text);
+        await sendQuestion(text, false);
     };
 
     const toggleChat = () => {
@@ -466,7 +467,7 @@ const AiChatWidget = () => {
                                 key={idx} 
                                 type="button" 
                                 className="chat-preset-pill" 
-                                onClick={() => sendQuestion(q)}
+                                onClick={() => sendQuestion(q, true)}
                                 disabled={isLoading}
                             >
                                 {q}

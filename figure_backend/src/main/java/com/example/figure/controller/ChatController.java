@@ -43,8 +43,8 @@ public class ChatController {
             System.err.println("Error broadcasting message: " + e.getMessage());
         }
         
-        // If the sender is the customer, automatically generate an AI Bot reply in the same thread
-        if ("customer".equals(message.getSender())) {
+        // If the sender is the customer and it is a preset suggestion, automatically generate an AI Bot reply in the same thread
+        if ("customer".equals(message.getSender()) && Boolean.TRUE.equals(message.getIsPreset())) {
             try {
                 String botReply = aiChatService.generateReply(message.getText(), message.getSessionId());
                 

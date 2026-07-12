@@ -67,8 +67,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             // Phát đi (broadcast) tin nhắn này tới tất cả mọi người đang online
             broadcast(saved);
             
-            // Nếu người gửi là Customer, tự động kích hoạt bot trả lời trong cùng phiên chat
-            if ("customer".equals(saved.getSender())) {
+            // Nếu người gửi là Customer và là câu hỏi gợi ý, tự động kích hoạt bot trả lời trong cùng phiên chat
+            if ("customer".equals(saved.getSender()) && Boolean.TRUE.equals(chatMsg.getIsPreset())) {
                 String botReplyText = aiChatService.generateReply(saved.getText(), saved.getSessionId());
                 
                 ChatMessage botMsg = new ChatMessage();
