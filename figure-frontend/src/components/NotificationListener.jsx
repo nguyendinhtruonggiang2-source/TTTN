@@ -64,12 +64,13 @@ const NotificationListener = () => {
                 try {
                     const data = JSON.parse(event.data);
                     if (data) {
-                        // Không hiện cửa sổ thông báo quản trị (Toast) khi đang ở trang chính (/)
+                        // Không hiện cửa sổ thông báo quản trị (Toast) khi đang ở trang chính (/) hoặc là thông báo đơn hàng mới
                         const isAdminNotification = data.redirectUrl?.startsWith('/admin');
                         const isMainPage = window.location.pathname === '/';
+                        const isNewOrderNotification = data.title?.includes('Đơn hàng mới') || data.content?.includes('đặt đơn hàng mới');
                         
-                        if (isAdminNotification && isMainPage) {
-                            console.log('Skipping admin notification toast on main page');
+                        if ((isAdminNotification && isMainPage) || isNewOrderNotification) {
+                            console.log('Skipping toast notification (admin on main page or new order notification)');
                             // Vẫn phát Event để cập nhật số lượng badge ở các vị trí khác
                             window.dispatchEvent(new CustomEvent('new-notification', { detail: data }));
                             return;
