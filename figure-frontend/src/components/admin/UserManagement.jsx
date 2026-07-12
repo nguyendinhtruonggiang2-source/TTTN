@@ -254,11 +254,11 @@ const UserManagement = () => {
                                     <td className="name-cell">{user.name || 'Chưa cập nhật'}</td>
                                     <td className="roles-cell">
                                         <div className="roles-list">
-                                            {user.roles?.map((role, index) => (
-                                                <React.Fragment key={index}>
-                                                    {getRoleBadge(role)}
-                                                </React.Fragment>
-                                            ))}
+                                            {user.roles?.includes('ROLE_ADMIN') ? (
+                                                getRoleBadge('ROLE_ADMIN')
+                                            ) : (
+                                                getRoleBadge('ROLE_USER')
+                                            )}
                                         </div>
                                         <button 
                                             className="edit-roles-btn"
@@ -332,31 +332,21 @@ const UserManagement = () => {
                                 <div className="role-options">
                                     <label className="role-option">
                                         <input
-                                            type="checkbox"
-                                            checked={selectedRoles.includes('ROLE_USER')}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedRoles([...selectedRoles, 'ROLE_USER']);
-                                                } else {
-                                                    setSelectedRoles(selectedRoles.filter(r => r !== 'ROLE_USER'));
-                                                }
-                                            }}
+                                            type="radio"
+                                            name="roleSelect"
+                                            checked={selectedRoles.includes('ROLE_ADMIN')}
+                                            onChange={() => setSelectedRoles(['ROLE_ADMIN'])}
                                         />
-                                        <span className="role-badge user"><FaUser /> Người dùng</span>
+                                        <span className="role-badge admin"><FaCrown /> Quản trị viên</span>
                                     </label>
                                     <label className="role-option">
                                         <input
-                                            type="checkbox"
-                                            checked={selectedRoles.includes('ROLE_ADMIN')}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedRoles([...selectedRoles, 'ROLE_ADMIN']);
-                                                } else {
-                                                    setSelectedRoles(selectedRoles.filter(r => r !== 'ROLE_ADMIN'));
-                                                }
-                                            }}
+                                            type="radio"
+                                            name="roleSelect"
+                                            checked={selectedRoles.includes('ROLE_USER') && !selectedRoles.includes('ROLE_ADMIN')}
+                                            onChange={() => setSelectedRoles(['ROLE_USER'])}
                                         />
-                                        <span className="role-badge admin"><FaCrown /> Quản trị viên</span>
+                                        <span className="role-badge user"><FaUser /> Người dùng</span>
                                     </label>
                                 </div>
                             </div>
@@ -463,27 +453,19 @@ const UserManagement = () => {
                                     <div style={{ display: 'flex', gap: '20px', marginTop: '5px' }}>
                                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', cursor: 'pointer' }}>
                                             <input
-                                                type="checkbox"
-                                                checked={userFormData.roles.includes('ROLE_USER')}
-                                                onChange={(e) => {
-                                                    const updated = e.target.checked 
-                                                        ? [...userFormData.roles, 'ROLE_USER']
-                                                        : userFormData.roles.filter(r => r !== 'ROLE_USER');
-                                                    setUserFormData(prev => ({ ...prev, roles: updated }));
-                                                }}
+                                                type="radio"
+                                                name="userRoles"
+                                                checked={userFormData.roles.includes('ROLE_USER') && !userFormData.roles.includes('ROLE_ADMIN')}
+                                                onChange={() => setUserFormData(prev => ({ ...prev, roles: ['ROLE_USER'] }))}
                                             />
                                             USER
                                         </label>
                                         <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', cursor: 'pointer' }}>
                                             <input
-                                                type="checkbox"
+                                                type="radio"
+                                                name="userRoles"
                                                 checked={userFormData.roles.includes('ROLE_ADMIN')}
-                                                onChange={(e) => {
-                                                    const updated = e.target.checked 
-                                                        ? [...userFormData.roles, 'ROLE_ADMIN']
-                                                        : userFormData.roles.filter(r => r !== 'ROLE_ADMIN');
-                                                    setUserFormData(prev => ({ ...prev, roles: updated }));
-                                                }}
+                                                onChange={() => setUserFormData(prev => ({ ...prev, roles: ['ROLE_ADMIN'] }))}
                                             />
                                             ADMIN
                                         </label>
