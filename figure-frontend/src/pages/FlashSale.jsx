@@ -65,13 +65,11 @@ const FlashSale = () => {
       console.log('All flash sales response:', response.data);
       const allSales = response.data || [];
       
-      const active = allSales.filter(s => s.status === 'ACTIVE' && s.isActive);
-      const upcoming = allSales.filter(s => s.status === 'UPCOMING' && s.isActive);
-      const ended = allSales.filter(s => s.status === 'ENDED' || !s.isActive);
+      const mappedSales = allSales.map(s => ({ ...s, status: 'ACTIVE' }));
       
-      setFlashSales(active);
-      setUpcomingSales(upcoming);
-      setEndedSales(ended);
+      setFlashSales(mappedSales);
+      setUpcomingSales([]);
+      setEndedSales([]);
       setError(null);
     } catch (err) {
       console.error('Error fetching flash sales:', err);
