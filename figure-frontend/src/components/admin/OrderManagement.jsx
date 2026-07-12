@@ -19,7 +19,8 @@ const OrderManagement = () => {
         setLoading(true);
         try {
             const response = await axiosClient.get('/admin/orders');
-            setOrders(response.data || []);
+            const sortedOrders = (response.data || []).sort((a, b) => b.id - a.id);
+            setOrders(sortedOrders);
         } catch (error) {
             console.error('Error fetching orders:', error);
         } finally {
