@@ -16,14 +16,16 @@ function OrderHistory() {
 
   // Map status từ backend sang hiển thị
   const getStatusMapping = (status) => {
+    if (!status) return { text: '', class: 'pending', icon: '' };
     const statusMap = {
       'PENDING': { text: 'Chờ xác nhận', class: 'pending', icon: '' },
       'PROCESSING': { text: 'Đang xử lý', class: 'processing', icon: '' },
       'SHIPPED': { text: 'Đang giao hàng', class: 'shipping', icon: '' },
       'DELIVERED': { text: 'Đã giao hàng', class: 'delivered', icon: '' },
-      'CANCELLED': { text: 'Đã hủy', class: 'cancelled', icon: '' }
+      'CANCELLED': { text: 'Đã hủy', class: 'cancelled', icon: '' },
+      'CANCELLING': { text: 'Đang chờ hủy', class: 'cancelled', icon: '⏳' }
     };
-    return statusMap[status] || { text: status, class: 'pending', icon: '' };
+    return statusMap[status.toUpperCase()] || { text: status, class: 'pending', icon: '' };
   };
 
   useEffect(() => {
@@ -348,12 +350,12 @@ function OrderHistory() {
                     >
                       Xem chi tiết
                     </button>
-                    {order.status === 'PENDING' && (
+                    {(order.status?.toUpperCase() === 'PENDING' || order.status?.toUpperCase() === 'PROCESSING') && (
                       <button 
                         className="btn-cancel"
                         onClick={() => handleCancelOrder(order.id)}
                       >
-                        Hủy đơn
+                        Yêu cầu hủy
                       </button>
                     )}
                     {order.status === 'DELIVERED' && (

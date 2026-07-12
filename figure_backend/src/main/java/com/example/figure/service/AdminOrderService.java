@@ -6,6 +6,7 @@ import com.example.figure.dto.UserDTO;
 import com.example.figure.entity.Order;
 import com.example.figure.entity.OrderItem;
 import com.example.figure.repository.OrderRepository;
+import com.example.figure.repository.FigureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class AdminOrderService {
     
     private final OrderRepository orderRepository;
+    private final FigureRepository figureRepository;
     private final com.example.figure.repository.NotificationRepository notificationRepository;
     private final com.example.figure.websocket.NotificationWebSocketHandler notificationWebSocketHandler;
     
@@ -36,8 +38,23 @@ public class AdminOrderService {
     public OrderDTO updateOrderStatus(Long id, String status) {
         Order order = orderRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        String oldStatus = order.getStatus();
         order.setStatus(status);
         Order updated = orderRepository.save(order);
+
+        // Nếu chuyển sang trạng thái huỷ đơn và trạng thái trước đó chưa phải huỷ
+        if ("cancelled".equalsIgnoreCase(status) && !"cancelled".equalsIgnoreCase(oldStatus)) {
+            if (updated.getItems() != null) {
+                for (OrderItem item : updated.getItems()) {
+                    if (item.getFigure() != null) {
+                        com.example.figure.entity.Figure figure = item.getFigure();
+                        figure.setQuantity(figure.getQuantity() + item.getQuantity());
+                        figureRepository.save(figure);
+                    }
+                }
+            }
+        }
 
         // Tạo thông báo cho khách hàng khi có cập nhật trạng thái đơn hàng
         try {
@@ -69,6 +86,7 @@ public class AdminOrderService {
             case "processing": return "Đang xử lý";
             case "shipped": return "Đang giao hàng";
             case "delivered": return "Đã giao hàng thành công";
+            case "cancelling": return "Đang chờ hủy (yêu cầu từ khách)";
             case "cancelled": return "Đã hủy";
             default: return status;
         }

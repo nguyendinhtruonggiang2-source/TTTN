@@ -193,7 +193,7 @@ function OrderDetail() {
       </div>
 
       <div className="order-actions">
-        {order.status === 'pending' && (
+        {(order.status?.toUpperCase() === 'PENDING' || order.status?.toUpperCase() === 'PROCESSING') && (
           <button 
             className="btn-cancel"
             onClick={handleCancelOrder}
@@ -205,7 +205,7 @@ function OrderDetail() {
                 Đang xử lý...
               </>
             ) : (
-              '❌ Hủy đơn hàng'
+              '❌ Yêu cầu hủy đơn'
             )}
           </button>
         )}
@@ -221,14 +221,16 @@ function OrderDetail() {
 }
 
 function getStatusText(status) {
+  if (!status) return '';
   const statusMap = {
-    'pending': '⏳ Chờ xác nhận',
-    'confirmed': '✅ Đã xác nhận',
-    'shipping': '🚚 Đang giao hàng',
-    'delivered': '📦 Đã giao hàng',
-    'cancelled': '❌ Đã hủy'
+    'PENDING': '⏳ Chờ xác nhận',
+    'PROCESSING': '⚙️ Đang xử lý',
+    'SHIPPED': '🚚 Đang giao hàng',
+    'DELIVERED': '📦 Đã giao hàng',
+    'CANCELLED': '❌ Đã hủy',
+    'CANCELLING': '⚠️ Đang chờ hủy'
   };
-  return statusMap[status] || status;
+  return statusMap[status.toUpperCase()] || status;
 }
 
 function getPaymentMethod(method) {

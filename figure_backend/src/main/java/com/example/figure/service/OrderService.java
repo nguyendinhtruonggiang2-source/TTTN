@@ -138,20 +138,12 @@ public class OrderService {
             .filter(o -> o.getUser().getId().equals(user.getId()))
             .orElseThrow(() -> new RuntimeException("Order not found"));
         
-        if (!"pending".equals(order.getStatus())) {
-            throw new RuntimeException("Chỉ có thể hủy đơn hàng đang chờ xác nhận");
+        String statusUpper = order.getStatus() != null ? order.getStatus().toUpperCase() : "";
+        if (!"PENDING".equals(statusUpper) && !"PROCESSING".equals(statusUpper)) {
+            throw new RuntimeException("Chỉ có thể yêu cầu hủy đơn hàng đang chờ xác nhận hoặc đang xử lý");
         }
         
-        order.setStatus("cancelled");
-        
-        if (order.getItems() != null) {
-            for (OrderItem item : order.getItems()) {
-                Figure figure = item.getFigure();
-                figure.setQuantity(figure.getQuantity() + item.getQuantity());
-                figureRepository.save(figure);
-            }
-        }
-        
+        order.setStatus("CANCELLING");
         orderRepository.save(order);
     }
 }

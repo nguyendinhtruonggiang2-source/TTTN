@@ -97,7 +97,8 @@ const OrderManagement = () => {
     };
 
     const getStatusInfo = (status) => {
-        switch(status) {
+        if (!status) return { label: '', color: '#666', icon: '❓' };
+        switch(status.toUpperCase()) {
             case 'PENDING':
                 return { label: 'Chờ xác nhận', color: '#fa8c16', icon: '⏳' };
             case 'PROCESSING':
@@ -108,25 +109,32 @@ const OrderManagement = () => {
                 return { label: 'Đã giao', color: '#52c41a', icon: '✅' };
             case 'CANCELLED':
                 return { label: 'Đã hủy', color: '#ff4d4f', icon: '❌' };
+            case 'CANCELLING':
+                return { label: 'Khách yêu cầu hủy', color: '#fa541c', icon: '⚠️' };
             default:
                 return { label: status, color: '#666', icon: '❓' };
         }
     };
 
     const getStatusOptions = (currentStatus) => {
+        if (!currentStatus) return [];
+        const statusUpper = currentStatus.toUpperCase();
         const allStatuses = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
         const orderFlow = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
         
-        if (currentStatus === 'CANCELLED') {
+        if (statusUpper === 'CANCELLED') {
             return [];
         }
+        if (statusUpper === 'CANCELLING') {
+            return ['PENDING', 'PROCESSING', 'CANCELLED'];
+        }
         
-        const currentIndex = orderFlow.indexOf(currentStatus);
+        const currentIndex = orderFlow.indexOf(statusUpper);
         if (currentIndex !== -1) {
             return orderFlow.slice(currentIndex + 1);
         }
         
-        return allStatuses.filter(status => status !== currentStatus && status !== 'CANCELLED');
+        return allStatuses.filter(status => status !== statusUpper && status !== 'CANCELLED');
     };
 
     return (
@@ -191,19 +199,40 @@ const OrderManagement = () => {
                                         <td className="date-cell">{formatDate(order.createdAt)}</td>
                                         <td className="amount-cell">{formatCurrency(order.totalAmount)}</td>
                                         <td className="status-cell">
-                                            <div className="status-container">
+                                            <div className="status-container" style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                                                 <span 
                                                     className={`status-badge ${order.status.toLowerCase()}`}
                                                 >
                                                     {statusInfo.icon} {statusInfo.label}
                                                 </span>
+                                                {order.status.toUpperCase() === 'CANCELLING' && (
+                                                    <button
+                                                        onClick={() => handleUpdateStatus(order.id, 'CANCELLED')}
+                                                        className="confirm-cancel-btn"
+                                                        style={{
+                                                            padding: '4px 10px',
+                                                            backgroundColor: '#ff4d4f',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            fontWeight: 'bold',
+                                                            fontSize: '11px',
+                                                            transition: 'background-color 0.2s'
+                                                        }}
+                                                        onMouseOver={(e) => e.target.style.backgroundColor = '#ff7875'}
+                                                        onMouseOut={(e) => e.target.style.backgroundColor = '#ff4d4f'}
+                                                    >
+                                                        Xác nhận hủy
+                                                    </button>
+                                                )}
                                                 {statusOptions.length > 0 && (
                                                     <select
                                                         className="status-select"
-                                                        value={order.status}
+                                                        value={order.status.toUpperCase()}
                                                         onChange={(e) => handleUpdateStatus(order.id, e.target.value)}
                                                     >
-                                                        <option value={order.status}>
+                                                        <option value={order.status.toUpperCase()}>
                                                             → Cập nhật
                                                         </option>
                                                         {statusOptions.map(status => {
