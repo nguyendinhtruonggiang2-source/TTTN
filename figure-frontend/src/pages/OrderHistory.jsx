@@ -23,7 +23,8 @@ function OrderHistory() {
       'SHIPPED': { text: 'Đang giao hàng', class: 'shipping', icon: '' },
       'DELIVERED': { text: 'Đã giao hàng', class: 'delivered', icon: '' },
       'CANCELLED': { text: 'Đã hủy', class: 'cancelled', icon: '' },
-      'CANCELLING': { text: 'Đang chờ hủy', class: 'cancelled', icon: '⏳' }
+      'CANCELLING': { text: 'Đang chờ hủy', class: 'cancelled', icon: '⏳' },
+      'WAITING_PAYMENT': { text: 'Chờ thanh toán', class: 'pending', icon: '💳 ' }
     };
     return statusMap[status.toUpperCase()] || { text: status, class: 'pending', icon: '' };
   };
@@ -350,7 +351,7 @@ function OrderHistory() {
                     >
                       Xem chi tiết
                     </button>
-                    {(order.status?.toUpperCase() === 'PENDING' || order.status?.toUpperCase() === 'PROCESSING') && (
+                    {(order.status?.toUpperCase() === 'PENDING' || order.status?.toUpperCase() === 'PROCESSING' || order.status?.toUpperCase() === 'WAITING_PAYMENT') && (
                       <button 
                         className="btn-cancel"
                         onClick={() => handleCancelOrder(order.id)}

@@ -38,7 +38,11 @@ public class OrderService {
         order.setShippingEmail(request.getShippingInfo().getEmail());
         order.setShippingAddress(request.getShippingInfo().getAddress());
         order.setPaymentMethod(request.getPaymentMethod());
-        order.setStatus("pending");
+        if ("banking".equalsIgnoreCase(request.getPaymentMethod())) {
+            order.setStatus("WAITING_PAYMENT");
+        } else {
+            order.setStatus("PENDING");
+        }
         
         if (request.getShippingInfo() != null) {
             order.setNote(request.getShippingInfo().getNote());

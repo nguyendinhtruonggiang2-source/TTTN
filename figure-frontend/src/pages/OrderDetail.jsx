@@ -193,7 +193,7 @@ function OrderDetail() {
       </div>
 
       <div className="order-actions">
-        {(order.status?.toUpperCase() === 'PENDING' || order.status?.toUpperCase() === 'PROCESSING') && (
+        {(order.status?.toUpperCase() === 'PENDING' || order.status?.toUpperCase() === 'PROCESSING' || order.status?.toUpperCase() === 'WAITING_PAYMENT') && (
           <button 
             className="btn-cancel"
             onClick={handleCancelOrder}
@@ -228,7 +228,8 @@ function getStatusText(status) {
     'SHIPPED': '🚚 Đang giao hàng',
     'DELIVERED': '📦 Đã giao hàng',
     'CANCELLED': '❌ Đã hủy',
-    'CANCELLING': '⚠️ Đang chờ hủy'
+    'CANCELLING': '⚠️ Đang chờ hủy',
+    'WAITING_PAYMENT': '💳 Chờ thanh toán'
   };
   return statusMap[status.toUpperCase()] || status;
 }

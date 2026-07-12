@@ -87,6 +87,7 @@ public class AdminOrderService {
             case "shipped": return "Đang giao hàng";
             case "delivered": return "Đã giao hàng thành công";
             case "cancelling": return "Đang chờ hủy (yêu cầu từ khách)";
+            case "waiting_payment": return "Chờ xác nhận thanh toán";
             case "cancelled": return "Đã hủy";
             default: return status;
         }

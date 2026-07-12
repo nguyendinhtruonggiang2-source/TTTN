@@ -106,12 +106,14 @@ const OrderManagement = () => {
     };
 
     const getStatusText = (status) => {
-        switch(status) {
+        if (!status) return '';
+        switch(status.toUpperCase()) {
             case 'PENDING': return 'Chờ xác nhận';
             case 'PROCESSING': return 'Đang xử lý';
             case 'SHIPPED': return 'Đang giao';
             case 'DELIVERED': return 'Đã giao';
             case 'CANCELLED': return 'Đã hủy';
+            case 'WAITING_PAYMENT': return 'Chờ thanh toán';
             default: return status;
         }
     };
@@ -131,6 +133,8 @@ const OrderManagement = () => {
                 return { label: 'Đã hủy', color: '#ff4d4f', icon: '❌' };
             case 'CANCELLING':
                 return { label: 'Khách yêu cầu hủy', color: '#fa541c', icon: '⚠️' };
+            case 'WAITING_PAYMENT':
+                return { label: 'Chờ thanh toán', color: '#722ed1', icon: '💳' };
             default:
                 return { label: status, color: '#666', icon: '❓' };
         }
@@ -147,6 +151,9 @@ const OrderManagement = () => {
         }
         if (statusUpper === 'CANCELLING') {
             return ['PENDING', 'PROCESSING', 'CANCELLED'];
+        }
+        if (statusUpper === 'WAITING_PAYMENT') {
+            return ['PENDING', 'CANCELLED'];
         }
         
         const currentIndex = orderFlow.indexOf(statusUpper);
@@ -244,6 +251,27 @@ const OrderManagement = () => {
                                                         onMouseOut={(e) => e.target.style.backgroundColor = '#ff4d4f'}
                                                     >
                                                         Xác nhận hủy
+                                                    </button>
+                                                )}
+                                                {order.status.toUpperCase() === 'WAITING_PAYMENT' && (
+                                                    <button
+                                                        onClick={() => handleUpdateStatus(order.id, 'PENDING')}
+                                                        className="confirm-payment-btn"
+                                                        style={{
+                                                            padding: '4px 10px',
+                                                            backgroundColor: '#2f54eb',
+                                                            color: 'white',
+                                                            border: 'none',
+                                                            borderRadius: '4px',
+                                                            cursor: 'pointer',
+                                                            fontWeight: 'bold',
+                                                            fontSize: '11px',
+                                                            transition: 'background-color 0.2s'
+                                                        }}
+                                                        onMouseOver={(e) => e.target.style.backgroundColor = '#597ef7'}
+                                                        onMouseOut={(e) => e.target.style.backgroundColor = '#2f54eb'}
+                                                    >
+                                                        Xác nhận thanh toán
                                                     </button>
                                                 )}
                                                 {statusOptions.length > 0 && (
