@@ -97,7 +97,7 @@ function OrderHistory() {
     }
 
     try {
-      await axiosClient.put(`/orders/${orderId}/cancel`);
+      await axiosClient.post(`/orders/${orderId}/cancel`);
       alert('✅ Đã hủy đơn hàng thành công');
       await fetchOrders();
     } catch (err) {
