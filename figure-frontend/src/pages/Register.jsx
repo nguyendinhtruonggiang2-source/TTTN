@@ -180,35 +180,37 @@ function Register({ updateAuthStatus }) {
       if (error.response) {
         const { status, data } = error.response;
         
+        let errorMessage = "Đăng ký thất bại. Vui lòng thử lại";
+        if (typeof data === 'string') {
+          errorMessage = data;
+        } else if (data && typeof data === 'object') {
+          errorMessage = data.message || data.error || JSON.stringify(data);
+        }
+        
         switch (status) {
           case 400:
-            if (typeof data === 'string') {
-              if (data.includes("username") || data.includes("Username")) {
-                setErrors({ username: data });
-              } else if (data.includes("email") || data.includes("Email")) {
-                setErrors({ email: data });
-              } else if (data.includes("password") || data.includes("Password")) {
-                setErrors({ password: data });
-              } else {
-                setErrors({ general: data });
-              }
-            } else if (data.message) {
-              setErrors({ general: data.message });
+            const lowerMessage = errorMessage.toLowerCase();
+            if (lowerMessage.includes("username")) {
+              setErrors({ username: errorMessage });
+            } else if (lowerMessage.includes("email")) {
+              setErrors({ email: errorMessage });
+            } else if (lowerMessage.includes("password")) {
+              setErrors({ password: errorMessage });
             } else {
-              setErrors({ general: "Dữ liệu không hợp lệ" });
+              setErrors({ general: errorMessage });
             }
             break;
             
           case 409:
-            setErrors({ general: "Tài khoản đã tồn tại" });
+            setErrors({ general: "Tài khoản hoặc email đã tồn tại" });
             break;
             
           case 500:
-            setErrors({ general: "Lỗi server. Vui lòng thử lại sau" });
+            setErrors({ general: "Lỗi hệ thống. Vui lòng thử lại sau" });
             break;
             
           default:
-            setErrors({ general: "Đăng ký thất bại. Vui lòng thử lại" });
+            setErrors({ general: errorMessage });
         }
       } else if (error.request) {
         setErrors({ general: "Không thể kết nối đến server. Vui lòng kiểm tra kết nối" });
