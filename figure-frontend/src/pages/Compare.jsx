@@ -43,9 +43,26 @@ const Compare = () => {
     }
   };
 
+  const fetchDefaultProducts = async () => {
+    try {
+      const response = await axiosClient.get('/figures');
+      const compareIds = compareProducts.map(p => p.id);
+      const filtered = (response.data || []).filter(p => !compareIds.includes(p.id));
+      setSearchResults(filtered);
+    } catch (error) {
+      console.error('Error fetching default products for compare:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (showProductModal) {
+      fetchDefaultProducts();
+    }
+  }, [showProductModal]);
+
   const searchProducts = async () => {
     if (!searchTerm.trim()) {
-      setSearchResults([]);
+      fetchDefaultProducts();
       return;
     }
     
@@ -64,13 +81,13 @@ const Compare = () => {
     const delayDebounce = setTimeout(() => {
       if (searchTerm) {
         searchProducts();
-      } else {
-        setSearchResults([]);
+      } else if (showProductModal) {
+        fetchDefaultProducts();
       }
     }, 500);
     
     return () => clearTimeout(delayDebounce);
-  }, [searchTerm]);
+  }, [searchTerm, showProductModal]);
 
   const addToCompare = (product) => {
     if (compareProducts.length >= 4) {
