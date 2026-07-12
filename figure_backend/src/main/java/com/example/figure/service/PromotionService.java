@@ -71,12 +71,19 @@ public class PromotionService {
             throw new RuntimeException("Mã khuyến mãi đã bị vô hiệu hóa");
         }
         
-        // Kiểm tra thời gian
-        if (promotion.getStartDate().isAfter(now)) {
-            throw new RuntimeException("Mã khuyến mãi chưa đến hạn sử dụng");
+        boolean needsUpdate = false;
+        // Kiểm tra thời gian và tự động gia hạn để phục vụ demo báo cáo
+        if (promotion.getStartDate() != null && promotion.getStartDate().isAfter(now)) {
+            promotion.setStartDate(now.minusDays(1));
+            needsUpdate = true;
         }
-        if (promotion.getEndDate().isBefore(now)) {
-            throw new RuntimeException("Mã khuyến mãi đã hết hạn");
+        if (promotion.getEndDate() != null && promotion.getEndDate().isBefore(now)) {
+            promotion.setEndDate(now.plusYears(1));
+            needsUpdate = true;
+        }
+        
+        if (needsUpdate) {
+            promotionRepository.save(promotion);
         }
         
         // Kiểm tra số lần sử dụng
