@@ -422,6 +422,7 @@ const FlashSale = () => {
                 })}
               </div>
             </div>
+          )}
           {/* Flash Sale đã kết thúc */}
           {endedSales.length > 0 && (
             <div className="upcoming-section ended-section" style={{ marginTop: '40px', opacity: 0.75 }}>
