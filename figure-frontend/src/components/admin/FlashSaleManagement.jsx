@@ -159,10 +159,18 @@ const FlashSaleManagement = () => {
     }
   };
 
+  const parseDate = (dateString) => {
+    if (!dateString) return null;
+    if (typeof dateString === 'string' && !dateString.endsWith('Z') && !dateString.includes('+') && dateString.includes('T')) {
+      return new Date(dateString + 'Z');
+    }
+    return new Date(dateString);
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
     try {
-      const date = new Date(dateString);
+      const date = parseDate(dateString);
       return date.toLocaleString('vi-VN');
     } catch {
       return dateString;
@@ -172,8 +180,8 @@ const FlashSaleManagement = () => {
   const getStatus = (startTime, endTime, isActive) => {
     if (isActive === false) return { text: 'Đã tắt', class: 'status-ended' };
     const now = new Date();
-    const start = new Date(startTime);
-    const end = new Date(endTime);
+    const start = parseDate(startTime);
+    const end = parseDate(endTime);
     
     if (now < start) return { text: 'Sắp diễn ra', class: 'status-upcoming' };
     if (now > end) return { text: 'Đã kết thúc', class: 'status-ended' };
@@ -237,7 +245,7 @@ const FlashSaleManagement = () => {
           <tbody>
             {filteredFlashSales.map(item => {
               const status = getStatus(item.startTime, item.endTime, item.isActive);
-              const ended = new Date(item.endTime) < new Date();
+              const ended = parseDate(item.endTime) < new Date();
               const isChecked = item.isActive && !ended;
               return (
                 <tr key={item.id}>

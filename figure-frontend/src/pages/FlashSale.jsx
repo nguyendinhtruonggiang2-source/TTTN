@@ -8,6 +8,14 @@ import {
 import axiosClient, { getImageUrl } from '../api/axiosClient';
 import '../styles/FlashSale.css';
 
+const parseDate = (dateString) => {
+  if (!dateString) return null;
+  if (typeof dateString === 'string' && !dateString.endsWith('Z') && !dateString.includes('+') && dateString.includes('T')) {
+    return new Date(dateString + 'Z');
+  }
+  return new Date(dateString);
+};
+
 const FlashSale = () => {
   const navigate = useNavigate();
   const [flashSales, setFlashSales] = useState([]);
@@ -80,7 +88,7 @@ const FlashSale = () => {
     
     flashSales.forEach(sale => {
       if (sale.status === 'ACTIVE') {
-        const end = new Date(sale.endTime).getTime();
+        const end = parseDate(sale.endTime).getTime();
         const diff = end - now;
         
         if (diff > 0) {
@@ -96,7 +104,7 @@ const FlashSale = () => {
     
     upcomingSales.forEach(sale => {
       if (sale.status === 'UPCOMING') {
-        const start = new Date(sale.startTime).getTime();
+        const start = parseDate(sale.startTime).getTime();
         const diff = start - now;
         
         if (diff > 0) {

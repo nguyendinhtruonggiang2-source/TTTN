@@ -6,6 +6,14 @@ import BranchSection from "../components/BranchSection";
 import { FaShoppingCart, FaEye } from "react-icons/fa";
 import "../styles/home.css";
 
+const parseDate = (dateString) => {
+  if (!dateString) return null;
+  if (typeof dateString === 'string' && !dateString.endsWith('Z') && !dateString.includes('+') && dateString.includes('T')) {
+    return new Date(dateString + 'Z');
+  }
+  return new Date(dateString);
+};
+
 function Home() {
   const [figures, setFigures] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
@@ -447,7 +455,7 @@ function Home() {
     const activeSales = flashSales.filter(s => s.status === 'ACTIVE');
     if (activeSales.length === 0) return;
     
-    const endTime = new Date(activeSales[0].endTime).getTime();
+    const endTime = parseDate(activeSales[0].endTime).getTime();
     
     const interval = setInterval(() => {
       const now = new Date().getTime();
