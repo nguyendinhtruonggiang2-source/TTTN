@@ -140,6 +140,61 @@ const Compare = () => {
     }
   };
 
+  const getRecommendation = () => {
+    if (compareProducts.length < 2) return null;
+    
+    const p1 = compareProducts[0];
+    const p2 = compareProducts[1];
+    
+    const priceDiff = Math.abs(p1.price - p2.price);
+    const cheaperProduct = p1.price < p2.price ? p1 : p2;
+    const expensiveProduct = p1.price > p2.price ? p1 : p2;
+    
+    let highlights = [];
+    let recommendationText = "";
+
+    // 1. So sánh giá
+    if (p1.price === p2.price) {
+      highlights.push(`Cả hai sản phẩm đều đồng giá **${formatCurrency(p1.price)}**.`);
+    } else {
+      const percent = Math.round((priceDiff / expensiveProduct.price) * 100);
+      highlights.push(`**${cheaperProduct.name}** có giá tiết kiệm hơn **${formatCurrency(priceDiff)}** (rẻ hơn khoảng **${percent}%** so với **${expensiveProduct.name}**).`);
+    }
+
+    // 2. So sánh tỷ lệ (Scale)
+    if (p1.scale && p2.scale) {
+      if (p1.scale === p2.scale) {
+        highlights.push(`Hai mô hình có cùng kích thước tỉ lệ **${p1.scale}**, giúp kệ trưng bày của bạn trông đồng đều và đẹp mắt.`);
+      } else {
+        highlights.push(`**${p1.name}** có tỉ lệ **${p1.scale}** trong khi **${p2.name}** có tỉ lệ **${p2.scale}**.`);
+      }
+    }
+
+    // 3. So sánh nhà sản xuất
+    if (p1.manufacturer && p2.manufacturer) {
+      if (p1.manufacturer === p2.manufacturer) {
+        highlights.push(`Đều được sản xuất bởi hãng danh tiếng **${p1.manufacturer}**, đảm bảo chất lượng gia công và độ chi tiết cực cao.`);
+      } else {
+        highlights.push(`Được chế tác từ hai hãng khác nhau (**${p1.manufacturer}** và **${p2.manufacturer}**), mang lại phong cách tạo hình riêng biệt.`);
+      }
+    }
+
+    // 4. Kiểm tra tồn kho
+    if (p1.quantity === 0 || p2.quantity === 0) {
+      const outOfStock = p1.quantity === 0 ? p1 : p2;
+      highlights.push(`⚠️ Lưu ý: Mô hình **${outOfStock.name}** hiện đã cháy hàng.`);
+    }
+
+    // Lời khuyên tổng quan
+    if (p1.price !== p2.price) {
+      recommendationText = `💡 **Lời khuyên tuyển chọn:** Nếu ngân sách là ưu tiên số một, **${cheaperProduct.name}** là phương án cực kỳ kinh tế mà vẫn giữ được chất lượng mô hình tốt. Nếu bạn quan tâm nhiều hơn đến độ hiếm, hãng sản xuất hoặc độ chi tiết sắc sảo, việc đầu tư thêm cho **${expensiveProduct.name}** sẽ rất xứng đáng cho bộ sưu tập của bạn.`;
+    } else {
+      recommendationText = `💡 **Lời khuyên tuyển chọn:** Cả hai mô hình có giá trị ngang nhau. Bạn nên lựa chọn dựa trên mức độ yêu thích cá nhân đối với nhân vật, hoặc chọn sản phẩm có điểm số đánh giá tốt hơn.`;
+    }
+
+    return { highlights, recommendationText };
+  };
+
   // Các trường so sánh
   const compareFields = [
     { key: 'name', label: 'Tên sản phẩm', icon: <FaTag /> },
@@ -195,98 +250,134 @@ const Compare = () => {
 
       {/* Compare Table */}
       {compareProducts.length > 0 && !loading && (
-        <div className="compare-table-wrapper">
-          <table className="compare-table">
-            <thead>
-              <tr>
-                <th className="field-label">Thông tin</th>
-                {compareProducts.map(product => (
-                  <th key={product.id} className="product-header">
-                    <div className="product-header-content">
-                      <button 
-                        className="remove-product-btn"
-                        onClick={() => removeFromCompare(product.id)}
-                        title="Xóa khỏi so sánh"
-                      >
-                        <FaTimes />
-                      </button>
-                      <img 
-                        src={getImageUrl(product.image)} 
-                        alt={product.name}
-                        className="product-thumb"
-                        onError={(e) => { e.target.src = '/default-figure.jpg'; }}
-                      />
-                      <h3>{product.name}</h3>
-                      <div className="product-actions-header">
-                        <button 
-                          className="cart-btn-header"
-                          onClick={() => handleAddToCart(product)}
-                          title="Thêm vào giỏ"
-                        >
-                          <FaShoppingCart />
-                        </button>
-                        <Link to={`/product/${product.id}`} className="view-btn-header">
-                          <FaEye />
-                        </Link>
-                      </div>
-                    </div>
-                  </th>
-                ))}
-                {compareProducts.length < 4 && (
-                  <th className="add-more-col">
-                    <button 
-                      className="add-more-btn"
-                      onClick={() => setShowProductModal(true)}
-                    >
-                      <FaPlus />
-                      <span>Thêm sản phẩm</span>
-                    </button>
-                  </th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {compareFields.map(field => (
-                <tr key={field.key}>
-                  <td className="field-label">
-                    {field.icon && <span className="field-icon">{field.icon}</span>}
-                    <strong>{field.label}</strong>
-                  </td>
+        <>
+          <div className="compare-table-wrapper">
+            <table className="compare-table">
+              <thead>
+                <tr>
+                  <th className="field-label">Thông tin</th>
                   {compareProducts.map(product => (
-                    <td key={product.id} className="field-value">
-                      {field.key === 'name' && (
-                        <Link to={`/product/${product.id}`} className="product-link">
-                          {product[field.key] || 'N/A'}
-                        </Link>
-                      )}
-                      {field.key === 'price' && (
-                        <span className="price-value">
-                          {formatCurrency(product.price)}
-                        </span>
-                      )}
-                      {field.key === 'stock' && (
-                        <span className={`stock-value ${product.quantity > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                          {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
-                        </span>
-                      )}
-                      {field.key === 'rating' && (
-                        <div className="rating-value">
-                          {getRatingStars(product.rating || 4.5)}
-                          <span className="rating-number">({product.rating || 4.5})</span>
+                    <th key={product.id} className="product-header">
+                      <div className="product-header-content">
+                        <button 
+                          className="remove-product-btn"
+                          onClick={() => removeFromCompare(product.id)}
+                          title="Xóa khỏi so sánh"
+                        >
+                          <FaTimes />
+                        </button>
+                        <img 
+                          src={getImageUrl(product.image)} 
+                          alt={product.name}
+                          className="product-thumb"
+                          onError={(e) => { e.target.src = '/default-figure.jpg'; }}
+                        />
+                        <h3>{product.name}</h3>
+                        <div className="product-actions-header">
+                          <button 
+                            className="cart-btn-header"
+                            onClick={() => handleAddToCart(product)}
+                            title="Thêm vào giỏ"
+                          >
+                            <FaShoppingCart />
+                          </button>
+                          <Link to={`/product/${product.id}`} className="view-btn-header">
+                            <FaEye />
+                          </Link>
                         </div>
-                      )}
-                      {field.key !== 'name' && field.key !== 'price' && 
-                       field.key !== 'stock' && field.key !== 'rating' && (
-                        <span>{product[field.key] || 'Chưa cập nhật'}</span>
-                      )}
-                    </td>
+                      </div>
+                    </th>
                   ))}
-                  {compareProducts.length < 4 && <td className="empty-cell"></td>}
+                  {compareProducts.length < 4 && (
+                    <th className="add-more-col">
+                      <button 
+                        className="add-more-btn"
+                        onClick={() => setShowProductModal(true)}
+                      >
+                        <FaPlus />
+                        <span>Thêm sản phẩm</span>
+                      </button>
+                    </th>
+                  )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {compareFields.map(field => (
+                  <tr key={field.key}>
+                    <td className="field-label">
+                      {field.icon && <span className="field-icon">{field.icon}</span>}
+                      <strong>{field.label}</strong>
+                    </td>
+                    {compareProducts.map(product => (
+                      <td key={product.id} className="field-value">
+                        {field.key === 'name' && (
+                          <Link to={`/product/${product.id}`} className="product-link">
+                            {product[field.key] || 'N/A'}
+                          </Link>
+                        )}
+                        {field.key === 'price' && (
+                          <span className="price-value">
+                            {formatCurrency(product.price)}
+                          </span>
+                        )}
+                        {field.key === 'stock' && (
+                          <span className={`stock-value ${product.quantity > 0 ? 'in-stock' : 'out-of-stock'}`}>
+                            {product.quantity > 0 ? `Còn ${product.quantity} sản phẩm` : 'Hết hàng'}
+                          </span>
+                        )}
+                        {field.key === 'rating' && (
+                          <div className="rating-value">
+                            {getRatingStars(product.rating || 4.5)}
+                            <span className="rating-number">({product.rating || 4.5})</span>
+                          </div>
+                        )}
+                        {field.key !== 'name' && field.key !== 'price' && 
+                         field.key !== 'stock' && field.key !== 'rating' && (
+                          <span>{product[field.key] || 'Chưa cập nhật'}</span>
+                        )}
+                      </td>
+                    ))}
+                    {compareProducts.length < 4 && <td className="empty-cell"></td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Suggestion Box */}
+          {compareProducts.length >= 2 && (() => {
+            const rec = getRecommendation();
+            if (!rec) return null;
+            return (
+              <div className="compare-suggestion-box" style={{
+                marginTop: '30px',
+                padding: '24px',
+                backgroundColor: '#f0fdf4',
+                border: '1px solid #b7ebc6',
+                borderRadius: '12px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                fontFamily: 'inherit'
+              }}>
+                <h3 style={{ margin: '0 0 16px 0', color: '#166534', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: 'bold' }}>
+                  🤖 Phân Tích & Gợi Ý Lựa Chọn Của AI:
+                </h3>
+                <ul style={{ margin: '0 0 16px 0', paddingLeft: '20px', color: '#1e293b', fontSize: '14.5px', lineHeight: '1.6' }}>
+                  {rec.highlights.map((h, i) => {
+                    const parts = h.split('**');
+                    return (
+                      <li key={i} style={{ marginBottom: '8px' }}>
+                        {parts.map((part, index) => index % 2 === 1 ? <strong key={index} style={{ color: '#15803d' }}>{part}</strong> : part)}
+                      </li>
+                    );
+                  })}
+                </ul>
+                <p style={{ margin: 0, padding: '12px 16px', backgroundColor: '#ffffff', borderRadius: '8px', borderLeft: '4px solid #22c55e', color: '#334155', fontSize: '14.5px', lineHeight: '1.6', fontStyle: 'italic' }}>
+                  {rec.recommendationText.split('**').map((part, index) => index % 2 === 1 ? <strong key={index}>{part}</strong> : part)}
+                </p>
+              </div>
+            );
+          })()}
+        </>
       )}
 
       {/* Add Product Modal */}
