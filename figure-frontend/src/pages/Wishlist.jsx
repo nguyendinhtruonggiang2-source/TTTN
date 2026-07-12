@@ -157,7 +157,7 @@ const Wishlist = () => {
               <div key={item.id} className="wishlist-card">
                 <div className="card-image">
                   <img 
-                    src={getImageUrl(item.figure.image)} 
+                    src={getImageUrl(item.figure.image || item.figure.imageUrl)} 
                     alt={item.figure.name}
                     onError={(e) => e.target.src = '/default-figure.jpg'}
                   />

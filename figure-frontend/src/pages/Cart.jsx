@@ -577,7 +577,7 @@ const Cart = () => {
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }} className="cart-item-row">
                             <img
-                              src={getImageUrl(item.figure?.imageUrl)}
+                              src={getImageUrl(item.figure?.image || item.figure?.imageUrl)}
                               alt={item.figure?.name || 'Sản phẩm'}
                               className="cart-item-image"
                               onError={(e) => {
