@@ -8,6 +8,7 @@ import "../styles/home.css";
 
 function Home() {
   const [figures, setFigures] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchParams] = useSearchParams();
@@ -118,7 +119,13 @@ function Home() {
       
       console.log("🔍 Fetching figures from:", url);
       
-      const response = await axiosClient.get(url);
+      const [response, newestResponse] = await Promise.all([
+        axiosClient.get(url),
+        axiosClient.get("/figures/newest").catch(err => {
+          console.warn("⚠️ Failed to fetch newest figures:", err);
+          return { data: [] };
+        })
+      ]);
       
       console.log("✅ Figures response received:", {
         status: response.status,
@@ -159,6 +166,41 @@ function Home() {
       } else {
         console.warn("⚠️ Response data is not an array:", response.data);
         setFigures([]);
+      }
+
+      if (newestResponse && Array.isArray(newestResponse.data)) {
+        const processedNewest = newestResponse.data.map((figure, index) => {
+          const quantity = figure.quantity && figure.quantity > 0 ? figure.quantity : Math.floor(Math.random() * 50) + 20;
+          const stock = figure.stock && figure.stock > 0 ? figure.stock : quantity;
+          
+          const basePrice = figure.price || 500000;
+          const discount = figure.discount || 0;
+          const originalPrice = figure.originalPrice || basePrice;
+          
+          return {
+            ...figure,
+            id: figure.id || `fig-new-${index}`,
+            imageUrl: getImageUrl(figure.imageUrl || figure.image) || getPlaceholderImage(index),
+            price: basePrice,
+            originalPrice: originalPrice,
+            stock: stock,
+            quantity: quantity,
+            isNew: true, // Always show "NEW" badge for actual newest arrivals
+            discount: discount,
+            category: figure.category || ["Anime", "Game", "Movie"][index % 3],
+            name: figure.name || `Figure ${index + 1}`,
+            series: figure.series || "Various",
+            manufacturer: figure.manufacturer || "Unknown",
+            description: figure.description || "Mô hình chất lượng cao",
+            rating: 5,
+            soldCount: figure.soldCount || 0
+          };
+        });
+        
+        console.log(`✅ Processed ${processedNewest.length} new arrivals`);
+        setNewArrivals(processedNewest);
+      } else {
+        setNewArrivals([]);
       }
     } catch (error) {
       console.error("❌ Error fetching figures:", error);
@@ -946,7 +988,7 @@ function Home() {
         </div>
         
         <div className="home-products-grid">
-          {figures.slice(4, 8).map((figure, index) => (
+          {(newArrivals.length > 0 ? newArrivals : figures.slice(4, 8)).slice(0, 4).map((figure, index) => (
             <div className="home-product-card" key={`new-${figure.id}`} onClick={() => handleViewDetail(figure)}>
               {figure.isNew && (
                 <div className="home-product-badge new">MỚI</div>
