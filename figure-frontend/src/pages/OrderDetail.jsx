@@ -13,38 +13,34 @@ function OrderDetail() {
   const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
-    fetchOrderDetail(false);
+    fetchOrderDetail();
 
-    // Tự động làm mới chi tiết đơn hàng định kỳ mỗi 10 giây ngầm
+    // Tự động tải lại toàn bộ trang định kỳ mỗi 15 giây
     const intervalId = setInterval(() => {
-      fetchOrderDetail(true);
-    }, 10000);
+      window.location.reload();
+    }, 15000);
 
     return () => clearInterval(intervalId);
   }, [id]);
 
-  const fetchOrderDetail = async (isBackground = false) => {
+  const fetchOrderDetail = async () => {
     try {
-      if (!isBackground) {
-        setLoading(true);
-      }
+      setLoading(true);
       const response = await axiosClient.get(`/orders/${id}`);
       console.log('Order detail response:', response.data);
       setOrder(response.data);
     } catch (err) {
       console.error('Error fetching order detail:', err);
       if (err.response?.status === 404) {
-        if (!isBackground) setError('Không tìm thấy đơn hàng');
+        setError('Không tìm thấy đơn hàng');
       } else if (err.response?.status === 401) {
-        if (!isBackground) setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại');
+        setError('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại');
         setTimeout(() => navigate('/login'), 1500);
       } else {
-        if (!isBackground) setError('Không thể tải thông tin đơn hàng');
+        setError('Không thể tải thông tin đơn hàng');
       }
     } finally {
-      if (!isBackground) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
   };
 
