@@ -22,7 +22,6 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final NotificationRepository notificationRepository;
     private final com.example.figure.websocket.NotificationWebSocketHandler notificationWebSocketHandler;
-    private final EmailService emailService;
     
     @Transactional
     public Order createOrder(OrderRequest request, String username) {
@@ -104,79 +103,6 @@ public class OrderService {
             }
         } catch (Exception e) {
             System.err.println("Error saving/pushing admin notification: " + e.getMessage());
-        }
-        
-        // Gửi email xác nhận đặt hàng về gmail của khách hàng
-        try {
-            String recipientEmail = finalOrder.getShippingEmail();
-            if (recipientEmail == null || recipientEmail.trim().isEmpty()) {
-                recipientEmail = user.getEmail();
-            }
-            
-            if (recipientEmail != null && !recipientEmail.trim().isEmpty()) {
-                String subject = "[Figure Store] Xác nhận đơn hàng " + finalOrder.getOrderCode();
-                
-                // Xây dựng danh sách sản phẩm ở dạng HTML table row
-                StringBuilder itemsHtml = new StringBuilder();
-                for (OrderItem item : finalOrder.getItems()) {
-                    itemsHtml.append("<tr>")
-                            .append("<td style=\"padding: 10px; border: 1px solid #cbd5e1;\">").append(item.getFigure().getName()).append("</td>")
-                            .append("<td style=\"padding: 10px; border: 1px solid #cbd5e1; text-align: center;\">").append(item.getQuantity()).append("</td>")
-                            .append("<td style=\"padding: 10px; border: 1px solid #cbd5e1; text-align: right;\">")
-                            .append(String.format("%,.0fđ", item.getPrice()))
-                            .append("</td>")
-                            .append("</tr>");
-                }
-                
-                String paymentText = finalOrder.getPaymentMethod();
-                if ("cod".equalsIgnoreCase(paymentText)) {
-                    paymentText = "Thanh toán khi nhận hàng (COD)";
-                } else if ("banking".equalsIgnoreCase(paymentText)) {
-                    paymentText = "Chuyển khoản ngân hàng";
-                } else if ("momo".equalsIgnoreCase(paymentText)) {
-                    paymentText = "Ví điện tử MoMo";
-                }
-                
-                String emailContent = "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 10px;\">" +
-                        "    <h2 style=\"color: #2563eb; text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 10px;\">CẢM ƠN BẠN ĐÃ ĐẶT HÀNG!</h2>" +
-                        "    <p>Xin chào <strong>" + finalOrder.getShippingName() + "</strong>,</p>" +
-                        "    <p>Đơn hàng của bạn đã được tiếp nhận thành công. Dưới đây là thông tin chi tiết đơn hàng của bạn:</p>" +
-                        "    " +
-                        "    <div style=\"background-color: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;\">" +
-                        "        <p style=\"margin: 5px 0;\"><strong>Mã đơn hàng:</strong> " + finalOrder.getOrderCode() + "</p>" +
-                        "        <p style=\"margin: 5px 0;\"><strong>Phương thức thanh toán:</strong> " + paymentText + "</p>" +
-                        "        <p style=\"margin: 5px 0;\"><strong>Địa chỉ giao hàng:</strong> " + finalOrder.getShippingAddress() + "</p>" +
-                        "        <p style=\"margin: 5px 0;\"><strong>Số điện thoại:</strong> " + finalOrder.getShippingPhone() + "</p>" +
-                        "    </div>" +
-                        "    " +
-                        "    <table style=\"width: 100%; border-collapse: collapse; margin-top: 15px;\">" +
-                        "        <thead>" +
-                        "            <tr style=\"background-color: #e2e8f0; text-align: left;\">" +
-                        "                <th style=\"padding: 10px; border: 1px solid #cbd5e1;\">Sản phẩm</th>" +
-                        "                <th style=\"padding: 10px; border: 1px solid #cbd5e1; text-align: center;\">SL</th>" +
-                        "                <th style=\"padding: 10px; border: 1px solid #cbd5e1; text-align: right;\">Đơn giá</th>" +
-                        "            </tr>" +
-                        "        </thead>" +
-                        "        <tbody>" +
-                        "            " + itemsHtml.toString() +
-                        "        </tbody>" +
-                        "    </table>" +
-                        "    " +
-                        "    <div style=\"margin-top: 15px; text-align: right; font-size: 16px;\">" +
-                        "        <p style=\"margin: 5px 0;\"><strong>Phí vận chuyển:</strong> 30.000đ</p>" +
-                        "        <p style=\"margin: 5px 0; font-size: 18px; color: #dc2626;\"><strong>Tổng cộng:</strong> " + String.format("%,.0fđ", finalOrder.getTotalAmount()) + "</p>" +
-                        "    </div>" +
-                        "    " +
-                        "    <div style=\"border-top: 1px solid #e2e8f0; margin-top: 20px; padding-top: 15px; text-align: center; color: #64748b; font-size: 12px;\">" +
-                        "        <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với chúng tôi qua nguyendinhtruonggiang2@gmail.com.</p>" +
-                        "        <p>© 2026 Figure Store. All rights reserved.</p>" +
-                        "    </div>" +
-                        "</div>";
-                
-                emailService.sendEmail(recipientEmail, subject, emailContent);
-            }
-        } catch (Exception e) {
-            System.err.println("Error sending order confirmation email: " + e.getMessage());
         }
         
         return finalOrder;
