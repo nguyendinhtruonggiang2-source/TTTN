@@ -102,7 +102,12 @@ api.interceptors.response.use(
       
       switch (status) {
         case 401:
-          console.warn('⚠️ 401 Unauthorized - Session token returned 401, but keeping user logged in per user preferences');
+          console.warn('⚠️ 401 Unauthorized - Session token expired or invalid. Logging out user...');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+            window.location.href = '/login';
+          }
           break;
           
         case 403:
