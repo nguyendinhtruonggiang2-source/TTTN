@@ -27,17 +27,28 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     
     // Danh sách các endpoint KHÔNG cần authentication
     private static final List<String> PUBLIC_PATHS = Arrays.asList(
-        "/api/auth/",           // Authentication endpoints
-        "/api/figures",         // Public figure endpoints  
-        "/api/categories",      // Public category endpoints (chỉ public GET)
-        "/api/test",           // Test endpoints
-        "/images",             // Image resources
-        "/uploads",            // Uploads
-        "/static",             // Static resources
-        "/swagger-ui",         // Swagger UI
-        "/v3/api-docs",        // API docs
-        "/error",              // Error pages
-        "/ws"                  // WebSocket handshakes
+        "/api/auth/",
+        "/api/ai/",
+        "/api/chat/",
+        "/ws",
+        "/api/figures",
+        "/api/categories",
+        "/api/series",
+        "/api/test",
+        "/api/posts",
+        "/api/comments/post",
+        "/api/branches",
+        "/api/promotions",
+        "/api/banners",
+        "/images",
+        "/uploads",
+        "/static",
+        "/swagger-ui",
+        "/v3/api-docs",
+        "/error",
+        "/api/flash-sale",
+        "/api/reviews/figure",
+        "/api/track-order"
     );
     
     @Override
@@ -93,6 +104,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Kiểm tra token không rỗng
         if (jwt == null || jwt.trim().isEmpty()) {
             System.out.println("⚠️ Token is empty after 'Bearer ' prefix");
+            if (isPublicPath || isCategoriesGet) {
+                System.out.println("✅ Public path with empty token, continuing unauthenticated: " + path);
+                filterChain.doFilter(request, response);
+                return;
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Invalid token format\"}");
@@ -118,6 +134,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     System.out.println("✅ User authorities: " + userDetails.getAuthorities());
                 } else {
                     System.out.println("❌ Token is invalid or expired");
+                    if (isPublicPath || isCategoriesGet) {
+                        System.out.println("✅ Public path with invalid token, continuing unauthenticated: " + path);
+                        filterChain.doFilter(request, response);
+                        return;
+                    }
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.getWriter().write("{\"message\": \"Token expired or invalid\"}");
@@ -126,7 +147,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             System.out.println("❌ JWT processing error: " + e.getMessage());
-            e.printStackTrace();
+            if (isPublicPath || isCategoriesGet) {
+                System.out.println("✅ Public path with JWT error, continuing unauthenticated: " + path);
+                filterChain.doFilter(request, response);
+                return;
+            }
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"message\": \"Authentication failed: " + e.getMessage() + "\"}");

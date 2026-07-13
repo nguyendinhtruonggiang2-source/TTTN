@@ -26,6 +26,9 @@ public class User {
     private String address;
     private String avatar;
     
+    @Column(nullable = false)
+    private String provider = "local";
+    
     @Column(name = "reset_code")
     private String resetCode;
     
@@ -66,6 +69,7 @@ public class User {
         if (notifyFlashSale == null) notifyFlashSale = true;
         if (notifyOrder == null) notifyOrder = true;
         if (notifyAiMessage == null) notifyAiMessage = true;
+        if (provider == null) provider = "local";
     }
     
     // Getters
@@ -86,6 +90,7 @@ public class User {
     public Boolean getNotifyAiMessage() { return notifyAiMessage == null ? true : notifyAiMessage; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public Set<Role> getRoles() { return roles; }
+    public String getProvider() { return provider; }
     
     // Setters
     public void setId(Long id) { this.id = id; }
@@ -105,6 +110,7 @@ public class User {
     public void setNotifyAiMessage(Boolean notifyAiMessage) { this.notifyAiMessage = notifyAiMessage; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
+    public void setProvider(String provider) { this.provider = provider; }
 
     
     public String getFullName() {
